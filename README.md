@@ -20,7 +20,7 @@ It's a fun and easy to use short form ad app! 🍟🍿
 
 ## 📢 🥨 팀 오죠사마 🥨 📢
 
-|               PM 봉민석                |              UXUI 김규희               |                iOS 김민혁                |                      iOS 김현기                      |                BackEnd 오성진                |
+|               PM 봉민석                |              UXUI 김규희               |                iOS 김민혁                |                      iOS 김현기                      |                Back 오성진                |
 | :------------------------------------: | :------------------------------------: | :--------------------------------------: | :--------------------------------------------------: | :--------------------------------------: |
 | [@KSH-KOR](https://github.com/KSH-KOR) | [@woals00](https://github.com/woals00) | [@hgkim215](https://github.com/hgkim215) | [@sehan2709-cmis](https://github.com/sehan2709-cmis) | [@markFT39](https://github.com/markFT39) |
 
