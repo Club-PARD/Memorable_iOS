@@ -16,6 +16,9 @@
 		DDAC4BF02C2805AC006206EB /* MemorableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC4BEF2C2805AC006206EB /* MemorableTests.swift */; };
 		DDAC4BFA2C2805AC006206EB /* MemorableUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC4BF92C2805AC006206EB /* MemorableUITests.swift */; };
 		DDAC4BFC2C2805AC006206EB /* MemorableUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC4BFB2C2805AC006206EB /* MemorableUITestsLaunchTests.swift */; };
+		DDBD12E72C298ED4006E7D92 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = DDBD12E62C298ED4006E7D92 /* SnapKit */; };
+		DDBD12E92C298ED4006E7D92 /* SnapKit-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = DDBD12E82C298ED4006E7D92 /* SnapKit-Dynamic */; };
+		DDBD12EC2C298EF8006E7D92 /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = DDBD12EB2C298EF8006E7D92 /* Then */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +59,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DDBD12E72C298ED4006E7D92 /* SnapKit in Frameworks */,
+				DDBD12EC2C298EF8006E7D92 /* Then in Frameworks */,
+				DDBD12E92C298ED4006E7D92 /* SnapKit-Dynamic in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -99,13 +105,8 @@
 		DDAC4BD42C2805AB006206EB /* Memorable */ = {
 			isa = PBXGroup;
 			children = (
-				DDAC4BD52C2805AB006206EB /* AppDelegate.swift */,
-				DDAC4BD72C2805AB006206EB /* SceneDelegate.swift */,
-				DDAC4BD92C2805AB006206EB /* ViewController.swift */,
-				DDAC4BE12C2805AC006206EB /* Assets.xcassets */,
-				DDAC4BE32C2805AC006206EB /* LaunchScreen.storyboard */,
-				DDAC4BE62C2805AC006206EB /* Info.plist */,
-				DDAC4BDE2C2805AB006206EB /* Memorable.xcdatamodeld */,
+				DDBD12EE2C298FA5006E7D92 /* Resources */,
+				DDBD12EF2C298FBD006E7D92 /* Sources */,
 			);
 			path = Memorable;
 			sourceTree = "<group>";
@@ -127,6 +128,43 @@
 			path = MemorableUITests;
 			sourceTree = "<group>";
 		};
+		DDBD12ED2C298F61006E7D92 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				DDAC4BD92C2805AB006206EB /* ViewController.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		DDBD12EE2C298FA5006E7D92 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				DDAC4BDE2C2805AB006206EB /* Memorable.xcdatamodeld */,
+				DDAC4BE62C2805AC006206EB /* Info.plist */,
+				DDAC4BE12C2805AC006206EB /* Assets.xcassets */,
+				DDAC4BE32C2805AC006206EB /* LaunchScreen.storyboard */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		DDBD12EF2C298FBD006E7D92 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				DDBD12F02C298FCD006E7D92 /* App */,
+				DDBD12ED2C298F61006E7D92 /* View */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		DDBD12F02C298FCD006E7D92 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				DDAC4BD72C2805AB006206EB /* SceneDelegate.swift */,
+				DDAC4BD52C2805AB006206EB /* AppDelegate.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -143,6 +181,11 @@
 			dependencies = (
 			);
 			name = Memorable;
+			packageProductDependencies = (
+				DDBD12E62C298ED4006E7D92 /* SnapKit */,
+				DDBD12E82C298ED4006E7D92 /* SnapKit-Dynamic */,
+				DDBD12EB2C298EF8006E7D92 /* Then */,
+			);
 			productName = Memorable;
 			productReference = DDAC4BD22C2805AB006206EB /* Memorable.app */;
 			productType = "com.apple.product-type.application";
@@ -215,6 +258,10 @@
 				Base,
 			);
 			mainGroup = DDAC4BC92C2805AB006206EB;
+			packageReferences = (
+				DDBD12E52C298ED4006E7D92 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				DDBD12EA2C298EF8006E7D92 /* XCRemoteSwiftPackageReference "Then" */,
+			);
 			productRefGroup = DDAC4BD32C2805AB006206EB /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -434,6 +481,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4FCV7BL65G;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Memorable/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -445,7 +493,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.pard.Memorable;
+				PRODUCT_BUNDLE_IDENTIFIER = io.pard.Memorable123;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -460,6 +508,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4FCV7BL65G;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Memorable/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -471,7 +520,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.pard.Memorable;
+				PRODUCT_BUNDLE_IDENTIFIER = io.pard.Memorable123;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -591,6 +640,43 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		DDBD12E52C298ED4006E7D92 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+		DDBD12EA2C298EF8006E7D92 /* XCRemoteSwiftPackageReference "Then" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/devxoul/Then";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		DDBD12E62C298ED4006E7D92 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DDBD12E52C298ED4006E7D92 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		DDBD12E82C298ED4006E7D92 /* SnapKit-Dynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DDBD12E52C298ED4006E7D92 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = "SnapKit-Dynamic";
+		};
+		DDBD12EB2C298EF8006E7D92 /* Then */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DDBD12EA2C298EF8006E7D92 /* XCRemoteSwiftPackageReference "Then" */;
+			productName = Then;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		DDAC4BDE2C2805AB006206EB /* Memorable.xcdatamodeld */ = {
