@@ -8,8 +8,10 @@
 import UIKit
 import SnapKit
 
-class SearchComponent: UIView {
+class HeaderComponent: UIView {
     
+    private let appLogoImageView = UIImageView()
+    private let appLogo = UIImage()
     private let searchBar = UISearchBar()
     private let searchButton = UIButton()
     private let plusButton = UIButton()
@@ -27,6 +29,17 @@ class SearchComponent: UIView {
     }
     
     private func setupViews() {
+        
+        // App Logo
+        addSubview(appLogoImageView)
+        appLogoImageView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(24)
+            make.centerY.equalToSuperview()
+            make.width.equalTo(174)
+            make.height.equalTo(21.92)
+        }
+        appLogoImageView.image = UIImage(named: "applogo2")
+            
         
         // Plus Button
         addSubview(plusButton)
