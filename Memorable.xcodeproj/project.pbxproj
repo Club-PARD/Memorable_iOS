@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		DD1A05FF2C2B1B4900DE0CB8 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1A05FE2C2B1B4900DE0CB8 /* User.swift */; };
+		DD4B40AB2C2BCEEF00524757 /* SearchComponent in Resources */ = {isa = PBXBuildFile; fileRef = DD4B40A72C2BCEEF00524757 /* SearchComponent */; };
+		DD4B40AC2C2BCEEF00524757 /* SearchComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4B40A82C2BCEEF00524757 /* SearchComponent.swift */; };
+		DD4B40AD2C2BCEEF00524757 /* TabViewComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4B40A92C2BCEEF00524757 /* TabViewComponent.swift */; };
 		DDAC4BD62C2805AB006206EB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC4BD52C2805AB006206EB /* AppDelegate.swift */; };
 		DDAC4BD82C2805AB006206EB /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC4BD72C2805AB006206EB /* SceneDelegate.swift */; };
 		DDAC4BDA2C2805AB006206EB /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC4BD92C2805AB006206EB /* LoginViewController.swift */; };
@@ -44,6 +47,9 @@
 
 /* Begin PBXFileReference section */
 		DD1A05FE2C2B1B4900DE0CB8 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		DD4B40A72C2BCEEF00524757 /* SearchComponent */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SearchComponent; sourceTree = "<group>"; };
+		DD4B40A82C2BCEEF00524757 /* SearchComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchComponent.swift; sourceTree = "<group>"; };
+		DD4B40A92C2BCEEF00524757 /* TabViewComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabViewComponent.swift; sourceTree = "<group>"; };
 		DDAC4BD22C2805AB006206EB /* Memorable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Memorable.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDAC4BD52C2805AB006206EB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DDAC4BD72C2805AB006206EB /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -91,6 +97,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DD4B40AA2C2BCEEF00524757 /* Component */ = {
+			isa = PBXGroup;
+			children = (
+				DD4B40A72C2BCEEF00524757 /* SearchComponent */,
+				DD4B40A82C2BCEEF00524757 /* SearchComponent.swift */,
+				DD4B40A92C2BCEEF00524757 /* TabViewComponent.swift */,
+			);
+			path = Component;
+			sourceTree = "<group>";
+		};
 		DDAC4BC92C2805AB006206EB = {
 			isa = PBXGroup;
 			children = (
@@ -166,6 +182,7 @@
 				DDC1EE8E2C2AACE700C88CD7 /* Manager */,
 				DDBD12F62C29C586006E7D92 /* Model */,
 				DDBD12ED2C298F61006E7D92 /* View */,
+				DD4B40AA2C2BCEEF00524757 /* Component */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -310,6 +327,7 @@
 			files = (
 				DDAC4BE22C2805AC006206EB /* Assets.xcassets in Resources */,
 				DDAC4BE52C2805AC006206EB /* Base in Resources */,
+				DD4B40AB2C2BCEEF00524757 /* SearchComponent in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -335,11 +353,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				DDAC4BDA2C2805AB006206EB /* LoginViewController.swift in Sources */,
+				DD4B40AC2C2BCEEF00524757 /* SearchComponent.swift in Sources */,
 				DDAC4BD62C2805AB006206EB /* AppDelegate.swift in Sources */,
 				DDC1EE8B2C2A898C00C88CD7 /* TestViewController.swift in Sources */,
 				DDAC4BE02C2805AB006206EB /* Memorable.xcdatamodeld in Sources */,
 				DDC1EE902C2AACFB00C88CD7 /* AuthState.swift in Sources */,
 				DD1A05FF2C2B1B4900DE0CB8 /* User.swift in Sources */,
+				DD4B40AD2C2BCEEF00524757 /* TabViewComponent.swift in Sources */,
 				DDC1EE922C2AAD2400C88CD7 /* SignInManager.swift in Sources */,
 				DDAC4BD82C2805AB006206EB /* SceneDelegate.swift in Sources */,
 				DDBD12FC2C29C6BC006E7D92 /* HomeViewController.swift in Sources */,
