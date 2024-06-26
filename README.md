@@ -1,9 +1,9 @@
 # Memorable
 
-<img height="250" src="https://github.com/snackads/SnackAds/assets/61077215/78b246f9-5391-4edb-9013-984ebed6e316"></img>
+<img height="200" src="https://github.com/Club-PARD/Memorable_iOS/assets/61077215/1406c9ac-e33a-4d11-90ae-cec85e9d56e3"></img>
 
 
-> **_Shortform ads like snacks 🍟 🍿, Snack Ads_** <br/><br/>
+> **_키워드 암기학습을 도와주고📚 학습자료 암기에 효율을 높여주는📑 iOS 앱서비스🍎_** <br/><br/>
 > **Development Period: 2024.06.24 ~ 2024.07.12**
 
 <br/>
