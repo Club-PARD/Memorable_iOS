@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DD1A05FF2C2B1B4900DE0CB8 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1A05FE2C2B1B4900DE0CB8 /* User.swift */; };
 		DDAC4BD62C2805AB006206EB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC4BD52C2805AB006206EB /* AppDelegate.swift */; };
 		DDAC4BD82C2805AB006206EB /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC4BD72C2805AB006206EB /* SceneDelegate.swift */; };
 		DDAC4BDA2C2805AB006206EB /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC4BD92C2805AB006206EB /* LoginViewController.swift */; };
@@ -18,9 +19,10 @@
 		DDAC4BFC2C2805AC006206EB /* MemorableUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC4BFB2C2805AC006206EB /* MemorableUITestsLaunchTests.swift */; };
 		DDBD12EC2C298EF8006E7D92 /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = DDBD12EB2C298EF8006E7D92 /* Then */; };
 		DDBD12F52C29BBD8006E7D92 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = DDBD12F42C29BBD7006E7D92 /* SnapKit */; };
-		DDBD12F82C29C5B1006E7D92 /* KeychainItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBD12F72C29C5B1006E7D92 /* KeychainItem.swift */; };
 		DDBD12FC2C29C6BC006E7D92 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBD12FB2C29C6BC006E7D92 /* HomeViewController.swift */; };
-		DDBD12FF2C29CC49006E7D92 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBD12FE2C29CC49006E7D92 /* SessionManager.swift */; };
+		DDC1EE8B2C2A898C00C88CD7 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC1EE8A2C2A898C00C88CD7 /* TestViewController.swift */; };
+		DDC1EE902C2AACFB00C88CD7 /* AuthState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC1EE8F2C2AACFB00C88CD7 /* AuthState.swift */; };
+		DDC1EE922C2AAD2400C88CD7 /* SignInManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC1EE912C2AAD2400C88CD7 /* SignInManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,6 +43,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		DD1A05FE2C2B1B4900DE0CB8 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		DDAC4BD22C2805AB006206EB /* Memorable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Memorable.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDAC4BD52C2805AB006206EB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DDAC4BD72C2805AB006206EB /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -54,9 +57,11 @@
 		DDAC4BF52C2805AC006206EB /* MemorableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MemorableUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDAC4BF92C2805AC006206EB /* MemorableUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemorableUITests.swift; sourceTree = "<group>"; };
 		DDAC4BFB2C2805AC006206EB /* MemorableUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemorableUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		DDBD12F72C29C5B1006E7D92 /* KeychainItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainItem.swift; sourceTree = "<group>"; };
 		DDBD12FB2C29C6BC006E7D92 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
-		DDBD12FE2C29CC49006E7D92 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
+		DDC1EE892C2A884100C88CD7 /* Memorable.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Memorable.entitlements; sourceTree = "<group>"; };
+		DDC1EE8A2C2A898C00C88CD7 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
+		DDC1EE8F2C2AACFB00C88CD7 /* AuthState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthState.swift; sourceTree = "<group>"; };
+		DDC1EE912C2AAD2400C88CD7 /* SignInManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +114,7 @@
 		DDAC4BD42C2805AB006206EB /* Memorable */ = {
 			isa = PBXGroup;
 			children = (
+				DDC1EE892C2A884100C88CD7 /* Memorable.entitlements */,
 				DDBD12EE2C298FA5006E7D92 /* Resources */,
 				DDBD12EF2C298FBD006E7D92 /* Sources */,
 			);
@@ -137,6 +143,7 @@
 			children = (
 				DDAC4BD92C2805AB006206EB /* LoginViewController.swift */,
 				DDBD12FB2C29C6BC006E7D92 /* HomeViewController.swift */,
+				DDC1EE8A2C2A898C00C88CD7 /* TestViewController.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -155,10 +162,11 @@
 		DDBD12EF2C298FBD006E7D92 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				DDBD12FD2C29CC3B006E7D92 /* Manager */,
 				DDBD12F02C298FCD006E7D92 /* App */,
+				DDC1EE8E2C2AACE700C88CD7 /* Manager */,
 				DDBD12F62C29C586006E7D92 /* Model */,
 				DDBD12ED2C298F61006E7D92 /* View */,
+				DDC1EE8C2C2AAC9600C88CD7 /* Component */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -175,15 +183,23 @@
 		DDBD12F62C29C586006E7D92 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				DDBD12F72C29C5B1006E7D92 /* KeychainItem.swift */,
+				DD1A05FE2C2B1B4900DE0CB8 /* User.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
 		};
-		DDBD12FD2C29CC3B006E7D92 /* Manager */ = {
+		DDC1EE8C2C2AAC9600C88CD7 /* Component */ = {
 			isa = PBXGroup;
 			children = (
-				DDBD12FE2C29CC49006E7D92 /* SessionManager.swift */,
+			);
+			path = Component;
+			sourceTree = "<group>";
+		};
+		DDC1EE8E2C2AACE700C88CD7 /* Manager */ = {
+			isa = PBXGroup;
+			children = (
+				DDC1EE8F2C2AACFB00C88CD7 /* AuthState.swift */,
+				DDC1EE912C2AAD2400C88CD7 /* SignInManager.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -328,11 +344,13 @@
 			files = (
 				DDAC4BDA2C2805AB006206EB /* LoginViewController.swift in Sources */,
 				DDAC4BD62C2805AB006206EB /* AppDelegate.swift in Sources */,
-				DDBD12F82C29C5B1006E7D92 /* KeychainItem.swift in Sources */,
+				DDC1EE8B2C2A898C00C88CD7 /* TestViewController.swift in Sources */,
 				DDAC4BE02C2805AB006206EB /* Memorable.xcdatamodeld in Sources */,
+				DDC1EE902C2AACFB00C88CD7 /* AuthState.swift in Sources */,
+				DD1A05FF2C2B1B4900DE0CB8 /* User.swift in Sources */,
+				DDC1EE922C2AAD2400C88CD7 /* SignInManager.swift in Sources */,
 				DDAC4BD82C2805AB006206EB /* SceneDelegate.swift in Sources */,
 				DDBD12FC2C29C6BC006E7D92 /* HomeViewController.swift in Sources */,
-				DDBD12FF2C29CC49006E7D92 /* SessionManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -506,6 +524,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Memorable/Memorable.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4FCV7BL65G;
@@ -513,8 +532,7 @@
 				INFOPLIST_FILE = Memorable/Resources/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -533,6 +551,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Memorable/Memorable.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4FCV7BL65G;
@@ -540,8 +559,7 @@
 				INFOPLIST_FILE = Memorable/Resources/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
