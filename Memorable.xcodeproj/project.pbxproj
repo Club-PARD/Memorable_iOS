@@ -166,7 +166,6 @@
 				DDC1EE8E2C2AACE700C88CD7 /* Manager */,
 				DDBD12F62C29C586006E7D92 /* Model */,
 				DDBD12ED2C298F61006E7D92 /* View */,
-				DDC1EE8C2C2AAC9600C88CD7 /* Component */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -186,13 +185,6 @@
 				DD1A05FE2C2B1B4900DE0CB8 /* User.swift */,
 			);
 			path = Model;
-			sourceTree = "<group>";
-		};
-		DDC1EE8C2C2AAC9600C88CD7 /* Component */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Component;
 			sourceTree = "<group>";
 		};
 		DDC1EE8E2C2AACE700C88CD7 /* Manager */ = {
