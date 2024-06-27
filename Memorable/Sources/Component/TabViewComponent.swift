@@ -109,7 +109,7 @@ class TabBarComponent: UIView {
         for (index, button) in buttons.enumerated() {
             let isSelected = index == selectedIndex
             if let imageView = button.subviews.first as? UIImageView,
-               let label = button.subviews.last as? UILabel {
+               let _ = button.subviews.last as? UILabel {
                 let imageName = imageNames[index] + (isSelected ? "-white" : "-gray")
                 imageView.image = UIImage(named: imageName)
                 imageView.backgroundColor = isSelected ? .systemBlue : .systemGray5

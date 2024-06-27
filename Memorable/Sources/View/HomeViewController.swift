@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class HomeViewController: UIViewController {
+class HomeViewController: UIViewController, HeaderComponentDelegate {
     
     lazy var userName: String = "민석"
     let tabBar = TabBarComponent()
@@ -17,11 +17,21 @@ class HomeViewController: UIViewController {
     let searchComponent = HeaderComponent()
     let blockView = UIView()
     var plusTrailing = -24
+    private let maskView = UIView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.lightGray
         setUI()
+        
+        searchComponent.delegate = self
+        
+        maskView.backgroundColor = .black
+        maskView.alpha = 0
+        view.insertSubview(maskView, belowSubview: searchComponent)
+        maskView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
     
     func setUI() {
@@ -29,37 +39,28 @@ class HomeViewController: UIViewController {
         // 탭바
         self.view.addSubview(tabBar)
         tabBar.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(86)
+            make.leading.equalToSuperview().offset(57)
             make.centerY.equalTo(self.view)
             make.width.equalTo(112)
             make.height.equalTo(504)
         }
         
-        // 탭바 설정
-                self.view.addSubview(tabBar)
-                tabBar.snp.makeConstraints { make in
-                    make.leading.equalToSuperview().offset(86)
-                    make.centerY.equalTo(self.view)
-                    make.width.equalTo(112)
-                    make.height.equalTo(504)
-                }
-                
-                // 탭바 구성
-                let tabItems: [(String, String, () -> Void)] = [
-                    ("라이브러리", "home", { self.showView(config: "home") }),
-                    ("즐겨찾기", "bookmark", { self.showView(config: "star") }),
-                    ("마이페이지", "mypage", { self.showView(config: "mypage") })
-                ]
-                
-                tabBar.configure(withItems: tabItems)
+        // 탭바 구성
+        let tabItems: [(String, String, () -> Void)] = [
+            ("라이브러리", "home", { self.showView(config: "home") }),
+            ("즐겨찾기", "bookmark", { self.showView(config: "star") }),
+            ("마이페이지", "mypage", { self.showView(config: "mypage") })
+        ]
+        
+        tabBar.configure(withItems: tabItems)
         
         // 메인뷰
         self.view.addSubview(containerView)
         containerView.snp.makeConstraints { make in
-            make.leading.equalTo(tabBar.snp.trailing).offset(50)
             make.trailing.equalToSuperview().offset(-24)
             make.top.equalTo(tabBar)
-            make.height.equalTo(550)
+            make.width.equalTo(952)
+            make.height.equalTo(569)
         }
         
         // 제목
@@ -69,7 +70,7 @@ class HomeViewController: UIViewController {
             make.bottom.equalTo(containerView.snp.top).offset(-28)
         }
         
-        // SearchComponent
+        // SearchComponent -> header
         self.view.addSubview(searchComponent)
         searchComponent.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
@@ -102,7 +103,6 @@ class HomeViewController: UIViewController {
         switch viewId {
         case "home":
             newView = LibraryViewComponent()
-            
             titleLabel.text = "\(userName)님,\n오늘도 함께 학습해볼까요?"
         case "star":
             newView.backgroundColor = .yellow
@@ -118,6 +118,13 @@ class HomeViewController: UIViewController {
         containerView.addSubview(newView)
         newView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+    }
+    
+    // MARK: - HeaderComponentDelegate
+    func didTapPlusButton(isMasked: Bool) {
+        UIView.animate(withDuration: 0.5) {
+            self.maskView.alpha = isMasked ? 0.5 : 0
         }
     }
 }
