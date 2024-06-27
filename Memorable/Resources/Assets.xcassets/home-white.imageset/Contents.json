@@ -1,6 +1,7 @@
 {
   "images" : [
     {
+      "filename" : "Frame 1171276801.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -9,7 +10,6 @@
       "scale" : "2x"
     },
     {
-      "filename" : "home-white.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
