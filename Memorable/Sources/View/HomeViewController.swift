@@ -8,50 +8,59 @@
 import UIKit
 import SnapKit
 
-class HomeViewController: UIViewController, TabBarComponentDelegate {
+class HomeViewController: UIViewController, HeaderComponentDelegate {
     
     lazy var userName: String = "민석"
     let tabBar = TabBarComponent()
     let containerView = UIView()
     let titleLabel = UILabel()
-    let searchComponent = SearchComponent()
+    let searchComponent = HeaderComponent()
     let blockView = UIView()
     var plusTrailing = -24
+    private let maskView = UIView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor.white
+        view.backgroundColor = UIColor.lightGray
         setUI()
+        
+        searchComponent.delegate = self
+        
+        maskView.backgroundColor = .black
+        maskView.alpha = 0
+        view.insertSubview(maskView, belowSubview: searchComponent)
+        maskView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
     
     func setUI() {
+        
         // 탭바
         self.view.addSubview(tabBar)
         tabBar.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(86)
+            make.leading.equalToSuperview().offset(57)
             make.centerY.equalTo(self.view)
             make.width.equalTo(112)
             make.height.equalTo(504)
         }
         
-        // 탭바 action 설정
-        let titles = ["홈", "즐겨찾기", "마이페이지"]
-        let actions: [() -> Void] = [
-            { self.showView(config: "home") },
-            { self.showView(config: "star") },
-            { self.showView(config: "mypage") }
+        // 탭바 구성
+        let tabItems: [(String, String, () -> Void)] = [
+            ("라이브러리", "home", { self.showView(config: "home") }),
+            ("즐겨찾기", "bookmark", { self.showView(config: "star") }),
+            ("마이페이지", "mypage", { self.showView(config: "mypage") })
         ]
         
-        tabBar.configure(withTitles: titles, actions: actions)
-        tabBar.delegate = self
+        tabBar.configure(withItems: tabItems)
         
         // 메인뷰
         self.view.addSubview(containerView)
         containerView.snp.makeConstraints { make in
-            make.leading.equalTo(tabBar.snp.trailing).offset(50)
             make.trailing.equalToSuperview().offset(-24)
             make.top.equalTo(tabBar)
-            make.height.equalTo(550)
+            make.width.equalTo(952)
+            make.height.equalTo(569)
         }
         
         // 제목
@@ -59,10 +68,9 @@ class HomeViewController: UIViewController, TabBarComponentDelegate {
         titleLabel.snp.makeConstraints { make in
             make.leading.equalTo(containerView.snp.leading)
             make.bottom.equalTo(containerView.snp.top).offset(-28)
-            make.height.equalTo(90)
         }
         
-        // SearchComponent
+        // SearchComponent -> header
         self.view.addSubview(searchComponent)
         searchComponent.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
@@ -75,8 +83,7 @@ class HomeViewController: UIViewController, TabBarComponentDelegate {
         // TO DO: 디자인 시스템
         
         // 임시 홈 화면 (초기화면)
-        let newView = UIView()
-        newView.backgroundColor = .red
+        let newView = LibraryViewComponent()
         containerView.addSubview(newView)
         newView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -92,10 +99,10 @@ class HomeViewController: UIViewController, TabBarComponentDelegate {
     private func showView(config viewId: String) {
         containerView.subviews.forEach { $0.removeFromSuperview() }
         
-        let newView = UIView()
+        var newView = UIView()
         switch viewId {
         case "home":
-            newView.backgroundColor = .red
+            newView = LibraryViewComponent()
             titleLabel.text = "\(userName)님,\n오늘도 함께 학습해볼까요?"
         case "star":
             newView.backgroundColor = .yellow
@@ -111,6 +118,13 @@ class HomeViewController: UIViewController, TabBarComponentDelegate {
         containerView.addSubview(newView)
         newView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+    }
+    
+    // MARK: - HeaderComponentDelegate
+    func didTapPlusButton(isMasked: Bool) {
+        UIView.animate(withDuration: 0.5) {
+            self.maskView.alpha = isMasked ? 0.5 : 0
         }
     }
 }
