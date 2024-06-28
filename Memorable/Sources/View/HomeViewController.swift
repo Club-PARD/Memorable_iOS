@@ -8,34 +8,65 @@
 import UIKit
 import SnapKit
 
-class HomeViewController: UIViewController, HeaderComponentDelegate {
+class HomeViewController: UIViewController {
     
     lazy var userName: String = "민석"
     let tabBar = TabBarComponent()
     let containerView = UIView()
     let titleLabel = UILabel()
-    let searchComponent = HeaderComponent()
+    let headerComponent = HeaderComponent()
+    let libraryViewComponent = LibraryViewComponent()
+    let worksheetListViewComponent = WorksheetListViewComponent()
     let blockView = UIView()
     var plusTrailing = -24
     private let maskView = UIView()
     
+    let mockData = [
+        Document(fileName: "Document1", fileType: "빈칸학습지"),
+        Document(fileName: "Document2", fileType: "빈칸학습지"),
+        Document(fileName: "Document3", fileType: "빈칸학습지"),
+        Document(fileName: "Document4", fileType: "빈칸학습지"),
+        Document(fileName: "Document5", fileType: "빈칸학습지"),
+        Document(fileName: "Document6", fileType: "빈칸학습지"),
+        Document(fileName: "Document7", fileType: "빈칸학습지"),
+        Document(fileName: "Test1", fileType: "나만의 시험지"),
+        Document(fileName: "Test2", fileType: "나만의 시험지"),
+        Document(fileName: "Test3", fileType: "나만의 시험지"),
+        Document(fileName: "Test4", fileType: "나만의 시험지"),
+        Document(fileName: "Test5", fileType: "나만의 시험지"),
+        Document(fileName: "Test6", fileType: "나만의 시험지"),
+        Document(fileName: "Wrong1", fileType: "오답노트"),
+        Document(fileName: "Wrong2", fileType: "오답노트"),
+        Document(fileName: "Wrong3", fileType: "오답노트"),
+        Document(fileName: "Wrong4", fileType: "오답노트"),
+        Document(fileName: "Wrong5", fileType: "오답노트"),
+        Document(fileName: "Wrong6", fileType: "오답노트"),
+        Document(fileName: "Wrong7", fileType: "오답노트"),
+        Document(fileName: "Wrong8", fileType: "오답노트")
+    ]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.lightGray
-        setUI()
+        headerComponent.delegate = self
         
-        searchComponent.delegate = self
+        setUI()
         
         maskView.backgroundColor = .black
         maskView.alpha = 0
-        view.insertSubview(maskView, belowSubview: searchComponent)
+        view.insertSubview(maskView, belowSubview: headerComponent)
         maskView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        headerComponent.isUserInteractionEnabled = true
+        
+        setupHeaderComponent()
+        setupLibraryViewComponent()
+        
+        headerComponent.subButton2.addTarget(self, action: #selector(handleTestCreateClicked), for: .touchUpInside)
     }
     
     func setUI() {
-        
         // 탭바
         self.view.addSubview(tabBar)
         tabBar.snp.makeConstraints { make in
@@ -71,8 +102,8 @@ class HomeViewController: UIViewController, HeaderComponentDelegate {
         }
         
         // SearchComponent -> header
-        self.view.addSubview(searchComponent)
-        searchComponent.snp.makeConstraints { make in
+        self.view.addSubview(headerComponent)
+        headerComponent.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             make.height.equalTo(76)
@@ -82,10 +113,12 @@ class HomeViewController: UIViewController, HeaderComponentDelegate {
         titleLabel.numberOfLines = 0
         // TO DO: 디자인 시스템
         
-        // 임시 홈 화면 (초기화면)
-        let newView = LibraryViewComponent()
-        containerView.addSubview(newView)
-        newView.snp.makeConstraints { make in
+        
+        
+        // 초기화면
+        libraryViewComponent.delegate = self  // delegate 설정
+        containerView.addSubview(libraryViewComponent)
+        libraryViewComponent.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         titleLabel.text = "\(userName)님,\n오늘도 함께 학습해볼까요?"
@@ -96,35 +129,59 @@ class HomeViewController: UIViewController, HeaderComponentDelegate {
         action()
     }
     
-    private func showView(config viewId: String) {
-        containerView.subviews.forEach { $0.removeFromSuperview() }
+    func setupHeaderComponent() {
+        let workDocuments = mockData.filter { $0.fileType == "빈칸학습지"}
         
-        var newView = UIView()
-        switch viewId {
-        case "home":
-            newView = LibraryViewComponent()
-            titleLabel.text = "\(userName)님,\n오늘도 함께 학습해볼까요?"
-        case "star":
-            newView.backgroundColor = .yellow
-            titleLabel.text = "\(userName)님이\n즐겨찾기한 파일"
-        case "mypage":
-            newView.backgroundColor = .green
-            titleLabel.text = "안녕하세요 \(userName)님!"
-        default:
-            newView.backgroundColor = .white
-            titleLabel.text = ""
-        }
+        headerComponent.setDocuments(
+            workDocuments: workDocuments
+        )
+    }
+    
+    func setupLibraryViewComponent() {
+        let topLeftDocuments = mockData.filter { $0.fileType == "빈칸학습지" }
+        let topRightDocuments = mockData.filter { $0.fileType == "나만의 시험지" }
+        let bottomDocuments = mockData.filter { $0.fileType == "오답노트" }
         
-        containerView.addSubview(newView)
-        newView.snp.makeConstraints { make in
+        libraryViewComponent.setDocuments(
+            topLeft: topLeftDocuments,
+            topRight: topRightDocuments,
+            bottom: bottomDocuments
+        )
+        
+        libraryViewComponent.delegate = self
+        containerView.addSubview(libraryViewComponent)
+        libraryViewComponent.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
     
-    // MARK: - HeaderComponentDelegate
-    func didTapPlusButton(isMasked: Bool) {
-        UIView.animate(withDuration: 0.5) {
-            self.maskView.alpha = isMasked ? 0.5 : 0
+    private func showView(config viewId: String) {
+        containerView.subviews.forEach { $0.removeFromSuperview() }
+        
+        switch viewId {
+        case "home":
+            containerView.addSubview(libraryViewComponent)
+            libraryViewComponent.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+            titleLabel.text = "\(userName)님,\n오늘도 함께 학습해볼까요?"
+        case "star":
+            containerView.addSubview(libraryViewComponent)
+            libraryViewComponent.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+            titleLabel.text = "\(userName)님이\n즐겨찾기한 파일"
+        case "mypage":
+            containerView.addSubview(libraryViewComponent)
+            libraryViewComponent.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+            titleLabel.text = "안녕하세요 \(userName)님!"
+        default:
+            libraryViewComponent.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+            titleLabel.text = ""
         }
     }
 }
@@ -138,5 +195,50 @@ extension UIImage {
         self.draw(in: rect)
         guard let resizedImage = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
         return resizedImage
+    }
+}
+
+extension HomeViewController: HeaderComponentDelegate {
+    // MARK: - HeaderComponentDelegate
+    func didTapPlusButton(isMasked: Bool) {
+        UIView.animate(withDuration: 0.5) {
+            self.maskView.alpha = isMasked ? 0.5 : 0
+        }
+    }
+}
+
+extension HomeViewController: LibraryViewComponentDelegate {
+
+    func didTapTopLeftButton(with documents: [Document]) {
+        print("didTapTopLeftButton")
+        showWorksheetView(withTitle: "총 \(documents.count)개의\n빈칸 학습지가 있어요", documents: documents)
+    }
+
+    func didTapTopRightButton(with documents: [Document]) {
+        showWorksheetView(withTitle: "총 \(documents.count)개의\n나만의 시험지가 있어요", documents: documents)
+    }
+
+    func didTapBottomButton(with documents: [Document]) {
+        showWorksheetView(withTitle: "총 \(documents.count)개의\n오답노트가 있어요", documents: documents)
+    }
+    
+    func showWorksheetView(withTitle title: String, documents: [Document]) {
+        print("showWorksheetView")
+        // 기존 LibraryViewComponent 제거
+        containerView.subviews.forEach { $0.removeFromSuperview() }
+        
+        // 새로운 WorksheetListViewComponent 추가
+        worksheetListViewComponent.setWorksheets(documents)
+        containerView.addSubview(worksheetListViewComponent)
+        worksheetListViewComponent.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        // titleLabel 업데이트
+        titleLabel.text = title
+    }
+    
+    @objc private func handleTestCreateClicked() {
+        tabBar.updateUIForFirstTab()
     }
 }
