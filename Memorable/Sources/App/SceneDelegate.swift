@@ -16,6 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         window?.rootViewController = LoginViewController()
 //        window?.rootViewController = HomeViewController()
+//        window?.rootViewController = TestViewController()
         window?.makeKeyAndVisible()
     }
 
