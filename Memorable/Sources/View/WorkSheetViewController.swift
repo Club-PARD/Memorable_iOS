@@ -44,9 +44,16 @@ class WorkSheetViewController: UIViewController {
 
     private var workSheetView: UIView?
 
-    private let showAnswerButton = UIButton().then {
-        $0.setTitle("답안보기", for: .normal)
+    private let resetButton = UIButton().then {
+        $0.setTitle("초기화하기", for: .normal)
         $0.backgroundColor = .black
+        $0.layer.cornerRadius = 22
+        $0.contentMode = .scaleAspectFit
+    }
+
+    private let showAnswerButton = UIButton().then {
+        $0.setTitle("키워드 보기", for: .normal)
+        $0.backgroundColor = .systemGray
         $0.layer.cornerRadius = 22
         $0.contentMode = .scaleAspectFit
     }
@@ -62,8 +69,44 @@ class WorkSheetViewController: UIViewController {
             answers: mockAnswers
         )
 
+        setupButtons()
+
         addSubViews()
         setupConstraints()
+    }
+
+    // MARK: - Button Action
+
+    @objc func didTapResetButton() {
+        print("RESET ANSWERS")
+        if let worksheetView = workSheetView as? WorkSheetView {
+            for answer in worksheetView.userAnswers {
+                answer.text = nil
+            }
+        } else {
+            print("WorkSheetView를 찾을 수 없습니다.")
+        }
+    }
+
+    @objc func didTapShowAnswerButton() {
+        print("SHOW ANSWER")
+        var userAnswer: [String] = []
+        
+        if let worksheetView = workSheetView as? WorkSheetView {
+            for answer in worksheetView.userAnswers {
+                userAnswer.append(answer.text ?? "")
+            }
+        } else {
+            print("WorkSheetView를 찾을 수 없습니다.")
+        }
+
+        print("✅ 실제 답안: \(mockAnswers)")
+        print("☑️ 유저 답안: \(userAnswer)")
+    }
+
+    func setupButtons() {
+        resetButton.addTarget(self, action: #selector(didTapResetButton), for: .touchUpInside)
+        showAnswerButton.addTarget(self, action: #selector(didTapShowAnswerButton), for: .touchUpInside)
     }
 
     func addSubViews() {
@@ -73,6 +116,7 @@ class WorkSheetViewController: UIViewController {
         view.addSubview(titleLabel)
         view.addSubview(categoryLabel)
         view.addSubview(workSheetView!)
+        view.addSubview(resetButton)
         view.addSubview(showAnswerButton)
     }
 
@@ -110,6 +154,13 @@ class WorkSheetViewController: UIViewController {
         showAnswerButton.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
             make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-32)
+            make.height.equalTo(44)
+            make.width.equalTo(132)
+        }
+
+        resetButton.snp.makeConstraints { make in
+            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
+            make.trailing.equalTo(showAnswerButton.snp.leading).offset(-10)
             make.height.equalTo(44)
             make.width.equalTo(132)
         }
