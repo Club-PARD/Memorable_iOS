@@ -5,15 +5,14 @@
 //  Created by Minhyeok Kim on 6/28/24.
 //
 
-import UIKit
 import SnapKit
 import Then
+import UIKit
 
 class TestViewController: UIViewController {
     private let questionManager = QuestionManager()
     private var currentPage = 0
     private let questionsPerPage = 3
-    
     
     private var questionViews: [QuestionView] = []
     private var nextButton: UIButton!
@@ -114,7 +113,7 @@ class TestViewController: UIViewController {
         }
         
         // Question views
-        for _ in 0..<3 {
+        for _ in 0 ..< 3 {
             let questionView = QuestionView()
             containerView.addSubview(questionView)
             questionViews.append(questionView)
@@ -124,9 +123,9 @@ class TestViewController: UIViewController {
         for (index, questionView) in questionViews.enumerated() {
             questionView.snp.makeConstraints { make in
                 if index == 0 {
-                    make.top.equalTo(containerView).offset(74)  // 첫 번째 문제는 상단에서 74 떨어짐
+                    make.top.equalTo(containerView).offset(74) // 첫 번째 문제는 상단에서 74 떨어짐
                 } else {
-                    make.top.equalTo(questionViews[index - 1].snp.bottom).offset(10)  // 나머지 문제들은 이전 문제와 10만큼 떨어짐
+                    make.top.equalTo(questionViews[index - 1].snp.bottom).offset(10) // 나머지 문제들은 이전 문제와 10만큼 떨어짐
                 }
                 make.leading.trailing.equalTo(containerView).offset(52)
                 make.height.equalTo(95)
@@ -176,8 +175,6 @@ class TestViewController: UIViewController {
             18: ["question": "정기적으로 상호작용하지만 사회조직에 속해있지 않은 간단한 집합체를 무엇이라고 하나요?", "answer": "Aggregate"],
             19: ["question": "공통의 특성을 가진 사람들의 집합체는 무엇인가요?", "answer": "Social category"],
             20: ["question": "집단에 속하는 구성원들이 공유하는 정체성을 무엇이라고 하나요?", "answer": "정체성"]
-            
-            
         ]
         questionManager.parseQuestions(from: jsonData)
         print("Loaded questions: \(questionManager.questions.count)")
@@ -190,7 +187,7 @@ class TestViewController: UIViewController {
             let questionIndex = startIndex + index
             if questionIndex < questionManager.questions.count {
                 let question = questionManager.questions[questionIndex]
-                questionView.configure(with: question, questionNumberValue: index+1)
+                questionView.configure(with: question, questionNumberValue: index + 1)
                 questionView.isHidden = false
             } else {
                 questionView.isHidden = true
