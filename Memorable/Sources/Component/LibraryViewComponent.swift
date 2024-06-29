@@ -8,8 +8,16 @@
 import UIKit
 import SnapKit
 
-class LibraryViewComponent: UIView {
+protocol LibraryViewComponentDelegate: AnyObject {
+    func didTapTopLeftButton(with documents: [Document])
+    func didTapTopRightButton(with documents: [Document])
+    func didTapBottomButton(with documents: [Document])
+}
 
+class LibraryViewComponent: UIView {
+    
+    weak var delegate: LibraryViewComponentDelegate?
+    
     private let topLeftView: UIView
     private let topRightView: UIView
     private let bottomView: UIView
@@ -31,39 +39,6 @@ class LibraryViewComponent: UIView {
         
         setupViews()
         setupConstraints()
-        
-        // Mock Data 생성
-        let mockData = [
-            Document(fileName: "Document1", fileType: "빈칸학습지"),
-            Document(fileName: "Document2", fileType: "빈칸학습지"),
-            Document(fileName: "Document3", fileType: "빈칸학습지"),
-            Document(fileName: "Document4", fileType: "빈칸학습지"),
-            Document(fileName: "Document5", fileType: "빈칸학습지"),
-            Document(fileName: "Document6", fileType: "빈칸학습지"),
-            Document(fileName: "Document7", fileType: "빈칸학습지")
-        ]
-        
-        setDocuments(
-            topLeft: mockData,
-            topRight: [
-                Document(fileName: "Test1", fileType: "나만의 시험지"),
-                Document(fileName: "Test2", fileType: "나만의 시험지"),
-                Document(fileName: "Test3", fileType: "나만의 시험지"),
-                Document(fileName: "Test4", fileType: "나만의 시험지"),
-                Document(fileName: "Test5", fileType: "나만의 시험지"),
-                Document(fileName: "Test6", fileType: "나만의 시험지")
-            ],
-            bottom: [
-                Document(fileName: "Wrong1", fileType: "오답노트"),
-                Document(fileName: "Wrong2", fileType: "오답노트"),
-                Document(fileName: "Wrong3", fileType: "오답노트"),
-                Document(fileName: "Wrong4", fileType: "오답노트"),
-                Document(fileName: "Wrong5", fileType: "오답노트"),
-                Document(fileName: "Wrong6", fileType: "오답노트"),
-                Document(fileName: "Wrong7", fileType: "오답노트"),
-                Document(fileName: "Wrong8", fileType: "오답노트")
-            ]
-        )
     }
     
     required init?(coder: NSCoder) {
@@ -177,7 +152,7 @@ class LibraryViewComponent: UIView {
         topLeftView.addSubview(topLeftCollectionView)
         topRightView.addSubview(topRightCollectionView)
         bottomView.addSubview(bottomCollectionView)
-
+        
         [topLeftCollectionView, topRightCollectionView, bottomCollectionView].forEach {
             $0.snp.makeConstraints { make in
                 make.top.equalToSuperview().offset(74)
@@ -219,21 +194,15 @@ class LibraryViewComponent: UIView {
     }
     
     @objc private func topLeftButtonTapped() {
-        print("Top Left Button Tapped")
-        // 다음 페이지로 이동하는 로직 추가
-        // Example: navigationController?.pushViewController(nextViewController, animated: true)
+        delegate?.didTapTopLeftButton(with: topLeftDocuments)
+        
     }
-    
     @objc private func topRightButtonTapped() {
-        print("Top Right Button Tapped")
-        // 다음 페이지로 이동하는 로직 추가
-        // Example: navigationController?.pushViewController(nextViewController, animated: true)
+        delegate?.didTapTopRightButton(with: topRightDocuments)
     }
-    
+
     @objc private func bottomButtonTapped() {
-        print("Bottom Button Tapped")
-        // 다음 페이지로 이동하는 로직 추가
-        // Example: navigationController?.pushViewController(nextViewController, animated: true)
+        delegate?.didTapBottomButton(with: bottomDocuments)
     }
 }
 

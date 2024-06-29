@@ -113,8 +113,13 @@ class TabBarComponent: UIView {
                 let imageName = imageNames[index] + (isSelected ? "-white" : "-gray")
                 imageView.image = UIImage(named: imageName)
                 imageView.backgroundColor = isSelected ? .systemBlue : .systemGray5
-
+                
             }
         }
+    }
+    
+    func updateUIForFirstTab() {
+        selectedIndex = 0
+        updateButtonStates()
     }
 }
