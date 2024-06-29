@@ -7,10 +7,13 @@
 
 import UIKit
 import SnapKit
+import PDFKit
+import Vision
 import UniformTypeIdentifiers
 
 protocol HeaderComponentDelegate: AnyObject {
     func didTapPlusButton(isMasked: Bool)
+    func didTapTopLeftButton(with documents: [Document])
 }
 
 class HeaderComponent: UIView {
@@ -25,12 +28,16 @@ class HeaderComponent: UIView {
     private let plusButtonImageView = UIImageView()
     private let subButtonsContainer = UIView()
     private let subButton1 = UIButton()
-    private let subButton2 = UIButton()
+    let subButton2 = UIButton()
     
     private var isExpanded = false
     private var isMasked = false
     private var searchTrailing: CGFloat = -124
+    private var workDocuments: [Document] = []
     private var uploadedFileName = ""
+    
+    private var pdfDocument: PDFDocument?
+    private var extractedText: String = ""
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -179,6 +186,7 @@ class HeaderComponent: UIView {
             $0.setTitleColor(.black, for: .normal)
             $0.layer.cornerRadius = 22
             $0.alpha = 0
+            $0.isUserInteractionEnabled = true
         }
         
         subButton1.setTitle("빈칸학습지 생성하기", for: .normal)
@@ -187,6 +195,20 @@ class HeaderComponent: UIView {
         subButton1.addTarget(self, action: #selector(createWorksheet), for: .touchUpInside)
         
         subButton2.addTarget(self, action: #selector(createTestsheet), for: .touchUpInside)
+        
+        subButtonsContainer.isUserInteractionEnabled = true
+    }
+    
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        if !self.isUserInteractionEnabled || self.isHidden || self.alpha <= 0.01 {
+            return nil
+        }
+        
+        if self.subButtonsContainer.point(inside: self.convert(point, to: self.subButtonsContainer), with: event) {
+            return self.subButtonsContainer.hitTest(self.convert(point, to: self.subButtonsContainer), with: event)
+        }
+        
+        return super.hitTest(point, with: event)
     }
     
     @objc private func plusButtonTapped() {
@@ -194,17 +216,17 @@ class HeaderComponent: UIView {
             hideSearchBar()
             isExpanded.toggle()
         } else {
-            isMasked.toggle() // 여기서 isMasked 상태를 변경합니다.
+            isMasked.toggle() // 여기서 isMasked 상태를 변경
             delegate?.didTapPlusButton(isMasked: isMasked)
             if isMasked {
                 rotatePlusButton()
             } else {
                 deRotatePlusButton()
             }
-            toggleSubButtons() // 서브 버튼을 토글합니다.
+            toggleSubButtons() // 서브 버튼을 토글
         }
     }
-    
+
     private func animateSearchBar() {
         UIView.animate(withDuration: 1,
                        delay: 0,
@@ -305,6 +327,10 @@ class HeaderComponent: UIView {
         }
     }
     
+    func setDocuments(workDocuments: [Document]) {
+        self.workDocuments = workDocuments
+    }
+    
     @objc private func createWorksheet() {
         print("Worksheet")
         presentDocumentPicker(for: "Worksheet")
@@ -312,7 +338,11 @@ class HeaderComponent: UIView {
     
     @objc private func createTestsheet() {
         print("Testsheet")
-        presentDocumentPicker(for: "Testsheet")
+        delegate?.didTapTopLeftButton(with: workDocuments)
+        isMasked.toggle()
+        delegate?.didTapPlusButton(isMasked: isMasked)
+        deRotatePlusButton()
+        toggleSubButtons()
     }
     
     private func presentDocumentPicker(for fileType: String) {
@@ -320,7 +350,7 @@ class HeaderComponent: UIView {
         documentPicker.delegate = self
         documentPicker.allowsMultipleSelection = false
         documentPicker.modalPresentationStyle = .formSheet
-        documentPicker.view.tintColor = .black // Customize tint color if needed
+        documentPicker.view.tintColor = .black // 다큐먼트픽커 테마색
         
         if let rootViewController = UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })
@@ -331,20 +361,135 @@ class HeaderComponent: UIView {
     }
     
     private func handleDocument(url: URL, fileName: String, fileType: String) {
-        let alertController = UIAlertController(title: "File Upload", message: "Enter the category for this \(fileType): \(fileName)", preferredStyle: .alert)
-        alertController.addTextField { textField in
-            textField.placeholder = "Category"
+        if fileType == "PDF" {
+            pdfDocument = PDFDocument(url: url)
+            extractTextFromPDF { [weak self] in
+                self?.showNameAlert(fileName: fileName, previousName: "")
+            }
+        } else if ["jpg", "jpeg", "png"].contains(fileType.lowercased()) {
+            if let image = UIImage(contentsOfFile: url.path) {
+                extractTextFromImage(image: image) { [weak self] in
+                    self?.showNameAlert(fileName: fileName, previousName: "")
+                }
+            }
         }
-        let confirmAction = UIAlertAction(title: "Confirm", style: .default) { [weak self] _ in
-            guard let category = alertController.textFields?.first?.text else { return }
-            // 파일과 카테고리 처리를 진행합니다.
-            self?.saveFile(fileName: fileName, category: category)
+    }
+    
+    private func extractTextFromPDF(completion: @escaping () -> Void) {
+        guard let pdfDocument = pdfDocument else {
+            print("No PDF to extract text from")
+            completion()
+            return
         }
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        alertController.addAction(confirmAction)
-        alertController.addAction(cancelAction)
         
-        // Use UIWindowScene.windows.first?.rootViewController to present alert
+        extractedText = ""
+        let dispatchGroup = DispatchGroup()
+        
+        for pageIndex in 0..<pdfDocument.pageCount {
+            if let page = pdfDocument.page(at: pageIndex) {
+                if let pageText = page.string {
+                    extractedText += pageText
+                }
+                
+                let pageImage = page.thumbnail(of: page.bounds(for: .mediaBox).size, for: .mediaBox)
+                dispatchGroup.enter()
+                recognizeTextInImage(image: pageImage) { recognizedText in
+                    self.extractedText += recognizedText
+                    dispatchGroup.leave()
+                }
+            }
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            completion()
+        }
+    }
+    
+    private func extractTextFromImage(image: UIImage, completion: @escaping () -> Void) {
+        recognizeTextInImage(image: image) { recognizedText in
+            self.extractedText = recognizedText
+            completion()
+        }
+    }
+    
+    private func recognizeTextInImage(image: UIImage, completion: @escaping (String) -> Void) {
+        guard let cgImage = image.cgImage else {
+            completion("")
+            return
+        }
+        
+        let requestHandler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+        let request = VNRecognizeTextRequest { (request, error) in
+            guard let observations = request.results as? [VNRecognizedTextObservation] else {
+                completion("")
+                return
+            }
+            
+            let recognizedStrings = observations.compactMap { observation in
+                return observation.topCandidates(1).first?.string
+            }
+            
+            completion(recognizedStrings.joined(separator: "\n"))
+        }
+        
+        request.recognitionLanguages = ["ko", "en"]
+        
+        do {
+            try requestHandler.perform([request])
+        } catch {
+            print("Unable to perform the requests: \(error).")
+            completion("")
+        }
+    }
+    
+    
+    private func showNameAlert(fileName: String, previousName: String) {
+        let nameAlertController = UIAlertController(title: "이름 설정하기", message: "해당 학습지의 이름을 설정해 주세요", preferredStyle: .alert)
+        nameAlertController.addTextField { textField in
+            textField.placeholder = fileName
+            textField.text = previousName
+            textField.autocorrectionType = .no
+            textField.spellCheckingType = .no
+        }
+        let nameConfirmAction = UIAlertAction(title: "확인", style: .default) { [weak self] _ in
+            guard let sheetName = nameAlertController.textFields?.first?.text, !sheetName.isEmpty else { return }
+            self?.showCategoryAlert(sheetName: sheetName)
+        }
+        let nameCancelAction = UIAlertAction(title: "취소", style: .cancel) { [weak self] _ in
+            self?.isMasked.toggle()
+            self?.delegate?.didTapPlusButton(isMasked: self?.isMasked ?? false)
+            self?.deRotatePlusButton()
+            self?.toggleSubButtons()
+        }
+        
+        nameAlertController.addAction(nameConfirmAction)
+        nameAlertController.addAction(nameCancelAction)
+        
+        presentAlert(nameAlertController)
+    }
+    
+    private func showCategoryAlert(sheetName: String) {
+        let categoryAlertController = UIAlertController(title: "카테고리 설정하기", message: "학습지의 카테고리를 설정해 주세요", preferredStyle: .alert)
+        categoryAlertController.addTextField { textField in
+            textField.placeholder = "카테고리"
+            textField.autocorrectionType = .no
+            textField.spellCheckingType = .no
+        }
+        let categoryConfirmAction = UIAlertAction(title: "확인", style: .default) { [weak self] _ in
+            guard let category = categoryAlertController.textFields?.first?.text, !category.isEmpty else { return }
+            self?.saveDocument(sheetName: sheetName, category: category)
+        }
+        let categoryCancelAction = UIAlertAction(title: "취소", style: .cancel) { [weak self] _ in
+            self?.showNameAlert(fileName: sheetName, previousName: sheetName)
+        }
+        
+        categoryAlertController.addAction(categoryConfirmAction)
+        categoryAlertController.addAction(categoryCancelAction)
+        
+        presentAlert(categoryAlertController)
+    }
+    
+    private func presentAlert(_ alertController: UIAlertController) {
         if let rootViewController = UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })
             .first?.windows
@@ -353,13 +498,16 @@ class HeaderComponent: UIView {
         }
     }
     
-    private func saveFile(fileName: String, category: String) {
-        // 파일 저장 및 카테고리 설정 로직을 추가합니다.
-        // 예를 들어, 파일을 저장하고, UI를 업데이트하는 코드를 작성합니다.
-        // 이 예시에서는 저장된 파일 이름을 업데이트하도록 하겠습니다.
-        self.uploadedFileName = fileName // Ensure 'self' is used to access instance property
-        self.plusButton.setTitle(self.uploadedFileName, for: .normal)
-        // 다른 UI 업데이트 로직을 추가할 수 있습니다.
+    private func saveDocument(sheetName: String, category: String) {
+        print("sheetName: \(sheetName), category: \(category), extractedText: \(extractedText)")
+        
+        //TODO: 클백작업해야함
+        
+        // 원래 홈뷰로 이동
+        isMasked.toggle()
+        delegate?.didTapPlusButton(isMasked: isMasked)
+        deRotatePlusButton()
+        toggleSubButtons()
     }
 }
 
