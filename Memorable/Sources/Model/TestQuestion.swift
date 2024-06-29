@@ -8,5 +8,6 @@
 struct Question {
     let id: Int
     let question: String
-    var answer: String
+    let answer: String
+    var userAnswer: String
 }
