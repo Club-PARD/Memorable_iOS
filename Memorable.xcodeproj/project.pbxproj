@@ -13,6 +13,7 @@
 		DB3CEC812C2E90BE00F8211C /* TestQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC802C2E90BE00F8211C /* TestQuestion.swift */; };
 		DB3CEC832C2E90FF00F8211C /* QuestionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC822C2E90FF00F8211C /* QuestionManager.swift */; };
 		DB3CEC852C2E912C00F8211C /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC842C2E912C00F8211C /* TestViewController.swift */; };
+		DB3CEC872C2FF66D00F8211C /* ProgressBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC862C2FF66D00F8211C /* ProgressBarView.swift */; };
 		DBD820492C2A804700A9B1C3 /* TabViewComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD820482C2A804700A9B1C3 /* TabViewComponent.swift */; };
 		DBD8204D2C2ADF5C00A9B1C3 /* HeaderComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD8204C2C2ADF5C00A9B1C3 /* HeaderComponent.swift */; };
 		DBD8204F2C2BE31800A9B1C3 /* LibraryViewComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD8204E2C2BE31800A9B1C3 /* LibraryViewComponent.swift */; };
@@ -58,6 +59,7 @@
 		DB3CEC802C2E90BE00F8211C /* TestQuestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestQuestion.swift; sourceTree = "<group>"; };
 		DB3CEC822C2E90FF00F8211C /* QuestionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionManager.swift; sourceTree = "<group>"; };
 		DB3CEC842C2E912C00F8211C /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
+		DB3CEC862C2FF66D00F8211C /* ProgressBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarView.swift; sourceTree = "<group>"; };
 		DBD820482C2A804700A9B1C3 /* TabViewComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabViewComponent.swift; sourceTree = "<group>"; };
 		DBD8204C2C2ADF5C00A9B1C3 /* HeaderComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderComponent.swift; sourceTree = "<group>"; };
 		DBD8204E2C2BE31800A9B1C3 /* LibraryViewComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewComponent.swift; sourceTree = "<group>"; };
@@ -118,6 +120,7 @@
 				DB3CEC7A2C2E10E000F8211C /* WorksheetListViewComponent.swift */,
 				DB3CEC7C2C2E1AE300F8211C /* WorksheetTableViewCell.swift */,
 				DB3CEC7E2C2E8C5300F8211C /* TestQuestionConponent.swift */,
+				DB3CEC862C2FF66D00F8211C /* ProgressBarView.swift */,
 			);
 			path = Component;
 			sourceTree = "<group>";
@@ -373,6 +376,7 @@
 				DDBD12F82C29C5B1006E7D92 /* KeychainItem.swift in Sources */,
 				DDAC4BE02C2805AB006206EB /* Memorable.xcdatamodeld in Sources */,
 				DB3CEC812C2E90BE00F8211C /* TestQuestion.swift in Sources */,
+				DB3CEC872C2FF66D00F8211C /* ProgressBarView.swift in Sources */,
 				DDAC4BD82C2805AB006206EB /* SceneDelegate.swift in Sources */,
 				DDBD12FC2C29C6BC006E7D92 /* HomeViewController.swift in Sources */,
 				DB3CEC7F2C2E8C5300F8211C /* TestQuestionConponent.swift in Sources */,
