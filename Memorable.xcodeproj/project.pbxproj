@@ -12,14 +12,12 @@
 		DB3CEC7F2C2E8C5300F8211C /* TestQuestionConponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC7E2C2E8C5300F8211C /* TestQuestionConponent.swift */; };
 		DB3CEC812C2E90BE00F8211C /* TestQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC802C2E90BE00F8211C /* TestQuestion.swift */; };
 		DB3CEC832C2E90FF00F8211C /* QuestionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC822C2E90FF00F8211C /* QuestionManager.swift */; };
-		DB3CEC852C2E912C00F8211C /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC842C2E912C00F8211C /* TestViewController.swift */; };
 		DBD820492C2A804700A9B1C3 /* TabViewComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD820482C2A804700A9B1C3 /* TabViewComponent.swift */; };
 		DBD8204D2C2ADF5C00A9B1C3 /* HeaderComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD8204C2C2ADF5C00A9B1C3 /* HeaderComponent.swift */; };
 		DBD8204F2C2BE31800A9B1C3 /* LibraryViewComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD8204E2C2BE31800A9B1C3 /* LibraryViewComponent.swift */; };
 		DBD820532C2C6E0000A9B1C3 /* ContentCollectionViewCellComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD820522C2C6E0000A9B1C3 /* ContentCollectionViewCellComponent.swift */; };
 		DBD820552C2C7CDA00A9B1C3 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD820542C2C7CDA00A9B1C3 /* Document.swift */; };
 		DD1A05FF2C2B1B4900DE0CB8 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1A05FE2C2B1B4900DE0CB8 /* User.swift */; };
-		DD4B40AC2C2BCEEF00524757 /* SearchComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4B40A82C2BCEEF00524757 /* SearchComponent.swift */; };
 		DD4B40AF2C2BD38A00524757 /* WorkSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4B40AE2C2BD38A00524757 /* WorkSheetViewController.swift */; };
 		DD4B40B12C2BE30600524757 /* WorkSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4B40B02C2BE30600524757 /* WorkSheetView.swift */; };
 		DD4B40B32C2BE4AD00524757 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4B40B22C2BE4AD00524757 /* MockData.swift */; };
@@ -63,14 +61,12 @@
 		DB3CEC7E2C2E8C5300F8211C /* TestQuestionConponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestQuestionConponent.swift; sourceTree = "<group>"; };
 		DB3CEC802C2E90BE00F8211C /* TestQuestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestQuestion.swift; sourceTree = "<group>"; };
 		DB3CEC822C2E90FF00F8211C /* QuestionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionManager.swift; sourceTree = "<group>"; };
-		DB3CEC842C2E912C00F8211C /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
 		DBD820482C2A804700A9B1C3 /* TabViewComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabViewComponent.swift; sourceTree = "<group>"; };
 		DBD8204C2C2ADF5C00A9B1C3 /* HeaderComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderComponent.swift; sourceTree = "<group>"; };
 		DBD8204E2C2BE31800A9B1C3 /* LibraryViewComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewComponent.swift; sourceTree = "<group>"; };
 		DBD820522C2C6E0000A9B1C3 /* ContentCollectionViewCellComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentCollectionViewCellComponent.swift; sourceTree = "<group>"; };
 		DBD820542C2C7CDA00A9B1C3 /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
 		DD1A05FE2C2B1B4900DE0CB8 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		DD4B40A82C2BCEEF00524757 /* SearchComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchComponent.swift; sourceTree = "<group>"; };
 		DD4B40AE2C2BD38A00524757 /* WorkSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSheetViewController.swift; sourceTree = "<group>"; };
 		DD4B40B02C2BE30600524757 /* WorkSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSheetView.swift; sourceTree = "<group>"; };
 		DD4B40B22C2BE4AD00524757 /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
@@ -122,6 +118,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DD4B40AA2C2BCEEF00524757 /* Component */ = {
+			isa = PBXGroup;
+			children = (
+				DD4B40B02C2BE30600524757 /* WorkSheetView.swift */,
+				DBD820482C2A804700A9B1C3 /* TabViewComponent.swift */,
+				DBD8204C2C2ADF5C00A9B1C3 /* HeaderComponent.swift */,
+				DBD8204E2C2BE31800A9B1C3 /* LibraryViewComponent.swift */,
+				DBD820522C2C6E0000A9B1C3 /* ContentCollectionViewCellComponent.swift */,
+				DB3CEC7A2C2E10E000F8211C /* WorksheetListViewComponent.swift */,
+				DB3CEC7C2C2E1AE300F8211C /* WorksheetTableViewCell.swift */,
+				DB3CEC7E2C2E8C5300F8211C /* TestQuestionConponent.swift */,
+			);
+			path = Component;
+			sourceTree = "<group>";
+		};
 		DDAC4BC92C2805AB006206EB = {
 			isa = PBXGroup;
 			children = (
@@ -129,7 +140,6 @@
 				DDAC4BEE2C2805AC006206EB /* MemorableTests */,
 				DDAC4BF82C2805AC006206EB /* MemorableUITests */,
 				DDAC4BD32C2805AB006206EB /* Products */,
-				DDB3E3832C2FE08300AF9182 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -170,23 +180,6 @@
 			path = MemorableUITests;
 			sourceTree = "<group>";
 		};
-		DDB3E3832C2FE08300AF9182 /* Recovered References */ = {
-			isa = PBXGroup;
-			children = (
-				DBD820522C2C6E0000A9B1C3 /* ContentCollectionViewCellComponent.swift */,
-				DD4B40B02C2BE30600524757 /* WorkSheetView.swift */,
-				DD4B40A82C2BCEEF00524757 /* SearchComponent.swift */,
-				DB3CEC7E2C2E8C5300F8211C /* TestQuestionConponent.swift */,
-				DB3CEC7A2C2E10E000F8211C /* WorksheetListViewComponent.swift */,
-				DBD820482C2A804700A9B1C3 /* TabViewComponent.swift */,
-				DBD8204C2C2ADF5C00A9B1C3 /* HeaderComponent.swift */,
-				DBD8204E2C2BE31800A9B1C3 /* LibraryViewComponent.swift */,
-				DB3CEC842C2E912C00F8211C /* TestViewController.swift */,
-				DB3CEC7C2C2E1AE300F8211C /* WorksheetTableViewCell.swift */,
-			);
-			name = "Recovered References";
-			sourceTree = "<group>";
-		};
 		DDBD12ED2C298F61006E7D92 /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -217,6 +210,7 @@
 				DDC1EE8E2C2AACE700C88CD7 /* Manager */,
 				DDBD12F62C29C586006E7D92 /* Model */,
 				DDBD12ED2C298F61006E7D92 /* View */,
+				DD4B40AA2C2BCEEF00524757 /* Component */,
 				DD4B40B22C2BE4AD00524757 /* MockData.swift */,
 			);
 			path = Sources;
@@ -392,7 +386,6 @@
 				DBD820532C2C6E0000A9B1C3 /* ContentCollectionViewCellComponent.swift in Sources */,
 				DDAC4BDA2C2805AB006206EB /* LoginViewController.swift in Sources */,
 				DD4B40B12C2BE30600524757 /* WorkSheetView.swift in Sources */,
-				DD4B40AC2C2BCEEF00524757 /* SearchComponent.swift in Sources */,
 				DDAC4BD62C2805AB006206EB /* AppDelegate.swift in Sources */,
 				DDAC4BE02C2805AB006206EB /* Memorable.xcdatamodeld in Sources */,
 				DDC1EE902C2AACFB00C88CD7 /* AuthState.swift in Sources */,
@@ -411,7 +404,6 @@
 				DBD8204D2C2ADF5C00A9B1C3 /* HeaderComponent.swift in Sources */,
 				DBD8204F2C2BE31800A9B1C3 /* LibraryViewComponent.swift in Sources */,
 				DB3CEC832C2E90FF00F8211C /* QuestionManager.swift in Sources */,
-				DB3CEC852C2E912C00F8211C /* TestViewController.swift in Sources */,
 				DB3CEC7D2C2E1AE300F8211C /* WorksheetTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
