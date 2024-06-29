@@ -41,17 +41,6 @@ class WorkSheetView: UIView {
 
     private var workSheetContent = UIView()
 
-    private let reExtractButton = UIButton().then {
-        var config = UIButton.Configuration.plain()
-        config.baseForegroundColor = .blue
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 12)
-        config.image = UIImage(systemName: "arrow.counterclockwise", withConfiguration: imageConfig)
-        config.imagePadding = 5
-        config.imagePlacement = .trailing
-        config.title = "빈칸 재추출하기"
-        $0.configuration = config
-    }
-
     // MARK: - Initialization
 
     init(frame: CGRect, viewWidth: CGFloat, text: String, answers: [String]) {
@@ -80,7 +69,6 @@ class WorkSheetView: UIView {
         addSubview(self.contentView)
 
         self.contentView.addSubview(self.scrollView)
-        self.contentView.addSubview(self.reExtractButton)
 
         self.contentView.backgroundColor = .white
         self.addSubViewsInScrollView()
@@ -88,11 +76,6 @@ class WorkSheetView: UIView {
         self.contentView.snp.makeConstraints {
             $0.top.leading.trailing.bottom.equalToSuperview()
             $0.width.equalToSuperview()
-        }
-
-        self.reExtractButton.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-20)
         }
 
         self.scrollView.snp.makeConstraints {
