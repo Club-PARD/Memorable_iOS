@@ -12,6 +12,8 @@ import UIKit
 class WorkSheetView: UIView {
     // MARK: - Properties
 
+    var userAnswers: [UITextField] = []
+
     private var viewWidth: CGFloat = 0
 
     // Create a container view for the text and text fields
@@ -19,7 +21,6 @@ class WorkSheetView: UIView {
         $0.axis = .vertical
         $0.spacing = 8
         $0.alignment = .leading
-        $0.translatesAutoresizingMaskIntoConstraints = false
     }
 
     private var previousLineView: UIStackView?
@@ -40,17 +41,6 @@ class WorkSheetView: UIView {
 
     private var workSheetContent = UIView()
 
-    private let reExtractButton = UIButton().then {
-        var config = UIButton.Configuration.plain()
-        config.baseForegroundColor = .blue
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 12)
-        config.image = UIImage(systemName: "arrow.counterclockwise", withConfiguration: imageConfig)
-        config.imagePadding = 5
-        config.imagePlacement = .trailing
-        config.title = "빈칸 재추출하기"
-        $0.configuration = config
-    }
-
     // MARK: - Initialization
 
     init(frame: CGRect, viewWidth: CGFloat, text: String, answers: [String]) {
@@ -59,13 +49,12 @@ class WorkSheetView: UIView {
         self.contentString = text
         self.answers = answers
 
-        print("View Width: \(viewWidth)")
-
         self.workSheetContent = self.createFillInTheBlanksUI(
             question: self.contentString,
             answers: self.answers
         )
 
+        self.setupTapGesture()
         self.setupView()
     }
 
@@ -80,7 +69,6 @@ class WorkSheetView: UIView {
         addSubview(self.contentView)
 
         self.contentView.addSubview(self.scrollView)
-        self.contentView.addSubview(self.reExtractButton)
 
         self.contentView.backgroundColor = .white
         self.addSubViewsInScrollView()
@@ -88,11 +76,6 @@ class WorkSheetView: UIView {
         self.contentView.snp.makeConstraints {
             $0.top.leading.trailing.bottom.equalToSuperview()
             $0.width.equalToSuperview()
-        }
-
-        self.reExtractButton.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-20)
         }
 
         self.scrollView.snp.makeConstraints {
@@ -120,6 +103,17 @@ class WorkSheetView: UIView {
         self.contentString = text
     }
 
+    // MARK: - TextField Tap Gesture
+
+    private func setupTapGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.handleTap(_:)))
+        self.addGestureRecognizer(tapGesture)
+    }
+
+    @objc private func handleTap(_ gesture: UITapGestureRecognizer) {
+        self.endEditing(true)
+    }
+
     // MARK: - Content Methods
 
     func createFillInTheBlanksUI(question: String, answers: [String]) -> UIView {
@@ -142,7 +136,6 @@ class WorkSheetView: UIView {
                 let label = UILabel().then {
                     $0.text = String(word) + " "
                     $0.textAlignment = .center
-                    $0.translatesAutoresizingMaskIntoConstraints = false
                 }
                 let labelWidth = label.intrinsicContentSize.width
 
@@ -153,7 +146,6 @@ class WorkSheetView: UIView {
                     }
                     currentLineView!.addArrangedSubview(label)
                     currentLineWidth += labelWidth
-                    print("current line width: \(currentLineWidth)")
                 }
                 // viewWidth 초과했을떄
                 else {
@@ -172,8 +164,10 @@ class WorkSheetView: UIView {
                 $0.placeholder = "Keyword"
                 $0.textAlignment = .center
                 $0.widthAnchor.constraint(equalToConstant: 100).isActive = true
-                $0.translatesAutoresizingMaskIntoConstraints = false
+                $0.delegate = self
             }
+            self.userAnswers.append(textField)
+
             let textFieldWidth = textField.intrinsicContentSize.width
 
             if currentLineWidth + textFieldWidth < self.viewWidth - 250 {
@@ -183,7 +177,6 @@ class WorkSheetView: UIView {
                 }
                 currentLineView!.addArrangedSubview(textField)
                 currentLineWidth += textFieldWidth
-                print("current line width with TextField: \(currentLineWidth)")
             }
             // viewWidth 초과했을떄
             else {
@@ -203,12 +196,11 @@ class WorkSheetView: UIView {
 
         // Add the remaining part of the question as a suffix label
         let words = remainingQuestion.split(separator: " ")
-        print(words)
+
         for word in words {
             let label = UILabel().then {
                 $0.text = String(word) + " "
                 $0.textAlignment = .center
-                $0.translatesAutoresizingMaskIntoConstraints = false
             }
             let labelWidth = label.intrinsicContentSize.width
 
@@ -245,14 +237,25 @@ class WorkSheetView: UIView {
     }
 
     func createNewLineView() -> UIStackView {
-        print("Create New Line View")
-
         let lineView = UIStackView()
         lineView.axis = .horizontal
         lineView.spacing = 8
         lineView.alignment = .center
-        lineView.translatesAutoresizingMaskIntoConstraints = false
 
         return lineView
+    }
+}
+
+extension WorkSheetView: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        textField.backgroundColor = .yellow
+    }
+
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        textField.backgroundColor = .clear
+    }
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        return textField.resignFirstResponder()
     }
 }
