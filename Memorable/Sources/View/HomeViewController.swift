@@ -105,7 +105,7 @@ class HomeViewController: UIViewController {
         self.view.addSubview(headerComponent)
         headerComponent.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.top.equalToSuperview().offset(24)
             make.height.equalTo(76)
         }
         
@@ -138,21 +138,34 @@ class HomeViewController: UIViewController {
     }
     
     func setupLibraryViewComponent() {
-        let topLeftDocuments = mockData.filter { $0.fileType == "빈칸학습지" }
-        let topRightDocuments = mockData.filter { $0.fileType == "나만의 시험지" }
-        let bottomDocuments = mockData.filter { $0.fileType == "오답노트" }
-        
-        libraryViewComponent.setDocuments(
-            topLeft: topLeftDocuments,
-            topRight: topRightDocuments,
-            bottom: bottomDocuments
-        )
+        containerView.snp.remakeConstraints { make in
+            make.top.equalTo(headerComponent.snp.bottom)
+            make.leading.equalTo(tabBar.snp.trailing).offset(49)
+            make.trailing.equalToSuperview().offset(-24)
+            make.bottom.equalToSuperview()
+        }
         
         libraryViewComponent.delegate = self
         containerView.addSubview(libraryViewComponent)
         libraryViewComponent.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        
+        // titleLabel 숨기기
+        titleLabel.isHidden = true
+    }
+    
+    private func setupDefaultView() {
+        // 기본 레이아웃으로 되돌리기
+        containerView.snp.remakeConstraints { make in
+            make.trailing.equalToSuperview().offset(-24)
+            make.top.equalTo(tabBar)
+            make.leading.equalTo(tabBar).offset(49)
+            make.height.equalTo(569)
+        }
+        
+        // titleLabel 보이기
+        titleLabel.isHidden = false
     }
     
     private func showView(config viewId: String) {
@@ -160,27 +173,16 @@ class HomeViewController: UIViewController {
         
         switch viewId {
         case "home":
-            containerView.addSubview(libraryViewComponent)
-            libraryViewComponent.snp.makeConstraints { make in
-                make.edges.equalToSuperview()
-            }
+            setupLibraryViewComponent()
             titleLabel.text = "\(userName)님,\n오늘도 함께 학습해볼까요?"
         case "star":
-            containerView.addSubview(libraryViewComponent)
-            libraryViewComponent.snp.makeConstraints { make in
-                make.edges.equalToSuperview()
-            }
+            setupDefaultView()
             titleLabel.text = "\(userName)님이\n즐겨찾기한 파일"
         case "mypage":
-            containerView.addSubview(libraryViewComponent)
-            libraryViewComponent.snp.makeConstraints { make in
-                make.edges.equalToSuperview()
-            }
+            setupDefaultView()
             titleLabel.text = "안녕하세요 \(userName)님!"
         default:
-            libraryViewComponent.snp.makeConstraints { make in
-                make.edges.equalToSuperview()
-            }
+            setupDefaultView()
             titleLabel.text = ""
         }
     }
