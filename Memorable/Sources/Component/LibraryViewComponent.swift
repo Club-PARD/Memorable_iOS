@@ -18,6 +18,8 @@ class LibraryViewComponent: UIView {
     
     weak var delegate: LibraryViewComponentDelegate?
     
+    private let scrollView: UIScrollView
+    private let contentView: UIView
     private let topLeftView: UIView
     private let topRightView: UIView
     private let bottomView: UIView
@@ -31,6 +33,8 @@ class LibraryViewComponent: UIView {
     private lazy var bottomCollectionView: UICollectionView = self.createCollectionView(isNoteView: true)
     
     override init(frame: CGRect) {
+        scrollView = UIScrollView()
+        contentView = UIView()
         topLeftView = UIView()
         topRightView = UIView()
         bottomView = UIView()
@@ -46,9 +50,11 @@ class LibraryViewComponent: UIView {
     }
     
     private func setupViews() {
-        addSubview(topLeftView)
-        addSubview(topRightView)
-        addSubview(bottomView)
+        addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        contentView.addSubview(topLeftView)
+        contentView.addSubview(topRightView)
+        contentView.addSubview(bottomView)
         
         [topLeftView, topRightView, bottomView].forEach {
             $0.backgroundColor = .white
@@ -125,26 +131,41 @@ class LibraryViewComponent: UIView {
     }
     
     private func setupConstraints() {
+        
+        scrollView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        contentView.snp.makeConstraints { make in
+            make.edges.equalTo(scrollView.contentLayoutGuide)
+            make.width.equalTo(scrollView.frameLayoutGuide)
+        }
+        
         topLeftView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.leading.equalToSuperview()
-            make.trailing.equalTo(self.snp.centerX).offset(-10)
-            make.height.equalTo(340)
+            make.top.equalToSuperview().offset(20)
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalTo(contentView.snp.centerX).offset(-10)
+            // 고정 높이 제거
         }
         
         topRightView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.leading.equalTo(self.snp.centerX).offset(10)
-            make.trailing.equalToSuperview()
-            make.height.equalTo(340)
+            make.top.equalToSuperview().offset(20)
+            make.leading.equalTo(contentView.snp.centerX).offset(10)
+            make.trailing.equalToSuperview().offset(-20)
+            make.height.equalTo(topLeftView)
         }
         
         bottomView.snp.makeConstraints { make in
             make.top.equalTo(topLeftView.snp.bottom).offset(20)
-            make.leading.equalToSuperview()
-            make.trailing.equalToSuperview()
-            make.height.equalTo(209)
-            make.bottom.equalToSuperview()
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
+            // 고정 높이 제거
+            make.bottom.equalToSuperview().offset(-20)
+        }
+        
+        // 컨텐츠 뷰의 높이를 설정
+        contentView.snp.makeConstraints { make in
+            make.bottom.equalTo(bottomView.snp.bottom)
         }
     }
     
