@@ -223,7 +223,6 @@ class WorkSheetViewController: UIViewController {
 
         let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
             print("PRESS CONFIRM")
-            // 여기에 확인 버튼을 눌렀을 때 수행할 작업을 추가하세요.
         }
 
         alert.addAction(cancelAction)
