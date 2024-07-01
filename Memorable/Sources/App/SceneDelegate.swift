@@ -23,8 +23,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         let navigationVC = UINavigationController(rootViewController: homeViewController)
 
-        window?.rootViewController = navigationVC
+        if #available(iOS 13.0, *) {
+            self.window?.overrideUserInterfaceStyle = .light // 라이트모드만 지원하기
+            //    self.window?.overrideUserInterfaceStyle = .dark // 다크모드만 지원하기
+        }
 
+        window?.rootViewController = navigationVC
         window?.makeKeyAndVisible()
     }
 

@@ -53,6 +53,7 @@
 		DDC1EE922C2AAD2400C88CD7 /* SignInManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC1EE912C2AAD2400C88CD7 /* SignInManager.swift */; };
 		DDF67E862C32F9D900F37BFC /* WrongSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF67E852C32F9D900F37BFC /* WrongSheetViewController.swift */; };
 		DDF67E882C32FB3800F37BFC /* WrongSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF67E872C32FB3800F37BFC /* WrongSheetView.swift */; };
+		DDF67E8A2C330F3400F37BFC /* WrongQuestionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF67E892C330F3400F37BFC /* WrongQuestionView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -143,6 +144,7 @@
 		DDC1EE912C2AAD2400C88CD7 /* SignInManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInManager.swift; sourceTree = "<group>"; };
 		DDF67E852C32F9D900F37BFC /* WrongSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongSheetViewController.swift; sourceTree = "<group>"; };
 		DDF67E872C32FB3800F37BFC /* WrongSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongSheetView.swift; sourceTree = "<group>"; };
+		DDF67E892C330F3400F37BFC /* WrongQuestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongQuestionView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -194,6 +196,7 @@
 			children = (
 				DD4B40B02C2BE30600524757 /* WorkSheetView.swift */,
 				DDF67E872C32FB3800F37BFC /* WrongSheetView.swift */,
+				DDF67E892C330F3400F37BFC /* WrongQuestionView.swift */,
 				DBD820482C2A804700A9B1C3 /* TabViewComponent.swift */,
 				DBD8204C2C2ADF5C00A9B1C3 /* HeaderComponent.swift */,
 				DBD8204E2C2BE31800A9B1C3 /* LibraryViewComponent.swift */,
@@ -293,9 +296,9 @@
 			children = (
 				DDAC4BD92C2805AB006206EB /* LoginViewController.swift */,
 				DDBD12FB2C29C6BC006E7D92 /* HomeViewController.swift */,
-				DD4B40AE2C2BD38A00524757 /* WorkSheetViewController.swift */,
 				DDB3E3842C2FE16200AF9182 /* TestLoginViewController.swift */,
 				DB3CEC8A2C30457A00F8211C /* TestSheetViewController.swift */,
+				DD4B40AE2C2BD38A00524757 /* WorkSheetViewController.swift */,
 				DDF67E852C32F9D900F37BFC /* WrongSheetViewController.swift */,
 			);
 			path = View;
@@ -538,6 +541,7 @@
 			files = (
 				DB3CEC8B2C30457A00F8211C /* TestSheetViewController.swift in Sources */,
 				DBD820532C2C6E0000A9B1C3 /* ContentCollectionViewCellComponent.swift in Sources */,
+				DDF67E8A2C330F3400F37BFC /* WrongQuestionView.swift in Sources */,
 				DDAC4BDA2C2805AB006206EB /* LoginViewController.swift in Sources */,
 				DB3CEC952C31A5DA00F8211C /* SearchedSheetView.swift in Sources */,
 				DD2F8B8E2C3089C8003F077D /* FloatingImage.swift in Sources */,

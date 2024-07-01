@@ -10,10 +10,6 @@ import UIKit
 class WrongSheetView: UIView {
     // MARK: - Properties
 
-    var userAnswers: [UITextField] = []
-
-    private var viewWidth: CGFloat = 0
-
     // Create a container view for the text and text fields
     let containerView = UIStackView().then {
         $0.axis = .vertical
@@ -30,24 +26,22 @@ class WrongSheetView: UIView {
         $0.showsVerticalScrollIndicator = true
     }
 
-    private var contentString = ""
+    private var questions: [String] = []
 
     private var answers: [String] = []
 
     private var wrongSheetContent = UIView()
 
+    var wrongQuestionViews: [WrongQuestionView] = []
+
     // MARK: - Initialization
 
-    init(frame: CGRect, viewWidth: CGFloat, text: String, answers: [String]) {
+    init(frame: CGRect, questions: [String], answers: [String]) {
         super.init(frame: frame)
-        self.viewWidth = viewWidth
-        self.contentString = text
+        self.questions = questions
         self.answers = answers
 
-//        self.workSheetContent = self.createFillInTheBlanksUI(
-//            question: self.contentString,
-//            answers: self.answers
-//        )
+        self.createWrongSheetContent()
 
         self.setupTapGesture()
         self.setupView()
@@ -56,6 +50,42 @@ class WrongSheetView: UIView {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: - Content Methods
+
+    func createWrongSheetContent() {
+        let questionLength = self.questions.count
+        var previousView: UIView?
+
+        for idx in 0 ..< questionLength {
+            let wrongQuestionView = WrongQuestionView(
+                frame: CGRect.zero,
+                idx: idx + 1,
+                question: self.questions[idx],
+                answer: self.answers[idx]
+            )
+            self.wrongQuestionViews.append(wrongQuestionView)
+
+            self.wrongSheetContent.addSubview(wrongQuestionView)
+
+            wrongQuestionView.snp.makeConstraints { make in
+                make.leading.trailing.equalToSuperview()
+                make.width.equalToSuperview()
+
+                if let previousView = previousView {
+                    make.top.equalTo(previousView.snp.bottom).offset(20) // 뷰 사이의 간격
+                } else {
+                    make.top.equalToSuperview()
+                }
+
+                if idx == questionLength - 1 {
+                    make.bottom.equalToSuperview()
+                }
+            }
+
+            previousView = wrongQuestionView
+        }
     }
 
     // MARK: - Setup
@@ -75,12 +105,12 @@ class WrongSheetView: UIView {
 
         self.scrollView.snp.makeConstraints {
             $0.leading.trailing.equalTo(self.contentView)
-            $0.top.equalTo(self.contentView).offset(72)
-            $0.bottom.equalTo(self.contentView).offset(-32)
+            $0.top.equalTo(self.contentView).offset(64)
+            $0.bottom.equalTo(self.contentView).offset(-64)
         }
 
         self.wrongSheetContent.snp.makeConstraints {
-            $0.top.equalTo(self.scrollView)
+            $0.top.equalTo(self.scrollView).offset(24)
             $0.leading.equalTo(self.scrollView).offset(32)
             $0.trailing.equalTo(self.scrollView).offset(-32)
             $0.bottom.equalTo(self.scrollView)
@@ -90,12 +120,6 @@ class WrongSheetView: UIView {
 
     func addSubViewsInScrollView() {
         self.scrollView.addSubview(self.wrongSheetContent)
-    }
-
-    // MARK: - Public Methods
-
-    func setContentString(with text: String) {
-        self.contentString = text
     }
 
     // MARK: - TextField Tap Gesture
@@ -108,8 +132,4 @@ class WrongSheetView: UIView {
     @objc private func handleTap(_ gesture: UITapGestureRecognizer) {
         self.endEditing(true)
     }
-
-    // MARK: - Content Methods
-
-    
 }
