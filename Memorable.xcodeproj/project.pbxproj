@@ -8,12 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		DB3CEC7B2C2E10E000F8211C /* WorksheetListViewComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC7A2C2E10E000F8211C /* WorksheetListViewComponent.swift */; };
-		DB3CEC7D2C2E1AE300F8211C /* WorksheetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC7C2C2E1AE300F8211C /* WorksheetTableViewCell.swift */; };
 		DB3CEC7F2C2E8C5300F8211C /* TestQuestionConponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC7E2C2E8C5300F8211C /* TestQuestionConponent.swift */; };
 		DB3CEC812C2E90BE00F8211C /* TestQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC802C2E90BE00F8211C /* TestQuestion.swift */; };
 		DB3CEC832C2E90FF00F8211C /* QuestionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC822C2E90FF00F8211C /* QuestionManager.swift */; };
 		DB3CEC872C2FF66D00F8211C /* ProgressBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC862C2FF66D00F8211C /* ProgressBarView.swift */; };
 		DB3CEC8B2C30457A00F8211C /* TestSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC8A2C30457A00F8211C /* TestSheetViewController.swift */; };
+		DB3CEC8F2C3149A100F8211C /* StarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC8E2C3149A100F8211C /* StarView.swift */; };
+		DB3CEC912C314AAB00F8211C /* MypageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC902C314AAB00F8211C /* MypageView.swift */; };
+		DB3CEC932C31655A00F8211C /* RecentsheetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC922C31655A00F8211C /* RecentsheetCell.swift */; };
+		DB3CEC952C31A5DA00F8211C /* SearchedSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC942C31A5DA00F8211C /* SearchedSheetView.swift */; };
+		DB3CEC972C31E16100F8211C /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC962C31E16100F8211C /* GradientView.swift */; };
 		DBD820492C2A804700A9B1C3 /* TabViewComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD820482C2A804700A9B1C3 /* TabViewComponent.swift */; };
 		DBD8204D2C2ADF5C00A9B1C3 /* HeaderComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD8204C2C2ADF5C00A9B1C3 /* HeaderComponent.swift */; };
 		DBD8204F2C2BE31800A9B1C3 /* LibraryViewComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD8204E2C2BE31800A9B1C3 /* LibraryViewComponent.swift */; };
@@ -60,12 +64,16 @@
 
 /* Begin PBXFileReference section */
 		DB3CEC7A2C2E10E000F8211C /* WorksheetListViewComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorksheetListViewComponent.swift; sourceTree = "<group>"; };
-		DB3CEC7C2C2E1AE300F8211C /* WorksheetTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorksheetTableViewCell.swift; sourceTree = "<group>"; };
 		DB3CEC7E2C2E8C5300F8211C /* TestQuestionConponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestQuestionConponent.swift; sourceTree = "<group>"; };
 		DB3CEC802C2E90BE00F8211C /* TestQuestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestQuestion.swift; sourceTree = "<group>"; };
 		DB3CEC822C2E90FF00F8211C /* QuestionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionManager.swift; sourceTree = "<group>"; };
 		DB3CEC862C2FF66D00F8211C /* ProgressBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarView.swift; sourceTree = "<group>"; };
 		DB3CEC8A2C30457A00F8211C /* TestSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSheetViewController.swift; sourceTree = "<group>"; };
+		DB3CEC8E2C3149A100F8211C /* StarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarView.swift; sourceTree = "<group>"; };
+		DB3CEC902C314AAB00F8211C /* MypageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MypageView.swift; sourceTree = "<group>"; };
+		DB3CEC922C31655A00F8211C /* RecentsheetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentsheetCell.swift; sourceTree = "<group>"; };
+		DB3CEC942C31A5DA00F8211C /* SearchedSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchedSheetView.swift; sourceTree = "<group>"; };
+		DB3CEC962C31E16100F8211C /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		DBD820482C2A804700A9B1C3 /* TabViewComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabViewComponent.swift; sourceTree = "<group>"; };
 		DBD8204C2C2ADF5C00A9B1C3 /* HeaderComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderComponent.swift; sourceTree = "<group>"; };
 		DBD8204E2C2BE31800A9B1C3 /* LibraryViewComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewComponent.swift; sourceTree = "<group>"; };
@@ -140,9 +148,13 @@
 				DBD8204E2C2BE31800A9B1C3 /* LibraryViewComponent.swift */,
 				DBD820522C2C6E0000A9B1C3 /* ContentCollectionViewCellComponent.swift */,
 				DB3CEC7A2C2E10E000F8211C /* WorksheetListViewComponent.swift */,
-				DB3CEC7C2C2E1AE300F8211C /* WorksheetTableViewCell.swift */,
 				DB3CEC7E2C2E8C5300F8211C /* TestQuestionConponent.swift */,
 				DB3CEC862C2FF66D00F8211C /* ProgressBarView.swift */,
+				DB3CEC8E2C3149A100F8211C /* StarView.swift */,
+				DB3CEC902C314AAB00F8211C /* MypageView.swift */,
+				DB3CEC922C31655A00F8211C /* RecentsheetCell.swift */,
+				DB3CEC942C31A5DA00F8211C /* SearchedSheetView.swift */,
+				DB3CEC962C31E16100F8211C /* GradientView.swift */,
 			);
 			path = Component;
 			sourceTree = "<group>";
@@ -401,10 +413,12 @@
 				DB3CEC8B2C30457A00F8211C /* TestSheetViewController.swift in Sources */,
 				DBD820532C2C6E0000A9B1C3 /* ContentCollectionViewCellComponent.swift in Sources */,
 				DDAC4BDA2C2805AB006206EB /* LoginViewController.swift in Sources */,
+				DB3CEC952C31A5DA00F8211C /* SearchedSheetView.swift in Sources */,
 				DD2F8B8E2C3089C8003F077D /* FloatingImage.swift in Sources */,
 				DD4B40B12C2BE30600524757 /* WorkSheetView.swift in Sources */,
 				DDAC4BD62C2805AB006206EB /* AppDelegate.swift in Sources */,
 				DDAC4BE02C2805AB006206EB /* Memorable.xcdatamodeld in Sources */,
+				DB3CEC912C314AAB00F8211C /* MypageView.swift in Sources */,
 				DDC1EE902C2AACFB00C88CD7 /* AuthState.swift in Sources */,
 				DD1A05FF2C2B1B4900DE0CB8 /* User.swift in Sources */,
 				DD4B40B32C2BE4AD00524757 /* MockData.swift in Sources */,
@@ -414,15 +428,17 @@
 				DDAC4BD82C2805AB006206EB /* SceneDelegate.swift in Sources */,
 				DD4B40AF2C2BD38A00524757 /* WorkSheetViewController.swift in Sources */,
 				DDBD12FC2C29C6BC006E7D92 /* HomeViewController.swift in Sources */,
+				DB3CEC8F2C3149A100F8211C /* StarView.swift in Sources */,
 				DB3CEC7F2C2E8C5300F8211C /* TestQuestionConponent.swift in Sources */,
 				DB3CEC7B2C2E10E000F8211C /* WorksheetListViewComponent.swift in Sources */,
 				DDB3E3852C2FE16200AF9182 /* TestLoginViewController.swift in Sources */,
 				DBD820492C2A804700A9B1C3 /* TabViewComponent.swift in Sources */,
+				DB3CEC932C31655A00F8211C /* RecentsheetCell.swift in Sources */,
 				DBD820552C2C7CDA00A9B1C3 /* Document.swift in Sources */,
 				DBD8204D2C2ADF5C00A9B1C3 /* HeaderComponent.swift in Sources */,
+				DB3CEC972C31E16100F8211C /* GradientView.swift in Sources */,
 				DBD8204F2C2BE31800A9B1C3 /* LibraryViewComponent.swift in Sources */,
 				DB3CEC832C2E90FF00F8211C /* QuestionManager.swift in Sources */,
-				DB3CEC7D2C2E1AE300F8211C /* WorksheetTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
