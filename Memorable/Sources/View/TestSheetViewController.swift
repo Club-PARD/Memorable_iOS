@@ -29,7 +29,7 @@ class TestSheetViewController: UIViewController {
     
     private let logoImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
-        $0.image = UIImage(named: "applogo2")
+        $0.image = UIImage(named: "applogo-v2")
     }
     
     private let backButton = UIButton().then {
@@ -104,6 +104,7 @@ class TestSheetViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor = .lightGray
         setupUI()
         loadQuestions()
@@ -113,15 +114,15 @@ class TestSheetViewController: UIViewController {
     private func setupUI() {
         view.addSubview(logoImageView)
         logoImageView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(27)
+            make.top.equalToSuperview().offset(51)
             make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
-            make.width.equalTo(174)
-            make.height.equalTo(21.92)
+            make.width.equalTo(126)
+            make.height.equalTo(15.07)
         }
         
         view.addSubview(backButton)
         backButton.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(16)
+            make.top.equalToSuperview().offset(30)
             make.leading.equalTo(logoImageView.snp.trailing).offset(22)
             make.height.equalTo(44)
             make.width.equalTo(44)
@@ -142,7 +143,7 @@ class TestSheetViewController: UIViewController {
         // Container view
         view.addSubview(containerView)
         containerView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(149)
+            make.top.equalToSuperview().offset(173)
             make.leading.equalToSuperview().offset(24)
             make.trailing.equalToSuperview().offset(-24)
             make.height.equalTo(540)
@@ -258,7 +259,7 @@ class TestSheetViewController: UIViewController {
         
         view.addSubview(remakeButton)
         remakeButton.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(31)
+            make.top.equalToSuperview().offset(55)
             make.trailing.equalToSuperview().offset(-24)
             make.width.equalTo(132)
             make.height.equalTo(44)
