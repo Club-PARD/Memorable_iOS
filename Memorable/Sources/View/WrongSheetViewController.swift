@@ -36,21 +36,38 @@ class WrongSheetViewController: UIViewController {
         $0.textColor = .gray
     }
 
+    private var wrongSheetView: UIView?
+
     private let resetButton = UIButton().then {
         $0.setTitle("초기화하기", for: .normal)
-        $0.backgroundColor = .black
-        $0.layer.cornerRadius = 22
         $0.contentMode = .scaleAspectFit
+
+        var config = UIButton.Configuration.filled()
+        config.baseBackgroundColor = .black
+        config.baseForegroundColor = .white
+        config.cornerStyle = .large
+
+        $0.configuration = config
     }
 
     private var isShowingAnswer = false
 
     private let showAnswerButton = UIButton().then {
-        $0.setTitle("키워드 보기", for: .normal)
-        $0.setTitle("키워드 숨기기", for: .selected)
-        $0.backgroundColor = .systemGray
-        $0.layer.cornerRadius = 22
+        $0.setTitle("정답 보기", for: .normal)
+        $0.setTitle("정댭 가리기", for: .selected)
+
+//        $0.layer.cornerRadius = 30
         $0.contentMode = .scaleAspectFit
+
+        var config = UIButton.Configuration.filled()
+        config.image = UIImage(systemName: "eye")
+        config.imagePadding = 10
+        config.imagePlacement = .leading
+        config.baseBackgroundColor = .blue.withAlphaComponent(0.5)
+        config.baseForegroundColor = .white
+        config.cornerStyle = .large
+
+        $0.configuration = config
     }
 
     private var userAnswer: [String] = []
@@ -62,6 +79,11 @@ class WrongSheetViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .lightGray
 
+        wrongSheetView = WrongSheetView(
+            frame: CGRect.zero,
+            questions: mockWrongQuestions,
+            answers: mockWrongQuestionAnswers
+        )
         setupButtons()
 
         addSubViews()
@@ -72,11 +94,148 @@ class WrongSheetViewController: UIViewController {
 
     func setupButtons() {
         backButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
+        resetButton.addTarget(self, action: #selector(didTapResetButton), for: .touchUpInside)
+        showAnswerButton.addTarget(self, action: #selector(didTapShowAnswerButton), for: .touchUpInside)
     }
 
     @objc func didTapBackButton() {
         print("GO BACK")
-        navigationController?.popViewController(animated: true)
+
+        let alert = UIAlertController(title: "오답노트 나가기", message: "오답노트를 나가시겠습니까?\n라이브러리로 되돌아갑니다.", preferredStyle: .alert)
+
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
+            print("PRESS CANCEL")
+        }
+
+        let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
+            self.navigationController?.popViewController(animated: true)
+        }
+
+        alert.addAction(cancelAction)
+        alert.addAction(confirmAction)
+
+        present(alert, animated: true)
+    }
+
+    @objc func didTapResetButton() {
+        print("RESET")
+        if let wrongSheetView = wrongSheetView as? WrongSheetView {
+            for wrongQuestionView in wrongSheetView.wrongQuestionViews {
+                wrongQuestionView.answerTextField.text = nil
+            }
+        }
+        else {
+            print("WrongSheetView를 찾을 수 없습니다.")
+        }
+    }
+
+    @objc func didTapShowAnswerButton() {
+        print("SHOW KEYWORD")
+        isShowingAnswer.toggle()
+        showAnswerButton.isSelected = isShowingAnswer
+
+        if isShowingAnswer {
+            showAnswer()
+
+            var config = UIButton.Configuration.gray()
+            config.image = UIImage(systemName: "eye.slash")
+            config.imagePadding = 10
+            config.imagePlacement = .leading
+//            config.baseBackgroundColor = .blue.withAlphaComponent(0.5)
+            config.baseForegroundColor = .gray
+            config.cornerStyle = .large
+
+            showAnswerButton.configuration = config
+        }
+        else {
+            hideAnswer()
+
+            var config = UIButton.Configuration.filled()
+            config.image = UIImage(systemName: "eye")
+            config.imagePadding = 10
+            config.imagePlacement = .leading
+            config.baseBackgroundColor = .blue.withAlphaComponent(0.5)
+            config.baseForegroundColor = .white
+            config.cornerStyle = .large
+
+            showAnswerButton.configuration = config
+        }
+    }
+
+    @objc func showAnswer() {
+        print("SHOW ANSWER")
+        correctCount = 0
+
+        guard let wrongsheet = wrongSheetView as? WrongSheetView else {
+            print("WrongSheetView를 찾을 수 없습니다.")
+            return
+        }
+
+        userAnswer = wrongsheet.wrongQuestionViews.map { $0.answerTextField.text ?? "" }
+        answerLength = wrongsheet.wrongQuestionViews.count
+
+        print("✅ 실제 답안: \(mockWrongQuestionAnswers)")
+        print("☑️ 유저 답안: \(userAnswer)")
+
+        DispatchQueue.main.async {
+            for idx in 0 ..< self.answerLength {
+                let textField = wrongsheet.wrongQuestionViews[idx].answerTextField
+                let myAnswerLabel = wrongsheet.wrongQuestionViews[idx].myAnswerWhenChecking
+
+                // 값을 안 쓴 부분
+                if self.userAnswer[idx].isEmpty {
+                    textField.textColor = .lightGray
+                    textField.text = mockWrongQuestionAnswers[idx]
+                }
+                // 값이 동일
+                else if mockWrongQuestionAnswers[idx] == self.userAnswer[idx] {
+                    self.correctCount += 1
+                    textField.textColor = .blue
+                }
+                // 나머지 (= 틀림)
+                else {
+                    textField.textColor = .red
+                    textField.text = mockWrongQuestionAnswers[idx]
+
+                    myAnswerLabel.text = "내가 쓴 답: \(self.userAnswer[idx])"
+                    myAnswerLabel.isHidden = false
+                }
+
+                textField.isEnabled = false
+                textField.setNeedsDisplay()
+            }
+
+//            if self.correctCount == self.answerLength {
+//                self.correctAll()
+//            }
+
+            wrongsheet.layoutIfNeeded()
+        }
+    }
+
+    func hideAnswer() {
+        print("HIDE ANSWER")
+
+        guard let wrongsheet = wrongSheetView as? WrongSheetView else {
+            print("WrongSheetView를 찾을 수 없습니다.")
+            return
+        }
+
+        DispatchQueue.main.async {
+            for idx in 0 ..< self.answerLength {
+                let myAnswerLabel = wrongsheet.wrongQuestionViews[idx].myAnswerWhenChecking
+
+                wrongsheet.wrongQuestionViews[idx].answerTextField.text = self.userAnswer[idx]
+                wrongsheet.wrongQuestionViews[idx].answerTextField.textColor = .black
+                wrongsheet.wrongQuestionViews[idx].answerTextField.isEnabled = true
+                wrongsheet.wrongQuestionViews[idx].answerTextField.setNeedsDisplay()
+
+                myAnswerLabel.text = nil
+                myAnswerLabel.isHidden = true
+            }
+
+            wrongsheet.layoutIfNeeded()
+        }
     }
 
     // MARK: - General Settings
@@ -87,6 +246,8 @@ class WrongSheetViewController: UIViewController {
 
         view.addSubview(categoryTitleLabel)
         view.addSubview(fileNameLabel)
+
+        view.addSubview(wrongSheetView!)
 
         view.addSubview(resetButton)
         view.addSubview(showAnswerButton)
@@ -116,18 +277,25 @@ class WrongSheetViewController: UIViewController {
             make.centerY.equalTo(categoryTitleLabel.snp.centerY)
         }
 
+        wrongSheetView!.snp.makeConstraints { make in
+            make.top.equalTo(categoryTitleLabel.snp.bottom).offset(28)
+            make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
+            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-24)
+            make.bottom.equalTo(showAnswerButton.snp.top).offset(-24)
+        }
+
         showAnswerButton.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
-            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-32)
+            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-24)
             make.height.equalTo(44)
-            make.width.equalTo(132)
+            make.width.equalTo(140)
         }
 
         resetButton.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
             make.trailing.equalTo(showAnswerButton.snp.leading).offset(-10)
             make.height.equalTo(44)
-            make.width.equalTo(132)
+            make.width.equalTo(140)
         }
     }
 }
