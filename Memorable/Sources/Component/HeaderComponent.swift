@@ -12,8 +12,11 @@ import Vision
 import UniformTypeIdentifiers
 
 protocol HeaderComponentDelegate: AnyObject {
+    func didTapBackButton()
     func didTapPlusButton(isMasked: Bool)
-    func didTapTopLeftButton(with documents: [Document])
+    func didTapWorksheetButton(with documents: [Document])
+    func didTapTestsheetButton(with documents: [Document])
+    func didSearchDocuments(with documents: [Document], searchText: String)
 }
 
 class HeaderComponent: UIView {
@@ -21,6 +24,7 @@ class HeaderComponent: UIView {
     weak var delegate: HeaderComponentDelegate?
     
     private let appLogoImageView = UIImageView()
+    private let backButton = UIButton()
     private let searchBar = UISearchBar()
     private let searchButton = UIButton()
     private let searchButtonOverlayView = UIView()
@@ -33,7 +37,7 @@ class HeaderComponent: UIView {
     private var isExpanded = false
     private var isMasked = false
     private var searchTrailing: CGFloat = -124
-    private var workDocuments: [Document] = []
+    private var documents: [Document] = []
     private var uploadedFileName = ""
     
     private var pdfDocument: PDFDocument?
@@ -44,12 +48,26 @@ class HeaderComponent: UIView {
         setupViews()
     }
     
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        if !self.isUserInteractionEnabled || self.isHidden || self.alpha <= 0.01 {
+            return nil
+        }
+        
+        if self.subButtonsContainer.point(inside: self.convert(point, to: self.subButtonsContainer), with: event) {
+            return self.subButtonsContainer.hitTest(self.convert(point, to: self.subButtonsContainer), with: event)
+        }
+        
+        return super.hitTest(point, with: event)
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
     private func setupViews() {
         setupAppLogoImageView()
+        setupBackButton()
         setupPlusButton()
         setupSearchButton()
         setupOverlayViews()
@@ -62,10 +80,32 @@ class HeaderComponent: UIView {
         appLogoImageView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(24)
             make.centerY.equalToSuperview()
-            make.width.equalTo(174)
-            make.height.equalTo(21.92)
+            make.width.equalTo(126)
+            make.height.equalTo(15.07)
         }
-        appLogoImageView.image = UIImage(named: "applogo2")
+        appLogoImageView.image = UIImage(named: "applogo-v2")
+    }
+    
+    private func setupBackButton() {
+        addSubview(backButton)
+        let image = UIImage(systemName: "chevron.left")
+        backButton.setImage(image, for: .normal)
+        backButton.backgroundColor = .white
+        backButton.contentMode = .scaleAspectFit
+        backButton.layer.cornerRadius = 0.5 * 44
+        backButton.clipsToBounds = true
+        backButton.isHidden = true // 초기에는 숨김 상태
+        
+        backButton.snp.makeConstraints { make in
+            make.leading.equalTo(appLogoImageView.snp.trailing).offset(45)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(44)
+        }
+        backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
+    }
+    
+    func showBackButton(_ show: Bool) {
+        backButton.isHidden = !show
     }
     
     private func setupPlusButton() {
@@ -147,14 +187,8 @@ class HeaderComponent: UIView {
             textField.clipsToBounds = true
             textField.font = UIFont.systemFont(ofSize: 16)
         }
-    }
-    
-    @objc private func searchButtonTapped() {
-        isExpanded.toggle()
         
-        if isExpanded {
-            animateSearchBar()
-        }
+        searchBar.delegate = self
     }
     
     private func setupSubButtons() {
@@ -197,34 +231,6 @@ class HeaderComponent: UIView {
         subButton2.addTarget(self, action: #selector(createTestsheet), for: .touchUpInside)
         
         subButtonsContainer.isUserInteractionEnabled = true
-    }
-    
-    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        if !self.isUserInteractionEnabled || self.isHidden || self.alpha <= 0.01 {
-            return nil
-        }
-        
-        if self.subButtonsContainer.point(inside: self.convert(point, to: self.subButtonsContainer), with: event) {
-            return self.subButtonsContainer.hitTest(self.convert(point, to: self.subButtonsContainer), with: event)
-        }
-        
-        return super.hitTest(point, with: event)
-    }
-    
-    @objc private func plusButtonTapped() {
-        if isExpanded {
-            hideSearchBar()
-            isExpanded.toggle()
-        } else {
-            isMasked.toggle() // 여기서 isMasked 상태를 변경
-            delegate?.didTapPlusButton(isMasked: isMasked)
-            if isMasked {
-                rotatePlusButton()
-            } else {
-                deRotatePlusButton()
-            }
-            toggleSubButtons() // 서브 버튼을 토글
-        }
     }
 
     private func animateSearchBar() {
@@ -327,22 +333,8 @@ class HeaderComponent: UIView {
         }
     }
     
-    func setDocuments(workDocuments: [Document]) {
-        self.workDocuments = workDocuments
-    }
-    
-    @objc private func createWorksheet() {
-        print("Worksheet")
-        presentDocumentPicker(for: "Worksheet")
-    }
-    
-    @objc private func createTestsheet() {
-        print("Testsheet")
-        delegate?.didTapTopLeftButton(with: workDocuments)
-        isMasked.toggle()
-        delegate?.didTapPlusButton(isMasked: isMasked)
-        deRotatePlusButton()
-        toggleSubButtons()
+    func setDocuments(documents: [Document]) {
+        self.documents = documents
     }
     
     private func presentDocumentPicker(for fileType: String) {
@@ -509,6 +501,51 @@ class HeaderComponent: UIView {
         deRotatePlusButton()
         toggleSubButtons()
     }
+    
+    @objc private func backButtonTapped() {
+        delegate?.didTapBackButton()
+    }
+    
+    @objc private func searchButtonTapped() {
+        print("searchButtonTapped")
+        isExpanded.toggle()
+        
+        if isExpanded {
+            animateSearchBar()
+        } 
+    }
+    
+    @objc private func plusButtonTapped() {
+        if isExpanded {
+            hideSearchBar()
+            searchBar.searchTextField.text = ""
+            isExpanded.toggle()
+        } else {
+            isMasked.toggle() // 여기서 isMasked 상태를 변경
+            delegate?.didTapPlusButton(isMasked: isMasked)
+            if isMasked {
+                rotatePlusButton()
+            } else {
+                deRotatePlusButton()
+            }
+            toggleSubButtons() // 서브 버튼을 토글
+        }
+    }
+    
+    @objc private func createWorksheet() {
+        print("Worksheet")
+        presentDocumentPicker(for: "Worksheet")
+    }
+    
+    @objc private func createTestsheet() {
+        print("Testsheet")
+        let workDocuments = documents.filter { $0.fileType == "빈칸학습지" }
+        delegate?.didTapWorksheetButton(with: workDocuments)
+        isMasked.toggle()
+        delegate?.didTapPlusButton(isMasked: isMasked)
+        deRotatePlusButton()
+        toggleSubButtons()
+    }
 }
 
 extension HeaderComponent: UIDocumentPickerDelegate {
@@ -530,4 +567,19 @@ extension HeaderComponent: UIDocumentPickerDelegate {
         }
     }
 }
+
+extension HeaderComponent: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        print("Search button clicked")
+        let searchText = searchBar.text ?? ""
+        let filteredDocuments = documents.filter { document in
+            searchText.isEmpty || document.fileName.contains(searchText) || document.fileType.contains(searchText)
+        }
+        
+        delegate?.didSearchDocuments(with: filteredDocuments, searchText: searchText)
+        searchBar.resignFirstResponder() // 키보드 숨기기
+    }
+}
+
+
 
