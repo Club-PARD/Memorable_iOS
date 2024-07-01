@@ -29,7 +29,7 @@ class TestSheetViewController: UIViewController {
     
     private let logoImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
-        $0.image = UIImage(named: "applogo2")
+        $0.image = UIImage(named: "applogo-v2")
     }
     
     private let backButton = UIButton().then {
@@ -104,6 +104,7 @@ class TestSheetViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor = .lightGray
         setupUI()
         loadQuestions()
@@ -115,8 +116,8 @@ class TestSheetViewController: UIViewController {
         logoImageView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(51)
             make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
-            make.width.equalTo(174)
-            make.height.equalTo(21.92)
+            make.width.equalTo(126)
+            make.height.equalTo(15.07)
         }
         
         view.addSubview(backButton)
