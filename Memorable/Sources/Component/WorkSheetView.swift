@@ -164,6 +164,7 @@ class WorkSheetView: UIView {
                 $0.borderStyle = .roundedRect
                 $0.placeholder = "Keyword"
                 $0.textAlignment = .center
+                $0.font = .systemFont(ofSize: 13)
                 $0.backgroundColor = .clear
                 $0.widthAnchor.constraint(equalToConstant: 100).isActive = true
                 $0.delegate = self

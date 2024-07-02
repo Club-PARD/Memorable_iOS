@@ -118,15 +118,28 @@ class WrongSheetViewController: UIViewController {
     }
 
     @objc func didTapResetButton() {
-        print("RESET")
-        if let wrongSheetView = wrongSheetView as? WrongSheetView {
-            for wrongQuestionView in wrongSheetView.wrongQuestionViews {
-                wrongQuestionView.answerTextField.text = nil
+        let alert = UIAlertController(title: "초기화하기", message: "작성한 키워드를 초기화하시겠습니까?\n이 작업은 복구할 수 없습니다.", preferredStyle: .alert)
+
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
+            print("PRESS CANCEL")
+        }
+
+        let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
+            print("RESET")
+            if let wrongSheetView = self.wrongSheetView as? WrongSheetView {
+                for wrongQuestionView in wrongSheetView.wrongQuestionViews {
+                    wrongQuestionView.answerTextField.text = nil
+                }
+            }
+            else {
+                print("WrongSheetView를 찾을 수 없습니다.")
             }
         }
-        else {
-            print("WrongSheetView를 찾을 수 없습니다.")
-        }
+
+        alert.addAction(cancelAction)
+        alert.addAction(confirmAction)
+
+        present(alert, animated: true)
     }
 
     @objc func didTapShowAnswerButton() {

@@ -66,7 +66,7 @@ class WorkSheetViewController: UIViewController {
 
     private let resetButton = UIButton().then {
         $0.setTitle("초기화하기", for: .normal)
-        $0.backgroundColor = .black
+        $0.backgroundColor = MemorableColor.Black
         $0.layer.cornerRadius = 22
         $0.contentMode = .scaleAspectFit
     }
@@ -76,7 +76,8 @@ class WorkSheetViewController: UIViewController {
     private let showAnswerButton = UIButton().then {
         $0.setTitle("키워드 보기", for: .normal)
         $0.setTitle("키워드 숨기기", for: .selected)
-        $0.backgroundColor = .systemGray
+        $0.titleLabel?.font = MemorableFont.Body1()
+        $0.backgroundColor = .blue2
         $0.layer.cornerRadius = 22
         $0.contentMode = .scaleAspectFit
     }
@@ -88,7 +89,7 @@ class WorkSheetViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .lightGray
+        view.backgroundColor = .gray5
 
         workSheetView = WorkSheetView(
             frame: view.bounds,
@@ -106,15 +107,28 @@ class WorkSheetViewController: UIViewController {
     // MARK: - Button Action
 
     @objc func didTapResetButton() {
-        print("RESET ANSWERS")
-        if let worksheetView = workSheetView as? WorkSheetView {
-            for answer in worksheetView.userAnswers {
-                answer.text = nil
+        let alert = UIAlertController(title: "초기화하기", message: "작성한 키워드를 초기화하시겠습니까?\n이 작업은 복구할 수 없습니다.", preferredStyle: .alert)
+
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
+            print("PRESS CANCEL")
+        }
+
+        let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
+            print("RESET ANSWERS")
+            if let worksheetView = self.workSheetView as? WorkSheetView {
+                for answer in worksheetView.userAnswers {
+                    answer.text = nil
+                }
+            }
+            else {
+                print("WorkSheetView를 찾을 수 없습니다.")
             }
         }
-        else {
-            print("WorkSheetView를 찾을 수 없습니다.")
-        }
+
+        alert.addAction(cancelAction)
+        alert.addAction(confirmAction)
+
+        present(alert, animated: true)
     }
 
     @objc func didTapShowAnswerButton() {
@@ -206,11 +220,40 @@ class WorkSheetViewController: UIViewController {
 
     @objc func didTapDoneButton() {
         print("DONE")
+        let alert = UIAlertController(title: "학습완료", message: "학습완료 하시겠습니까?\n해당 파일로 나만의 시험지를\n바로 생성할 수 있습니다.", preferredStyle: .alert)
+
+        let cancelAction = UIAlertAction(title: "나가기", style: .cancel) { _ in
+            print("PRESS CANCEL")
+            self.navigationController?.popViewController(animated: true)
+        }
+
+        let confirmAction = UIAlertAction(title: "시험지 생성하기", style: .default) { _ in
+            print("PRESS CONFIRM")
+        }
+
+        alert.addAction(cancelAction)
+        alert.addAction(confirmAction)
+
+        present(alert, animated: true)
     }
 
     @objc func didTapBackButton() {
         print("GO BACK")
-        navigationController?.popViewController(animated: true)
+        let alert = UIAlertController(title: "빈칸 학습지 나가기", message: "빈칸 학습지를 나가시겠습니까?\n지금까지의 기록이 저장되지 않고\n라이브러리로 되돌아갑니다.", preferredStyle: .alert)
+
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
+            print("PRESS CANCEL")
+        }
+
+        let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
+            print("PRESS CONFIRM")
+            self.navigationController?.popViewController(animated: true)
+        }
+
+        alert.addAction(cancelAction)
+        alert.addAction(confirmAction)
+
+        present(alert, animated: true)
     }
 
     @objc func didTapReExtractButton() {
