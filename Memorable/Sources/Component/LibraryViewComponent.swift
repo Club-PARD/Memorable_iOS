@@ -5,8 +5,8 @@
 //  Created by Minhyeok Kim on 6/26/24.
 //
 
-import UIKit
 import SnapKit
+import UIKit
 
 protocol LibraryViewComponentDelegate: AnyObject {
     func didTapWorksheetButton(with documents: [Document])
@@ -15,7 +15,6 @@ protocol LibraryViewComponentDelegate: AnyObject {
 }
 
 class LibraryViewComponent: UIView {
-    
     weak var delegate: LibraryViewComponentDelegate?
     
     private let scrollView: UIScrollView
@@ -68,6 +67,7 @@ class LibraryViewComponent: UIView {
         setupConstraints()
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -83,10 +83,10 @@ class LibraryViewComponent: UIView {
         contentView.addSubview(wrongsheetButton)
         contentView.addSubview(recentsheetLabel)
         
-        [worksheetButton, testsheetButton, wrongsheetButton].forEach {
-            $0.backgroundColor = .white
-            $0.layer.cornerRadius = 40
-            $0.layer.masksToBounds = true
+        for item in [worksheetButton, testsheetButton, wrongsheetButton] {
+            item.backgroundColor = .white
+            item.layer.cornerRadius = 40
+            item.layer.masksToBounds = true
         }
         
         setupRecentView()
@@ -257,7 +257,6 @@ class LibraryViewComponent: UIView {
     }
     
     private func setupConstraints() {
-        
         scrollView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
@@ -364,7 +363,7 @@ class LibraryViewComponent: UIView {
         filterButtonsView.axis = .horizontal
         filterButtonsView.spacing = 8
         filterButtonsView.alignment = .center
-        filterButtonsView.distribution = .fill  // fillEqually에서 fill로 변경
+        filterButtonsView.distribution = .fill // fillEqually에서 fill로 변경
         
         recentsheetView.addSubview(filterButtonsView)
         filterButtonsView.snp.makeConstraints { make in
@@ -431,7 +430,7 @@ class LibraryViewComponent: UIView {
     }
     
     private func updateButtonState(_ selectedButton: UIButton, isSelected: Bool) {
-        [allFilterButton, worksheetFilterButton, testsheetFilterButton, wrongsheetFilterButton].forEach { button in
+        for button in [allFilterButton, worksheetFilterButton, testsheetFilterButton, wrongsheetFilterButton] {
             var config = button.configuration
             if button == selectedButton && isSelected {
                 config?.baseForegroundColor = .white
@@ -459,7 +458,7 @@ class LibraryViewComponent: UIView {
         let gradientView = GradientView(startColor: .white, endColor: .white)
         recentsheetView.addSubview(gradientView)
         
-        gradientView.snp.makeConstraints{ make in
+        gradientView.snp.makeConstraints { make in
             make.top.equalTo(filterButtonsView.snp.bottom).offset(2)
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(20)
@@ -537,16 +536,18 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
             navigateToViewController(testSheetVC)
         case "오답노트":
             // 오답노트에 대한 처리를 여기에 추가할 수 있습니다.
-            break
+            print("오답")
+            let wrongSheetVC = WrongSheetViewController()
+            navigateToViewController(wrongSheetVC)
         default:
             print("Unknown file type")
         }
     }
     
     private func navigateToViewController(_ viewController: UIViewController) {
-        if let navigationController = self.window?.rootViewController as? UINavigationController {
+        if let navigationController = window?.rootViewController as? UINavigationController {
             navigationController.pushViewController(viewController, animated: true)
-        } else if let presentingViewController = self.window?.rootViewController {
+        } else if let presentingViewController = window?.rootViewController {
             presentingViewController.present(viewController, animated: true, completion: nil)
         }
     }

@@ -135,6 +135,7 @@ class WorkSheetView: UIView {
             for word in words {
                 let label = UILabel().then {
                     $0.text = String(word) + " "
+                    $0.textColor = .black
                     $0.textAlignment = .center
                 }
                 let labelWidth = label.intrinsicContentSize.width
@@ -163,6 +164,7 @@ class WorkSheetView: UIView {
                 $0.borderStyle = .roundedRect
                 $0.placeholder = "Keyword"
                 $0.textAlignment = .center
+                $0.backgroundColor = .clear
                 $0.widthAnchor.constraint(equalToConstant: 100).isActive = true
                 $0.delegate = self
             }
@@ -200,6 +202,7 @@ class WorkSheetView: UIView {
         for word in words {
             let label = UILabel().then {
                 $0.text = String(word) + " "
+                $0.textColor = .black
                 $0.textAlignment = .center
             }
             let labelWidth = label.intrinsicContentSize.width
