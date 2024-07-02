@@ -314,7 +314,7 @@ class HeaderComponent: UIView {
     private func deRotatePlusButton() {
         UIView.animate(withDuration: 0.3) {
             self.plusButton.backgroundColor = .cyan
-            self.plusButtonImageView.transform = CGAffineTransform(rotationAngle: -.pi / 4)
+            self.plusButtonImageView.transform = CGAffineTransform.identity
             self.searchButtonOverlayView.alpha = 0
         }
         self.searchButton.isEnabled.toggle()
@@ -571,7 +571,8 @@ extension HeaderComponent: UIDocumentPickerDelegate {
 extension HeaderComponent: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         print("Search button clicked")
-        let searchText = searchBar.text ?? ""
+        var searchText = searchBar.text ?? ""
+        searchText = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         let filteredDocuments = documents.filter { document in
             searchText.isEmpty || document.fileName.contains(searchText) || document.fileType.contains(searchText)
         }

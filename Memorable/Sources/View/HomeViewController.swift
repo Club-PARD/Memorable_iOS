@@ -11,6 +11,7 @@ import SnapKit
 class HomeViewController: UIViewController {
     
     lazy var userName: String = "민석"
+    lazy var userEmail: String = "memorable@ozosama.com"
     let tabBar = TabBarComponent()
     let containerView = UIView()
     let titleLabel = UILabel()
@@ -60,6 +61,7 @@ class HomeViewController: UIViewController {
         Document(fileName: "Wrong8", fileType: "오답노트", category: "카테고리6", bookmark: false, date: makeDate(year: 2024, month: 3, day: 8))
     ]
     
+    let attendanceRecord: [Bool] = [true, true, true, false, false, true, false, true, false, false, false, false, false, false]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -83,6 +85,8 @@ class HomeViewController: UIViewController {
         hideKeyboardWhenTappedAround()
         
         headerComponent.subButton2.addTarget(self, action: #selector(handleTestCreateClicked), for: .touchUpInside)
+        
+        view.insertSubview(gradientView, belowSubview: maskView)
     }
     
     func setUI() {
@@ -223,6 +227,13 @@ class HomeViewController: UIViewController {
         [libraryViewComponent, worksheetListViewComponent, starView, mypageView, searchedSheetView].forEach { $0.isHidden = true }
         
         switch viewId {
+        case "home", "star", "mypage":
+            tabBar.enableFirstTab(true)
+        default:
+            tabBar.enableFirstTab(false)
+        }
+        
+        switch viewId {
         case "home":
             viewStack = [viewId]
             headerComponent.showBackButton(false)
@@ -252,9 +263,16 @@ class HomeViewController: UIViewController {
             headerComponent.showBackButton(false)
             mypageView.isHidden = false
             titleLabel.isHidden = false
-            gradientView.isHidden = true
-            setupDefaultView()
-            titleLabel.text = "안녕하세요 \(userName)님!"
+            gradientView.isHidden = false
+            setupLibraryViewComponent()
+            titleLabel.text = ""
+            mypageView.titleLabel.text = "\(userName)님,\n안녕하세요!"
+            mypageView.profileName.text = userName
+            mypageView.profileEmail.text = userEmail
+            if let streakView = mypageView.streakView as? StreakView {
+                streakView.setAttendanceRecord(attendanceRecord)
+            }
+            mypageView.updateNotificationMessage()
         case "searchedSheet":
             viewStack.append(viewId)
             headerComponent.showBackButton(true)
