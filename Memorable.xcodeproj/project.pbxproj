@@ -35,9 +35,6 @@
 		DDAB24DB2C31465500AAEDB6 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = DDAB24DA2C31465500AAEDB6 /* SnapKit */; };
 		DDAB24DD2C31466500AAEDB6 /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = DDAB24DC2C31466500AAEDB6 /* Then */; };
 		DDAB24E02C3148A700AAEDB6 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAB24DF2C3148A700AAEDB6 /* APIManager.swift */; };
-		DDAB24E22C3148D100AAEDB6 /* ColorSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAB24E12C3148D100AAEDB6 /* ColorSystem.swift */; };
-		DDAB24E42C3148E200AAEDB6 /* FontSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAB24E32C3148E200AAEDB6 /* FontSystem.swift */; };
-		DDAB24E62C31490100AAEDB6 /* ComponentSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAB24E52C31490100AAEDB6 /* ComponentSystem.swift */; };
 		DDAC4BD62C2805AB006206EB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC4BD52C2805AB006206EB /* AppDelegate.swift */; };
 		DDAC4BD82C2805AB006206EB /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC4BD72C2805AB006206EB /* SceneDelegate.swift */; };
 		DDAC4BDA2C2805AB006206EB /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC4BD92C2805AB006206EB /* LoginViewController.swift */; };
@@ -53,6 +50,18 @@
 		DDBD12FC2C29C6BC006E7D92 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBD12FB2C29C6BC006E7D92 /* HomeViewController.swift */; };
 		DDC1EE902C2AACFB00C88CD7 /* AuthState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC1EE8F2C2AACFB00C88CD7 /* AuthState.swift */; };
 		DDC1EE922C2AAD2400C88CD7 /* SignInManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC1EE912C2AAD2400C88CD7 /* SignInManager.swift */; };
+		DDDA80022C339ACA0077E5F2 /* Pretendard-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = DDDA7FF92C339AC90077E5F2 /* Pretendard-Black.otf */; };
+		DDDA80032C339ACA0077E5F2 /* Pretendard-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = DDDA7FFA2C339ACA0077E5F2 /* Pretendard-SemiBold.otf */; };
+		DDDA80042C339ACA0077E5F2 /* Pretendard-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = DDDA7FFB2C339ACA0077E5F2 /* Pretendard-Medium.otf */; };
+		DDDA80052C339ACA0077E5F2 /* Pretendard-ExtraBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = DDDA7FFC2C339ACA0077E5F2 /* Pretendard-ExtraBold.otf */; };
+		DDDA80062C339ACA0077E5F2 /* Pretendard-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = DDDA7FFD2C339ACA0077E5F2 /* Pretendard-Bold.otf */; };
+		DDDA80072C339ACA0077E5F2 /* Pretendard-ExtraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = DDDA7FFE2C339ACA0077E5F2 /* Pretendard-ExtraLight.otf */; };
+		DDDA80082C339ACA0077E5F2 /* Pretendard-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = DDDA7FFF2C339ACA0077E5F2 /* Pretendard-Light.otf */; };
+		DDDA80092C339ACA0077E5F2 /* Pretendard-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = DDDA80002C339ACA0077E5F2 /* Pretendard-Regular.otf */; };
+		DDDA800A2C339ACA0077E5F2 /* Pretendard-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = DDDA80012C339ACA0077E5F2 /* Pretendard-Thin.otf */; };
+		DDDA800D2C339FFC0077E5F2 /* Color.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DDDA800C2C339FFC0077E5F2 /* Color.xcassets */; };
+		DDDA800F2C33A8110077E5F2 /* MemorableColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDDA800E2C33A8110077E5F2 /* MemorableColor.swift */; };
+		DDDA80112C33A8820077E5F2 /* MemorableFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDDA80102C33A8820077E5F2 /* MemorableFont.swift */; };
 		DDF67E862C32F9D900F37BFC /* WrongSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF67E852C32F9D900F37BFC /* WrongSheetViewController.swift */; };
 		DDF67E882C32FB3800F37BFC /* WrongSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF67E872C32FB3800F37BFC /* WrongSheetView.swift */; };
 		DDF67E8A2C330F3400F37BFC /* WrongQuestionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF67E892C330F3400F37BFC /* WrongQuestionView.swift */; };
@@ -124,9 +133,6 @@
 		DDAB24CD2C3144DA00AAEDB6 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		DDAB24D22C3144DA00AAEDB6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DDAB24DF2C3148A700AAEDB6 /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
-		DDAB24E12C3148D100AAEDB6 /* ColorSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorSystem.swift; sourceTree = "<group>"; };
-		DDAB24E32C3148E200AAEDB6 /* FontSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSystem.swift; sourceTree = "<group>"; };
-		DDAB24E52C31490100AAEDB6 /* ComponentSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentSystem.swift; sourceTree = "<group>"; };
 		DDAB24E82C315C0100AAEDB6 /* PDFShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PDFShareExtension.entitlements; sourceTree = "<group>"; };
 		DDAC4BD22C2805AB006206EB /* Memorable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Memorable.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDAC4BD52C2805AB006206EB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -146,6 +152,18 @@
 		DDC1EE892C2A884100C88CD7 /* Memorable.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Memorable.entitlements; sourceTree = "<group>"; };
 		DDC1EE8F2C2AACFB00C88CD7 /* AuthState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthState.swift; sourceTree = "<group>"; };
 		DDC1EE912C2AAD2400C88CD7 /* SignInManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInManager.swift; sourceTree = "<group>"; };
+		DDDA7FF92C339AC90077E5F2 /* Pretendard-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Pretendard-Black.otf"; path = "../../../../../../../Downloads/Pretendard-1.3.9/public/static/Pretendard-Black.otf"; sourceTree = "<group>"; };
+		DDDA7FFA2C339ACA0077E5F2 /* Pretendard-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Pretendard-SemiBold.otf"; path = "../../../../../../../Downloads/Pretendard-1.3.9/public/static/Pretendard-SemiBold.otf"; sourceTree = "<group>"; };
+		DDDA7FFB2C339ACA0077E5F2 /* Pretendard-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Pretendard-Medium.otf"; path = "../../../../../../../Downloads/Pretendard-1.3.9/public/static/Pretendard-Medium.otf"; sourceTree = "<group>"; };
+		DDDA7FFC2C339ACA0077E5F2 /* Pretendard-ExtraBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Pretendard-ExtraBold.otf"; path = "../../../../../../../Downloads/Pretendard-1.3.9/public/static/Pretendard-ExtraBold.otf"; sourceTree = "<group>"; };
+		DDDA7FFD2C339ACA0077E5F2 /* Pretendard-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Pretendard-Bold.otf"; path = "../../../../../../../Downloads/Pretendard-1.3.9/public/static/Pretendard-Bold.otf"; sourceTree = "<group>"; };
+		DDDA7FFE2C339ACA0077E5F2 /* Pretendard-ExtraLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Pretendard-ExtraLight.otf"; path = "../../../../../../../Downloads/Pretendard-1.3.9/public/static/Pretendard-ExtraLight.otf"; sourceTree = "<group>"; };
+		DDDA7FFF2C339ACA0077E5F2 /* Pretendard-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Pretendard-Light.otf"; path = "../../../../../../../Downloads/Pretendard-1.3.9/public/static/Pretendard-Light.otf"; sourceTree = "<group>"; };
+		DDDA80002C339ACA0077E5F2 /* Pretendard-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Pretendard-Regular.otf"; path = "../../../../../../../Downloads/Pretendard-1.3.9/public/static/Pretendard-Regular.otf"; sourceTree = "<group>"; };
+		DDDA80012C339ACA0077E5F2 /* Pretendard-Thin.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Pretendard-Thin.otf"; path = "../../../../../../../Downloads/Pretendard-1.3.9/public/static/Pretendard-Thin.otf"; sourceTree = "<group>"; };
+		DDDA800C2C339FFC0077E5F2 /* Color.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Color.xcassets; sourceTree = "<group>"; };
+		DDDA800E2C33A8110077E5F2 /* MemorableColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemorableColor.swift; sourceTree = "<group>"; };
+		DDDA80102C33A8820077E5F2 /* MemorableFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemorableFont.swift; sourceTree = "<group>"; };
 		DDF67E852C32F9D900F37BFC /* WrongSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongSheetViewController.swift; sourceTree = "<group>"; };
 		DDF67E872C32FB3800F37BFC /* WrongSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongSheetView.swift; sourceTree = "<group>"; };
 		DDF67E892C330F3400F37BFC /* WrongQuestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongQuestionView.swift; sourceTree = "<group>"; };
@@ -232,10 +250,10 @@
 		DDAB24DE2C31487900AAEDB6 /* DesignSystem */ = {
 			isa = PBXGroup;
 			children = (
+				DDDA800B2C339FD60077E5F2 /* Resources */,
 				DDAB24E72C31491100AAEDB6 /* Fonts */,
-				DDAB24E12C3148D100AAEDB6 /* ColorSystem.swift */,
-				DDAB24E32C3148E200AAEDB6 /* FontSystem.swift */,
-				DDAB24E52C31490100AAEDB6 /* ComponentSystem.swift */,
+				DDDA800E2C33A8110077E5F2 /* MemorableColor.swift */,
+				DDDA80102C33A8820077E5F2 /* MemorableFont.swift */,
 			);
 			path = DesignSystem;
 			sourceTree = "<group>";
@@ -243,6 +261,15 @@
 		DDAB24E72C31491100AAEDB6 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				DDDA7FF92C339AC90077E5F2 /* Pretendard-Black.otf */,
+				DDDA7FFD2C339ACA0077E5F2 /* Pretendard-Bold.otf */,
+				DDDA7FFC2C339ACA0077E5F2 /* Pretendard-ExtraBold.otf */,
+				DDDA7FFE2C339ACA0077E5F2 /* Pretendard-ExtraLight.otf */,
+				DDDA7FFF2C339ACA0077E5F2 /* Pretendard-Light.otf */,
+				DDDA7FFB2C339ACA0077E5F2 /* Pretendard-Medium.otf */,
+				DDDA80002C339ACA0077E5F2 /* Pretendard-Regular.otf */,
+				DDDA7FFA2C339ACA0077E5F2 /* Pretendard-SemiBold.otf */,
+				DDDA80012C339ACA0077E5F2 /* Pretendard-Thin.otf */,
 			);
 			path = Fonts;
 			sourceTree = "<group>";
@@ -363,6 +390,14 @@
 				DB3CEC822C2E90FF00F8211C /* QuestionManager.swift */,
 			);
 			path = Manager;
+			sourceTree = "<group>";
+		};
+		DDDA800B2C339FD60077E5F2 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				DDDA800C2C339FFC0077E5F2 /* Color.xcassets */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -512,7 +547,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				DDAC4BE22C2805AC006206EB /* Assets.xcassets in Resources */,
+				DDDA80042C339ACA0077E5F2 /* Pretendard-Medium.otf in Resources */,
+				DDDA80072C339ACA0077E5F2 /* Pretendard-ExtraLight.otf in Resources */,
+				DDDA80062C339ACA0077E5F2 /* Pretendard-Bold.otf in Resources */,
+				DDDA80052C339ACA0077E5F2 /* Pretendard-ExtraBold.otf in Resources */,
+				DDDA800D2C339FFC0077E5F2 /* Color.xcassets in Resources */,
+				DDDA80022C339ACA0077E5F2 /* Pretendard-Black.otf in Resources */,
 				DDAC4BE52C2805AC006206EB /* Base in Resources */,
+				DDDA80092C339ACA0077E5F2 /* Pretendard-Regular.otf in Resources */,
+				DDDA80032C339ACA0077E5F2 /* Pretendard-SemiBold.otf in Resources */,
+				DDDA800A2C339ACA0077E5F2 /* Pretendard-Thin.otf in Resources */,
+				DDDA80082C339ACA0077E5F2 /* Pretendard-Light.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -555,19 +600,18 @@
 				DD4B40B12C2BE30600524757 /* WorkSheetView.swift in Sources */,
 				DDAC4BD62C2805AB006206EB /* AppDelegate.swift in Sources */,
 				DDAC4BE02C2805AB006206EB /* Memorable.xcdatamodeld in Sources */,
-				DDAB24E42C3148E200AAEDB6 /* FontSystem.swift in Sources */,
 				DB3CEC912C314AAB00F8211C /* MypageView.swift in Sources */,
 				DDC1EE902C2AACFB00C88CD7 /* AuthState.swift in Sources */,
 				DD1A05FF2C2B1B4900DE0CB8 /* User.swift in Sources */,
 				DD4B40B32C2BE4AD00524757 /* MockData.swift in Sources */,
 				DDAB24E02C3148A700AAEDB6 /* APIManager.swift in Sources */,
 				DDC1EE922C2AAD2400C88CD7 /* SignInManager.swift in Sources */,
+				DDDA80112C33A8820077E5F2 /* MemorableFont.swift in Sources */,
 				DB3CEC812C2E90BE00F8211C /* TestQuestion.swift in Sources */,
 				DB3CEC872C2FF66D00F8211C /* ProgressBarView.swift in Sources */,
 				DDAC4BD82C2805AB006206EB /* SceneDelegate.swift in Sources */,
 				DDF67E862C32F9D900F37BFC /* WrongSheetViewController.swift in Sources */,
 				DD4B40AF2C2BD38A00524757 /* WorkSheetViewController.swift in Sources */,
-				DDAB24E62C31490100AAEDB6 /* ComponentSystem.swift in Sources */,
 				DDBD12FC2C29C6BC006E7D92 /* HomeViewController.swift in Sources */,
 				DB3CEC8F2C3149A100F8211C /* StarView.swift in Sources */,
 				DB3CEC7F2C2E8C5300F8211C /* TestQuestionConponent.swift in Sources */,
@@ -576,8 +620,8 @@
 				DDB3E3852C2FE16200AF9182 /* TestLoginViewController.swift in Sources */,
 				DBD820492C2A804700A9B1C3 /* TabViewComponent.swift in Sources */,
 				DB3CEC932C31655A00F8211C /* RecentsheetCell.swift in Sources */,
+				DDDA800F2C33A8110077E5F2 /* MemorableColor.swift in Sources */,
 				DBD820552C2C7CDA00A9B1C3 /* Document.swift in Sources */,
-				DDAB24E22C3148D100AAEDB6 /* ColorSystem.swift in Sources */,
 				DBD8204D2C2ADF5C00A9B1C3 /* HeaderComponent.swift in Sources */,
 				DBEB96A32C32BF8000106866 /* DayCell.swift in Sources */,
 				DB3CEC972C31E16100F8211C /* GradientView.swift in Sources */,
@@ -823,6 +867,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -851,6 +896,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
