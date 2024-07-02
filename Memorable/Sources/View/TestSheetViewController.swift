@@ -72,7 +72,7 @@ class TestSheetViewController: UIViewController {
         $0.contentMode = .scaleAspectFit
         $0.isHidden = true
     }
-
+    
     private let sendWrongAnswersButton = UIButton().then {
         $0.setTitle("오답노트 보내기", for: .normal)
         $0.backgroundColor = .systemGreen
@@ -109,6 +109,10 @@ class TestSheetViewController: UIViewController {
         setupUI()
         loadQuestions()
         updateUI()
+        
+        // 키보드 내리기 (작성 밖 터치)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
     }
     
     private func setupUI() {
@@ -187,6 +191,8 @@ class TestSheetViewController: UIViewController {
                 }
             }
         }
+        
+        backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
         
         containerView.addSubview(pagingLabel)
         pagingLabel.snp.makeConstraints{ make in
@@ -368,7 +374,7 @@ class TestSheetViewController: UIViewController {
         
         progressBarView = newProgressBarView
     }
-
+    
     private func showSubmitAlert() {
         let alertController = UIAlertController(title: "시험지 제출", message: "시험지를 제출하시겠습니까?\n결과분석 페이지로 이동합니다.", preferredStyle: .alert)
         let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
@@ -434,7 +440,7 @@ class TestSheetViewController: UIViewController {
     private func checkAnswersAndShowResult() {
         var correctAnswers = 0
         let totalQuestions = questionManager.questions.count
-
+        
         for question in questionManager.questions {
             let normalizedCorrectAnswer = question.answer.lowercased().replacingOccurrences(of: " ", with: "")
             let normalizedUserAnswer = question.userAnswer.lowercased().replacingOccurrences(of: " ", with: "")
@@ -443,23 +449,27 @@ class TestSheetViewController: UIViewController {
                 correctAnswers += 1
             }
         }
-
+        
         resultLabel.text = "\(correctAnswers)/\(totalQuestions)"
         resultLabel.isHidden = false
-
+        
         // 결과 애니메이션
         resultLabel.alpha = 0
         UIView.animate(withDuration: 0.5) {
             self.resultLabel.alpha = 1
         }
-
+        
         // 버튼 상태 변경
         submitButton.isHidden = true
         retryButton.isHidden = false
         sendWrongAnswersButton.isHidden = false
         remakeButton.isHidden = false
-
+        
         printAnswers()
+    }
+    
+    @objc private func backButtonTapped() {
+        navigationController?.popViewController(animated: true)
     }
     
     @objc private func nextPage() {
@@ -513,7 +523,7 @@ class TestSheetViewController: UIViewController {
         
         print("재시험 시작")
     }
-
+    
     @objc private func sendWrongAnswers() {
         // 오답노트 보내기 로직 구현
         print("오답노트 보내기")
@@ -522,5 +532,9 @@ class TestSheetViewController: UIViewController {
     @objc private func remakeTest() {
         print("문제 재추출")
         showRemakeAlert()
+    }
+    
+    @objc internal override func dismissKeyboard() {
+        view.endEditing(true) // 현재 화면에서 활성화된 키보드를 내림
     }
 }

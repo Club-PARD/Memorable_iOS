@@ -202,18 +202,19 @@ extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellD
     
     // 라우팅
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let document = allDocuments[indexPath.row]
+        let document = filteredDocuments[indexPath.row]
         
         switch document.fileType {
         case "빈칸학습지":
             let workSheetVC = WorkSheetViewController()
-//            workSheetVC.document = document
+            // workSheetVC.document = document // 필요하다면 document를 ViewController에 전달
             navigateToViewController(workSheetVC)
         case "나만의 시험지":
             let testSheetVC = TestSheetViewController()
-//            testSheetVC.document = document
+            // testSheetVC.document = document // 필요하다면 document를 ViewController에 전달
             navigateToViewController(testSheetVC)
         case "오답노트":
             // 오답노트에 대한 처리를 여기에 추가할 수 있습니다.
