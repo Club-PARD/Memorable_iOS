@@ -10,17 +10,36 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
 
+    /*
+        앱이 Scenes에 맞춰져 있고 앱이 실행되지 않은 상태에서는 시스템은 URL을 실행 이후에 URL을 scene(_:willConnectTo:options delegate 메서드에 전달하고,
+        앱이 메모리에서 실행되고 있거나 suspended된 상태에서 URL을 열 때는 scene(_:openURLContexts:)에 전달한다.
+     */
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
 
         window = UIWindow(windowScene: windowScene)
 
-       let homeViewController = HomeViewController()
+        let homeViewController = HomeViewController()
+
         let navigationVC = UINavigationController(rootViewController: homeViewController)
 
-        window?.rootViewController = navigationVC
+        if #available(iOS 13.0, *) {
+            self.window?.overrideUserInterfaceStyle = .light // 라이트모드만 지원하기
+            //    self.window?.overrideUserInterfaceStyle = .dark // 다크모드만 지원하기
+        }
 
+        window?.rootViewController = navigationVC
         window?.makeKeyAndVisible()
+    }
+
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        for context in URLContexts {
+            print("url: \(context.url.absoluteURL)")
+            print("scheme: \(context.url.scheme ?? "default")")
+            print("host: \(context.url.host ?? "default")")
+            print("path: \(context.url.path)")
+            print("components: \(context.url.pathComponents)")
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

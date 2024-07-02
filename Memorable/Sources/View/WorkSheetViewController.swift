@@ -12,7 +12,7 @@ import UIKit
 class WorkSheetViewController: UIViewController {
     private let logoImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
-        $0.image = UIImage(named: "applogo_v2")
+        $0.image = UIImage(named: "applogo-v2")
     }
 
     private let backButton = UIButton().then {
@@ -210,6 +210,7 @@ class WorkSheetViewController: UIViewController {
 
     @objc func didTapBackButton() {
         print("GO BACK")
+        navigationController?.popViewController(animated: true)
     }
 
     @objc func didTapReExtractButton() {
@@ -223,7 +224,6 @@ class WorkSheetViewController: UIViewController {
 
         let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
             print("PRESS CONFIRM")
-            // 여기에 확인 버튼을 눌렀을 때 수행할 작업을 추가하세요.
         }
 
         alert.addAction(cancelAction)
@@ -257,27 +257,27 @@ class WorkSheetViewController: UIViewController {
 
     func setupConstraints() {
         logoImageView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(24)
             make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
             make.height.equalTo(24)
         }
 
         backButton.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(-10)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(14)
             make.leading.equalTo(logoImageView.snp.trailing).offset(20)
             make.height.equalTo(40)
             make.width.equalTo(40)
         }
 
         doneButton.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(-11)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(13)
             make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-24)
             make.height.equalTo(44)
             make.width.equalTo(132)
         }
 
         finishImage.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(-11)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(13)
             make.trailing.equalTo(doneButton.snp.leading).offset(-10)
             make.height.equalTo(44)
             make.width.equalTo(260)
