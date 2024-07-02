@@ -23,6 +23,8 @@
 		DBD8204F2C2BE31800A9B1C3 /* LibraryViewComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD8204E2C2BE31800A9B1C3 /* LibraryViewComponent.swift */; };
 		DBD820532C2C6E0000A9B1C3 /* ContentCollectionViewCellComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD820522C2C6E0000A9B1C3 /* ContentCollectionViewCellComponent.swift */; };
 		DBD820552C2C7CDA00A9B1C3 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD820542C2C7CDA00A9B1C3 /* Document.swift */; };
+		DBEB96A12C32BACF00106866 /* StreakView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEB96A02C32BACF00106866 /* StreakView.swift */; };
+		DBEB96A32C32BF8000106866 /* DayCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEB96A22C32BF8000106866 /* DayCell.swift */; };
 		DD1A05FF2C2B1B4900DE0CB8 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1A05FE2C2B1B4900DE0CB8 /* User.swift */; };
 		DD2F8B8E2C3089C8003F077D /* FloatingImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2F8B8D2C3089C8003F077D /* FloatingImage.swift */; };
 		DD4B40AF2C2BD38A00524757 /* WorkSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4B40AE2C2BD38A00524757 /* WorkSheetViewController.swift */; };
@@ -79,6 +81,8 @@
 		DBD8204E2C2BE31800A9B1C3 /* LibraryViewComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewComponent.swift; sourceTree = "<group>"; };
 		DBD820522C2C6E0000A9B1C3 /* ContentCollectionViewCellComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentCollectionViewCellComponent.swift; sourceTree = "<group>"; };
 		DBD820542C2C7CDA00A9B1C3 /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
+		DBEB96A02C32BACF00106866 /* StreakView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakView.swift; sourceTree = "<group>"; };
+		DBEB96A22C32BF8000106866 /* DayCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayCell.swift; sourceTree = "<group>"; };
 		DD1A05FE2C2B1B4900DE0CB8 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		DD2F8B8D2C3089C8003F077D /* FloatingImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingImage.swift; sourceTree = "<group>"; };
 		DD4B40AE2C2BD38A00524757 /* WorkSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSheetViewController.swift; sourceTree = "<group>"; };
@@ -155,6 +159,8 @@
 				DB3CEC922C31655A00F8211C /* RecentsheetCell.swift */,
 				DB3CEC942C31A5DA00F8211C /* SearchedSheetView.swift */,
 				DB3CEC962C31E16100F8211C /* GradientView.swift */,
+				DBEB96A02C32BACF00106866 /* StreakView.swift */,
+				DBEB96A22C32BF8000106866 /* DayCell.swift */,
 			);
 			path = Component;
 			sourceTree = "<group>";
@@ -412,6 +418,7 @@
 			files = (
 				DB3CEC8B2C30457A00F8211C /* TestSheetViewController.swift in Sources */,
 				DBD820532C2C6E0000A9B1C3 /* ContentCollectionViewCellComponent.swift in Sources */,
+				DBEB96A12C32BACF00106866 /* StreakView.swift in Sources */,
 				DDAC4BDA2C2805AB006206EB /* LoginViewController.swift in Sources */,
 				DB3CEC952C31A5DA00F8211C /* SearchedSheetView.swift in Sources */,
 				DD2F8B8E2C3089C8003F077D /* FloatingImage.swift in Sources */,
@@ -436,6 +443,7 @@
 				DB3CEC932C31655A00F8211C /* RecentsheetCell.swift in Sources */,
 				DBD820552C2C7CDA00A9B1C3 /* Document.swift in Sources */,
 				DBD8204D2C2ADF5C00A9B1C3 /* HeaderComponent.swift in Sources */,
+				DBEB96A32C32BF8000106866 /* DayCell.swift in Sources */,
 				DB3CEC972C31E16100F8211C /* GradientView.swift in Sources */,
 				DBD8204F2C2BE31800A9B1C3 /* LibraryViewComponent.swift in Sources */,
 				DB3CEC832C2E90FF00F8211C /* QuestionManager.swift in Sources */,

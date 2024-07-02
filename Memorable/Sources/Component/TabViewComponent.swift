@@ -19,9 +19,10 @@ class TabBarComponent: UIView {
     }
     
     private func setupView() {
-        self.backgroundColor = .gray
+        self.backgroundColor = .white
         self.layer.cornerRadius = 56
         self.layer.masksToBounds = true
+        self.layer.shadowOpacity = 0.5
         
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -115,6 +116,13 @@ class TabBarComponent: UIView {
                 imageView.backgroundColor = isSelected ? .systemBlue : .systemGray5
                 
             }
+        }
+    }
+    
+    func enableFirstTab(_ enable: Bool) {
+        if buttons.indices.contains(0) {
+            let button = buttons[0]
+            button.isUserInteractionEnabled = enable
         }
     }
     
