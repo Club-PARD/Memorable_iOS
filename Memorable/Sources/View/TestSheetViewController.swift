@@ -10,6 +10,10 @@ import Then
 import UIKit
 
 class TestSheetViewController: UIViewController {
+    var sharedName: String?
+    var sharedCategory: String?
+    var sharedText: String?
+    
     private let questionManager = QuestionManager()
     private var currentPage = 0
     private let questionsPerPage = 3
@@ -113,6 +117,12 @@ class TestSheetViewController: UIViewController {
         // 키보드 내리기 (작성 밖 터치)
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
+        
+        // Example: Display data in a toast message or UI
+        if let fileName = sharedName, let category = sharedCategory, let extractedText = sharedText {
+            print("File: \(fileName)\nCategory: \(category)\nExtracted Text: \(extractedText)")
+            showToast("File: \(fileName)\nCategory: \(category)\nExtracted Text: \(extractedText)")
+        }
     }
     
     private func setupUI() {
@@ -275,28 +285,26 @@ class TestSheetViewController: UIViewController {
     
     private func loadQuestions() {
         let jsonData: [Int: [String: String]] = [
-            1: ["question": "어떤 특정한 행동을 기대하는 것을 무엇이라고 하나요?", "answer": "기대치", "userAnswer": ""],
-            2: ["question": "공통의 가치관을 가진 사람들이 교류하는 집합체를 무엇이라고 하나요?", "answer": "Social group", "userAnswer": ""],
-            3: ["question": "정기적으로 상호작용하지만 사회조직에 속해있지 않은 간단한 집합체를 무엇이라고 하나요?", "answer": "Aggregate", "userAnswer": ""],
-            4: ["question": "공통의 특성을 가진 사람들의 집합체는 무엇인가요?", "answer": "Social category", "userAnswer": ""],
-            5: ["question": "집단에 속하는 구성원들이 공유하는 정체성을 무엇이라고 하나요?", "answer": "정체성", "userAnswer": ""],
-            6: ["question": "어떤 특정한 행동을 기대하는 것을 무엇이라고 하나요?", "answer": "기대치", "userAnswer": ""],
-            7: ["question": "공통의 가치관을 가진 사람들이 교류하는 집합체를 무엇이라고 하나요?", "answer": "Social group", "userAnswer": ""],
-            8: ["question": "정기적으로 상호작용하지만 사회조직에 속해있지 않은 간단한 집합체를 무엇이라고 하나요?", "answer": "Aggregate", "userAnswer": ""],
-            9: ["question": "공통의 특성을 가진 사람들의 집합체는 무엇인가요?", "answer": "Social category", "userAnswer": ""],
-            10: ["question": "집단에 속하는 구성원들이 공유하는 정체성을 무엇이라고 하나요?", "answer": "정체성", "userAnswer": ""],
-            11: ["question": "어떤 특정한 행동을 기대하는 것을 무엇이라고 하나요?", "answer": "기대치", "userAnswer": ""],
-            12: ["question": "공통의 가치관을 가진 사람들이 교류하는 집합체를 무엇이라고 하나요?", "answer": "Social group", "userAnswer": ""],
-            13: ["question": "정기적으로 상호작용하지만 사회조직에 속해있지 않은 간단한 집합체를 무엇이라고 하나요?", "answer": "Aggregate", "userAnswer": ""],
-            14: ["question": "공통의 특성을 가진 사람들의 집합체는 무엇인가요?", "answer": "Social category", "userAnswer": ""],
-            15: ["question": "집단에 속하는 구성원들이 공유하는 정체성을 무엇이라고 하나요?", "answer": "정체성", "userAnswer": ""],
-            16: ["question": "어떤 특정한 행동을 기대하는 것을 무엇이라고 하나요?", "answer": "기대치", "userAnswer": ""],
-            17: ["question": "공통의 가치관을 가진 사람들이 교류하는 집합체를 무엇이라고 하나요?", "answer": "Social group", "userAnswer": ""],
-            18: ["question": "정기적으로 상호작용하지만 사회조직에 속해있지 않은 간단한 집합체를 무엇이라고 하나요?", "answer": "Aggregate", "userAnswer": ""],
-            19: ["question": "공통의 특성을 가진 사람들의 집합체는 무엇인가요?", "answer": "Social category", "userAnswer": ""],
-            20: ["question": "집단에 속하는 구성원들이 공유하는 정체성을 무엇이라고 하나요?", "answer": "정체성", "userAnswer": ""]
-            
-            
+            1: ["question": "자크 랑시에르의 철학적 배경은 어떤 철학자의 영향을 받았는가?", "answer": "알튀세르", "userAnswer": ""],
+            2: ["question": "랑시에르가 집중한 주요 철학적 개념 중 하나는 무엇인가?", "answer": "평등", "userAnswer": ""],
+            3: ["question": "조제프 자코토가 교육을 전담했던 시기는 어떤 역사적 사건 이후인가?", "answer": "프랑스 혁명", "userAnswer": ""],
+            4: ["question": "조제프 자코토가 프랑스어를 가르쳤던 나라는 어디인가?", "answer": "벨기에", "userAnswer": ""],
+            5: ["question": "전통적인 교육 시스템이 제한을 가하는 능력은 무엇인가?", "answer": "지적 능력", "userAnswer": ""],
+            6: ["question": "모국어가 어떤 상황 속에서 자연스럽게 배워진다고 언급되는가?", "answer": "일상", "userAnswer": ""],
+            7: ["question": "거의 동일한 지적 능력을 가진다는 철학적 배경의 기저에 깔려 있는 권리는 무엇인가?", "answer": "평등", "userAnswer": ""],
+            8: ["question": "특정한 교육 시스템이 학생들에게 제한을 가하는 방법은 무엇인가?", "answer": "전통적인 교육 시스템", "userAnswer": ""],
+            9: ["question": "자코토가 프랑스어를 가르치는 교육 실험의 중요한 개념 중 하나는 무엇인가?", "answer": "무지한 스승", "userAnswer": ""],
+            10: ["question": "랑시에르의 철학이 영향을 받은 철학적 사조 중 하나는 무엇인가?", "answer": "구조주의", "userAnswer": ""],
+            11: ["question": "자크 랑시에르가 주목한 철학적 접근법 중 하나는 무엇인가?", "answer": "마르크스주의", "userAnswer": ""],
+            12: ["question": "자크 랑시에르의 철학은 개인의 자유를 위한 과정에도 중점을 두고 있다. 이 과정을 무엇이라 부르는가?", "answer": "해방", "userAnswer": ""],
+            13: ["question": "교육 실험을 통해 혁신적인 교육방법을 제시한 프랑스의 교육자는 누구인가?", "answer": "조제프 자코토", "userAnswer": ""],
+            14: ["question": "자크 랑시에르의 철학에서 주요한 역할을 하는, 말이나 문자를 의미하는 것은 무엇인가?", "answer": "기호", "userAnswer": ""],
+            15: ["question": "자크 랑시에르가 비판적으로 바라본 것은 학생들에게 무지를 교육하며 제한하는 무엇인가?", "answer": "교육 시스템", "userAnswer": ""],
+            16: ["question": "조제프 자코토가 가르친 언어는 무엇인가?", "answer": "프랑스어", "userAnswer": ""],
+            17: ["question": "자크 랑시에르가 제시한 새로운 교육 시스템의 목적은 무엇인가?", "answer": "변혁", "userAnswer": ""],
+            18: ["question": "자크 랑시에르의 철학에서 언급된, 특정 언어를 학습하는 과정에서 중요한 역할을 하는 요소는 무엇인가?", "answer": "모국어", "userAnswer": ""],
+            19: ["question": "교육 시스템의 변혁을 중심으로 논지를 전개한 철학자는 누구인가?", "answer": "자크 랑시에르", "userAnswer": ""],
+            20: ["question": "자크 랑시에르는 구조주의 이후의 철학적 접근에도 영향을 받았다. 이 접근법은 무엇인가?", "answer": "포스트구조주의", "userAnswer": ""]
         ]
         questionManager.parseQuestions(from: jsonData)
         print("Loaded questions: \(questionManager.questions.count)")
@@ -536,5 +544,25 @@ class TestSheetViewController: UIViewController {
     
     @objc internal override func dismissKeyboard() {
         view.endEditing(true) // 현재 화면에서 활성화된 키보드를 내림
+    }
+    
+    private func showToast(_ message: String) {
+        let toastLabel = UILabel(frame: CGRect(x: self.view.frame.size.width/2 - 150, y: self.view.frame.size.height-100, width: 300, height: 70))
+        toastLabel.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+        toastLabel.textColor = UIColor.white
+        toastLabel.textAlignment = .center;
+        toastLabel.font = UIFont.systemFont(ofSize: 15.0)
+        toastLabel.text = message
+        toastLabel.numberOfLines = 0 // Allow multiple lines
+        toastLabel.alpha = 1.0
+        toastLabel.layer.cornerRadius = 10;
+        toastLabel.clipsToBounds = true
+        self.view.addSubview(toastLabel)
+        
+        UIView.animate(withDuration: 4.0, delay: 0.1, options: .curveEaseOut, animations: {
+            toastLabel.alpha = 0.0
+        }, completion: {(isCompleted) in
+            toastLabel.removeFromSuperview()
+        })
     }
 }
