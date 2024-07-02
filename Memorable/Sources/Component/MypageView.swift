@@ -5,11 +5,10 @@
 //  Created by Minhyeok Kim on 6/30/24.
 //
 
-import UIKit
 import SnapKit
+import UIKit
 
 class MypageView: UIView {
-    
     private let scrollView: UIScrollView
     private let contentView: UIView
     
@@ -65,6 +64,7 @@ class MypageView: UIView {
         setupTapGesture()
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -268,12 +268,12 @@ class MypageView: UIView {
             make.bottom.equalTo(priceLabel.snp.top)
         }
         
-        periodLabel.snp.makeConstraints{ make in
+        periodLabel.snp.makeConstraints { make in
             make.leading.equalTo(priceLabel.snp.trailing).offset(4)
             make.centerY.equalTo(priceLabel)
         }
         
-        optionLabel.snp.makeConstraints{ make in
+        optionLabel.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-24)
             make.centerY.equalTo(priceLabel)
         }
@@ -301,7 +301,6 @@ class MypageView: UIView {
         contentView.addSubview(removeUserButton)
     }
     
-    
     private func setupPurchaseButton() {
         purchaseButton.setTitle("구매하기", for: .normal)
         purchaseButton.setTitleColor(.white, for: .normal)
@@ -321,7 +320,7 @@ class MypageView: UIView {
     
     private func setupTapGesture() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        self.addGestureRecognizer(tapGesture)
+        addGestureRecognizer(tapGesture)
     }
     
     private func setupServiceButton(_ button: UIButton, title: String, imageName: String, action: Selector) {
@@ -392,7 +391,7 @@ class MypageView: UIView {
             make.centerY.equalTo(profileName)
         }
         
-        streakView.snp.makeConstraints{ make in
+        streakView.snp.makeConstraints { make in
             make.trailing.equalToSuperview()
             make.height.equalToSuperview()
             make.width.equalTo(494)
@@ -483,7 +482,7 @@ class MypageView: UIView {
         toastLabel.text = message
         toastLabel.numberOfLines = 0
         
-        let maxSize = CGSize(width: self.frame.width - 40, height: CGFloat.greatestFiniteMagnitude)
+        let maxSize = CGSize(width: frame.width - 40, height: CGFloat.greatestFiniteMagnitude)
         let expectedSize = toastLabel.sizeThatFits(maxSize)
         
         toastLabel.snp.updateConstraints { make in
@@ -503,7 +502,7 @@ class MypageView: UIView {
     private func resetButtonUI(_ button: UIView) {
         button.backgroundColor = .white
         button.layer.borderWidth = 0
-        button.subviews.forEach { view in
+        for view in button.subviews {
             if let label = view as? UILabel {
                 label.isHidden = false
                 if label == button.subviews.first {
@@ -517,7 +516,7 @@ class MypageView: UIView {
     }
     
     private func resetAllMembershipButtons() {
-        [membershipStandardButton, membershipProButton, membershipPremiumButton].forEach { button in
+        for button in [membershipStandardButton, membershipProButton, membershipPremiumButton] {
             resetButtonUI(button)
         }
         selectedMembershipButton = nil
@@ -530,7 +529,7 @@ class MypageView: UIView {
         button.layer.borderColor = UIColor.blue.cgColor
         button.layer.borderWidth = 2
 
-        button.subviews.forEach { view in
+        for view in button.subviews {
             if let label = view as? UILabel {
                 switch label.text {
                 case "사용중인 플랜":
@@ -590,7 +589,7 @@ class MypageView: UIView {
         }
         
         // titleLabel, detailsLabel, selectedLabel을 보여줌
-        tappedView.subviews.forEach { view in
+        for view in tappedView.subviews {
             if let label = view as? UILabel {
                 label.isHidden = false
             }
@@ -613,7 +612,8 @@ class MypageView: UIView {
         let location = gesture.location(in: self)
         if !membershipStandardButton.frame.contains(location) &&
             !membershipProButton.frame.contains(location) &&
-            !membershipPremiumButton.frame.contains(location) {
+            !membershipPremiumButton.frame.contains(location)
+        {
             resetAllMembershipButtons()
         }
     }
@@ -623,9 +623,10 @@ class MypageView: UIView {
         let alert = UIAlertController(title: "로그아웃", message: "로그아웃 하시겠습니까?", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "예", style: .default, handler: { _ in
             // 로그아웃 처리 코드
+            self.signOut()
         }))
         alert.addAction(UIAlertAction(title: "아니오", style: .cancel, handler: nil))
-        if let viewController = self.window?.rootViewController {
+        if let viewController = window?.rootViewController {
             viewController.present(alert, animated: true, completion: nil)
         }
     }
@@ -637,9 +638,29 @@ class MypageView: UIView {
             // 회원 탈퇴 처리 코드
         }))
         alert.addAction(UIAlertAction(title: "아니오", style: .cancel, handler: nil))
-        if let viewController = self.window?.rootViewController {
+        if let viewController = window?.rootViewController {
             viewController.present(alert, animated: true, completion: nil)
         }
+    }
+    
+    @objc func signOut() {
+        print("❎ Signed Out")
+
+        UserDefaults.standard.removeObject(forKey: SignInManager.userIdentifierKey)
+        
+        guard let navigationController = window?.rootViewController as? UINavigationController else { return }
+        navigationController.setViewControllers([HomeViewController()], animated: false)
+
+//        userIdentifier = ""
+//        givenName = ""
+//        familyName = ""
+//        email = ""
+
+//        DispatchQueue.main.async {
+//            guard let navController = navigationController else { return }
+//
+//            navController.setViewControllers([HomeViewController()], animated: false)
+//        }
     }
     
     // 문의하기 토스트 메시지 표시 메서드

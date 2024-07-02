@@ -15,10 +15,13 @@ class LoginViewController: UIViewController {
     
     let logoImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
-        $0.image = UIImage(named: "applogo")
+        $0.image = UIImage(named: "login_applogo")
     }
 
-    lazy var appleLoginButton = ASAuthorizationAppleIDButton()
+    lazy var appleLoginButton = ASAuthorizationAppleIDButton(
+        authorizationButtonType: .signIn,
+        authorizationButtonStyle: .black
+    )
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,14 +45,14 @@ class LoginViewController: UIViewController {
     func setupConstraints() {
         logoImageView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(200)
-            make.width.equalTo(300)
+            make.centerY.equalToSuperview().offset(-50)
+            make.width.equalTo(280)
         }
         appleLoginButton.snp.makeConstraints { make in
-            make.height.equalTo(50)
-            make.width.equalTo(300)
+            make.height.equalTo(40)
+            make.width.equalTo(375)
             make.centerX.equalToSuperview()
-            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-150)
+            make.centerY.equalToSuperview().offset(150)
         }
     }
     
@@ -174,6 +177,6 @@ extension UIViewController {
     func showLoginViewController() {
         guard let navController = navigationController else { return }
         
-        navController.setViewControllers([TestViewController()], animated: false)
+        navController.setViewControllers([HomeViewController()], animated: false)
     }
 }
