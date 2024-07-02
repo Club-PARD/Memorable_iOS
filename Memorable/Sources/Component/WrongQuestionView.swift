@@ -65,7 +65,7 @@ class WrongQuestionView: UIView {
     
     func setupConstraints() {
         snp.makeConstraints { make in
-            make.height.equalTo(130)
+            make.height.equalTo(120)
         }
         
         questionNumberView.snp.makeConstraints { make in
