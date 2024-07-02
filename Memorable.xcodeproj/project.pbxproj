@@ -31,7 +31,6 @@
 		DD4B40B12C2BE30600524757 /* WorkSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4B40B02C2BE30600524757 /* WorkSheetView.swift */; };
 		DD4B40B32C2BE4AD00524757 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4B40B22C2BE4AD00524757 /* MockData.swift */; };
 		DDAB24CE2C3144DA00AAEDB6 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAB24CD2C3144DA00AAEDB6 /* ShareViewController.swift */; };
-		DDAB24D52C3144DA00AAEDB6 /* PDFShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = DDAB24CB2C3144DA00AAEDB6 /* PDFShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		DDAB24DB2C31465500AAEDB6 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = DDAB24DA2C31465500AAEDB6 /* SnapKit */; };
 		DDAB24DD2C31466500AAEDB6 /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = DDAB24DC2C31466500AAEDB6 /* Then */; };
 		DDAB24E02C3148A700AAEDB6 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAB24DF2C3148A700AAEDB6 /* APIManager.swift */; };
@@ -98,7 +97,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				DDAB24D52C3144DA00AAEDB6 /* PDFShareExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -129,12 +127,10 @@
 		DD4B40AE2C2BD38A00524757 /* WorkSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSheetViewController.swift; sourceTree = "<group>"; };
 		DD4B40B02C2BE30600524757 /* WorkSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSheetView.swift; sourceTree = "<group>"; };
 		DD4B40B22C2BE4AD00524757 /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
-		DDAB24CB2C3144DA00AAEDB6 /* PDFShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PDFShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDAB24CD2C3144DA00AAEDB6 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		DDAB24D22C3144DA00AAEDB6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DDAB24DF2C3148A700AAEDB6 /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
 		DDAB24E82C315C0100AAEDB6 /* PDFShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PDFShareExtension.entitlements; sourceTree = "<group>"; };
-		DDAC4BD22C2805AB006206EB /* Memorable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Memorable.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDAC4BD52C2805AB006206EB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DDAC4BD72C2805AB006206EB /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		DDAC4BD92C2805AB006206EB /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -142,9 +138,7 @@
 		DDAC4BE12C2805AC006206EB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DDAC4BE42C2805AC006206EB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DDAC4BE62C2805AC006206EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DDAC4BEB2C2805AC006206EB /* MemorableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MemorableTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDAC4BEF2C2805AC006206EB /* MemorableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemorableTests.swift; sourceTree = "<group>"; };
-		DDAC4BF52C2805AC006206EB /* MemorableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MemorableUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDAC4BF92C2805AC006206EB /* MemorableUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemorableUITests.swift; sourceTree = "<group>"; };
 		DDAC4BFB2C2805AC006206EB /* MemorableUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemorableUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		DDB3E3842C2FE16200AF9182 /* TestLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestLoginViewController.swift; sourceTree = "<group>"; };
@@ -164,6 +158,11 @@
 		DDDA80192C33ADB80077E5F2 /* Pretendard-ExtraBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-ExtraBold.otf"; sourceTree = "<group>"; };
 		DDDA801A2C33ADB80077E5F2 /* Pretendard-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Light.otf"; sourceTree = "<group>"; };
 		DDDA801B2C33ADB80077E5F2 /* Pretendard-ExtraLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-ExtraLight.otf"; sourceTree = "<group>"; };
+		DDDA80272C33F0600077E5F2 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		DDDA80282C33F0600077E5F2 /* Memorable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Memorable.app; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/Memorable.app"; sourceTree = "<absolute>"; };
+		DDDA80292C33F0600077E5F2 /* MemorableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableTests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/Memorable.app/PlugIns/MemorableTests.xctest"; sourceTree = "<absolute>"; };
+		DDDA802A2C33F0600077E5F2 /* MemorableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableUITests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/MemorableUITests-Runner.app/PlugIns/MemorableUITests.xctest"; sourceTree = "<absolute>"; };
+		DDDA802B2C33F0600077E5F2 /* PDFShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; name = PDFShareExtension.appex; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/PDFShareExtension.appex"; sourceTree = "<absolute>"; };
 		DDF67E852C32F9D900F37BFC /* WrongSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongSheetViewController.swift; sourceTree = "<group>"; };
 		DDF67E872C32FB3800F37BFC /* WrongSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongSheetView.swift; sourceTree = "<group>"; };
 		DDF67E892C330F3400F37BFC /* WrongQuestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongQuestionView.swift; sourceTree = "<group>"; };
@@ -281,19 +280,7 @@
 				DDAB24CC2C3144DA00AAEDB6 /* PDFShareExtension */,
 				DDAC4BEE2C2805AC006206EB /* MemorableTests */,
 				DDAC4BF82C2805AC006206EB /* MemorableUITests */,
-				DDAC4BD32C2805AB006206EB /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		DDAC4BD32C2805AB006206EB /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				DDAC4BD22C2805AB006206EB /* Memorable.app */,
-				DDAC4BEB2C2805AC006206EB /* MemorableTests.xctest */,
-				DDAC4BF52C2805AC006206EB /* MemorableUITests.xctest */,
-				DDAB24CB2C3144DA00AAEDB6 /* PDFShareExtension.appex */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		DDAC4BD42C2805AB006206EB /* Memorable */ = {
@@ -421,7 +408,7 @@
 				DDAB24DC2C31466500AAEDB6 /* Then */,
 			);
 			productName = PDFShareExtension;
-			productReference = DDAB24CB2C3144DA00AAEDB6 /* PDFShareExtension.appex */;
+			productReference = DDDA802B2C33F0600077E5F2 /* PDFShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		DDAC4BD12C2805AB006206EB /* Memorable */ = {
@@ -444,7 +431,7 @@
 				DDBD12F42C29BBD7006E7D92 /* SnapKit */,
 			);
 			productName = Memorable;
-			productReference = DDAC4BD22C2805AB006206EB /* Memorable.app */;
+			productReference = DDDA80282C33F0600077E5F2 /* Memorable.app */;
 			productType = "com.apple.product-type.application";
 		};
 		DDAC4BEA2C2805AC006206EB /* MemorableTests */ = {
@@ -462,7 +449,7 @@
 			);
 			name = MemorableTests;
 			productName = MemorableTests;
-			productReference = DDAC4BEB2C2805AC006206EB /* MemorableTests.xctest */;
+			productReference = DDDA80292C33F0600077E5F2 /* MemorableTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		DDAC4BF42C2805AC006206EB /* MemorableUITests */ = {
@@ -480,7 +467,7 @@
 			);
 			name = MemorableUITests;
 			productName = MemorableUITests;
-			productReference = DDAC4BF52C2805AC006206EB /* MemorableUITests.xctest */;
+			productReference = DDDA802A2C33F0600077E5F2 /* MemorableUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -511,18 +498,19 @@
 			};
 			buildConfigurationList = DDAC4BCD2C2805AB006206EB /* Build configuration list for PBXProject "Memorable" */;
 			compatibilityVersion = "Xcode 14.0";
-			developmentRegion = en;
+			developmentRegion = ko;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
+				ko,
 			);
 			mainGroup = DDAC4BC92C2805AB006206EB;
 			packageReferences = (
 				DDBD12EA2C298EF8006E7D92 /* XCRemoteSwiftPackageReference "Then" */,
 				DDBD12F32C29BBD7006E7D92 /* XCRemoteSwiftPackageReference "SnapKit" */,
 			);
-			productRefGroup = DDAC4BD32C2805AB006206EB /* Products */;
+			productRefGroup = DDAC4BC92C2805AB006206EB;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -672,6 +660,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				DDAC4BE42C2805AC006206EB /* Base */,
+				DDDA80272C33F0600077E5F2 /* ko */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -736,6 +725,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -800,6 +790,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -864,6 +855,7 @@
 				DEVELOPMENT_TEAM = 4FCV7BL65G;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Memorable/Resources/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -893,6 +885,7 @@
 				DEVELOPMENT_TEAM = 4FCV7BL65G;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Memorable/Resources/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";

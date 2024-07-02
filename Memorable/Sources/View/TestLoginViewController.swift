@@ -9,7 +9,7 @@ import SnapKit
 import Then
 import UIKit
 
-class TestViewController: UIViewController {
+class AfterLoginViewController: UIViewController {
     var userIdentifier: String = ""
     var givenName: String = ""
     var familyName: String = ""
@@ -106,7 +106,7 @@ class TestViewController: UIViewController {
     }
 }
 
-extension TestViewController: LoginViewControllerDelegate {
+extension AfterLoginViewController: LoginViewControllerDelegate {
     func didFinishAuth() {
         userIdentifier = UserDefaults.standard.string(forKey: SignInManager.userIdentifierKey)!
         userIdentifierLabel.text = "UserIdentifier: \(userIdentifier)"

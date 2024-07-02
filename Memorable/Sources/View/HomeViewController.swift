@@ -5,13 +5,15 @@
 //  Created by 김현기 on 6/25/24.
 //
 
-import UIKit
 import SnapKit
+import UIKit
 
 class HomeViewController: UIViewController {
+    var userIdentifier: String = ""
+    var givenName: String = ""
+    var familyName: String = ""
+    var email: String = ""
     
-    lazy var userName: String = "민석"
-    lazy var userEmail: String = "memorable@ozosama.com"
     let tabBar = TabBarComponent()
     let containerView = UIView()
     let titleLabel = UILabel()
@@ -89,9 +91,30 @@ class HomeViewController: UIViewController {
         view.insertSubview(gradientView, belowSubview: maskView)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        SignInManager.checkUserAuth { authState in
+            switch authState {
+            case .undefined:
+                let controller = LoginViewController()
+                controller.modalPresentationStyle = .fullScreen
+                controller.delegate = self
+                self.present(controller, animated: false, completion: nil)
+            case .signedOut:
+                let controller = LoginViewController()
+                controller.modalPresentationStyle = .fullScreen
+                controller.delegate = self
+                self.present(controller, animated: false, completion: nil)
+            case .signedIn:
+                print("✅ Signed In")
+                self.didFinishAuth()
+            }
+        }
+    }
+    
     func setUI() {
         // 탭바
-        self.view.addSubview(tabBar)
+        view.addSubview(tabBar)
         tabBar.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(57)
             make.centerY.equalTo(self.view)
@@ -109,7 +132,7 @@ class HomeViewController: UIViewController {
         tabBar.configure(withItems: tabItems)
         
         // 메인뷰
-        self.view.addSubview(containerView)
+        view.addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-24)
             make.top.equalTo(tabBar)
@@ -118,7 +141,7 @@ class HomeViewController: UIViewController {
         }
         
         // header
-        self.view.addSubview(headerComponent)
+        view.addSubview(headerComponent)
         headerComponent.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.equalTo(view.safeAreaLayoutGuide)
@@ -133,7 +156,7 @@ class HomeViewController: UIViewController {
         }
         
         // 제목
-        self.view.addSubview(titleLabel)
+        view.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.top.equalTo(headerComponent.snp.bottom).offset(3)
             make.leading.equalTo(tabBar.snp.trailing).offset(65)
@@ -143,10 +166,8 @@ class HomeViewController: UIViewController {
         titleLabel.numberOfLines = 0
         // TO DO: 디자인 시스템
         
-        
-        
         // 초기화면
-        libraryViewComponent.delegate = self  // delegate 설정
+        libraryViewComponent.delegate = self // delegate 설정
         containerView.addSubview(libraryViewComponent)
         libraryViewComponent.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -155,7 +176,7 @@ class HomeViewController: UIViewController {
     
     func setupViews() {
         // 모든 뷰를 미리 생성하고 containerView에 추가
-        [libraryViewComponent, worksheetListViewComponent, starView, mypageView, searchedSheetView].forEach { view in
+        for view in [libraryViewComponent, worksheetListViewComponent, starView, mypageView, searchedSheetView] {
             containerView.addSubview(view)
             view.snp.makeConstraints { make in
                 make.edges.equalToSuperview()
@@ -178,7 +199,6 @@ class HomeViewController: UIViewController {
         let documents = mockData
         headerComponent.setDocuments(documents: documents)
     }
-    
     
     func setupLibraryViewComponent() {
         containerView.snp.remakeConstraints { make in
@@ -241,7 +261,7 @@ class HomeViewController: UIViewController {
             gradientView.isHidden = false
             setupLibraryViewComponent()
             titleLabel.text = ""
-            libraryViewComponent.titleLabel.text = "\(userName)님,\n오늘도 함께 학습해 볼까요?"
+            libraryViewComponent.titleLabel.text = "\(givenName)님,\n오늘도 함께 학습해 볼까요?"
         case "star":
             viewStack = [viewId]
             headerComponent.showBackButton(false)
@@ -249,7 +269,7 @@ class HomeViewController: UIViewController {
             titleLabel.isHidden = false
             gradientView.isHidden = true
             setupDefaultView()
-            titleLabel.text = "\(userName)님이\n즐겨찾기한 파일"
+            titleLabel.text = "\(givenName)님이\n즐겨찾기한 파일"
             let worksheetDocuments = mockData.filter { $0.fileType == "빈칸학습지" }
             let testsheetDocuments = mockData.filter { $0.fileType == "나만의 시험지" }
             let wrongsheetDocuments = mockData.filter { $0.fileType == "오답노트" }
@@ -266,9 +286,9 @@ class HomeViewController: UIViewController {
             gradientView.isHidden = false
             setupLibraryViewComponent()
             titleLabel.text = ""
-            mypageView.titleLabel.text = "\(userName)님,\n안녕하세요!"
-            mypageView.profileName.text = userName
-            mypageView.profileEmail.text = userEmail
+            mypageView.titleLabel.text = "\(givenName)님,\n안녕하세요!"
+            mypageView.profileName.text = givenName
+            mypageView.profileEmail.text = email
             if let streakView = mypageView.streakView as? StreakView {
                 streakView.setAttendanceRecord(attendanceRecord)
             }
@@ -288,8 +308,8 @@ class HomeViewController: UIViewController {
             titleLabel.isHidden = false
             gradientView.isHidden = true
             setupDefaultView()
-            // 여기서 worksheetListViewComponent에 대한 추가 설정을 할 수 있습니다.
-            // 예: worksheetListViewComponent.reloadData()
+        // 여기서 worksheetListViewComponent에 대한 추가 설정을 할 수 있습니다.
+        // 예: worksheetListViewComponent.reloadData()
         default:
             break
         }
@@ -302,7 +322,7 @@ extension UIImage {
         UIGraphicsBeginImageContextWithOptions(targetSize, false, UIScreen.main.scale)
         defer { UIGraphicsEndImageContext() }
         guard UIGraphicsGetCurrentContext() != nil else { return nil }
-        self.draw(in: rect)
+        draw(in: rect)
         guard let resizedImage = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
         return resizedImage
     }
@@ -324,7 +344,6 @@ extension HomeViewController: HeaderComponentDelegate {
 }
 
 extension HomeViewController: LibraryViewComponentDelegate {
-    
     func didTapBackButton() {
         if viewStack.count > 1 {
             viewStack.removeLast()
@@ -374,5 +393,20 @@ extension UIViewController {
     
     @objc func dismissKeyboard() {
         view.endEditing(true)
+    }
+}
+
+extension HomeViewController: LoginViewControllerDelegate {
+    func didFinishAuth() {
+        userIdentifier = UserDefaults.standard.string(forKey: SignInManager.userIdentifierKey)!
+
+        if let userData = UserDefaults.standard.data(forKey: "userInfo") {
+            if let decodedData = try? JSONDecoder().decode(User.self, from: userData) {
+                print("User Info: \(decodedData)")
+                givenName = decodedData.givenName
+                familyName = decodedData.familyName
+                email = decodedData.email
+            }
+        }
     }
 }
