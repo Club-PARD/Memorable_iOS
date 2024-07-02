@@ -140,7 +140,7 @@ class WorkSheetView: UIView {
                 }
                 let labelWidth = label.intrinsicContentSize.width
 
-                if currentLineWidth + labelWidth < self.viewWidth - 250 {
+                if currentLineWidth + labelWidth < self.viewWidth - 300 {
                     if currentLineView == nil {
                         currentLineView = self.createNewLineView()
                         self.containerView.addArrangedSubview(currentLineView!)
@@ -173,7 +173,7 @@ class WorkSheetView: UIView {
 
             let textFieldWidth = textField.intrinsicContentSize.width
 
-            if currentLineWidth + textFieldWidth < self.viewWidth - 250 {
+            if currentLineWidth + textFieldWidth < self.viewWidth - 300 {
                 if currentLineView == nil {
                     currentLineView = self.createNewLineView()
                     self.containerView.addArrangedSubview(currentLineView!)
@@ -208,7 +208,7 @@ class WorkSheetView: UIView {
             }
             let labelWidth = label.intrinsicContentSize.width
 
-            if currentLineWidth + labelWidth < self.viewWidth - 250 {
+            if currentLineWidth + labelWidth < self.viewWidth - 300 {
                 if currentLineView == nil {
                     currentLineView = self.createNewLineView()
                     self.containerView.addArrangedSubview(currentLineView!)
