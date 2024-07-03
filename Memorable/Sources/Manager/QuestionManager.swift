@@ -9,12 +9,10 @@ import Foundation
 
 class QuestionManager {
     var questions: [Question] = []
-    
-    func parseQuestions(from json: [Int: [String: String]]) {
-        questions = json.compactMap { (key, value) in
-            guard let question = value["question"],
-                  let answer = value["answer"] else { return nil }
-            return Question(id: key, question: question, answer: answer, userAnswer: "") // Initialize userAnswer with a default value
-        }.sorted { $0.id < $1.id }
+
+    func parseQuestions(from data: [Int: [String: String]]) {
+        questions = data.map { (id, dict) in
+            Question(questionId: id, question: dict["question"] ?? "", answer: dict["answer"] ?? "", userAnswer: dict["userAnswer"])
+        }.sorted { $0.questionId < $1.questionId }
     }
 }

@@ -131,9 +131,8 @@ class StarView: UIView {
         }
     }
     
-    func setDocuments(worksheet: [Document], testsheet: [Document], wrongsheet: [Document]) {
-        // 모든 북마크 문서 결합 후, 날짜를 기준으로 내림차순 정렬
-        allDocuments = (worksheet + testsheet + wrongsheet).filter { $0.bookmark }.sorted(by: { $0.date > $1.date })
+    func setDocuments(documents: [Document]) {
+        allDocuments = documents.filter { $0.isBookmarked }.sorted(by: { $0.createdDate > $1.createdDate })
         filteredDocuments = allDocuments
         tableView.reloadData()
     }
@@ -217,7 +216,8 @@ extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellD
             // testSheetVC.document = document // 필요하다면 document를 ViewController에 전달
             navigateToViewController(testSheetVC)
         case "오답노트":
-            // 오답노트에 대한 처리를 여기에 추가할 수 있습니다.
+            let wrongSheetVC = WrongSheetViewController()
+            navigateToViewController(wrongSheetVC)
             break
         default:
             print("Unknown file type")

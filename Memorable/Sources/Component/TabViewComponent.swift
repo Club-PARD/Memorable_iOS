@@ -20,7 +20,7 @@ class TabBarComponent: UIView {
     
     private func setupView() {
         self.backgroundColor = MemorableColor.White
-        self.layer.cornerRadius = 56
+        self.layer.cornerRadius = 49
         self.layer.masksToBounds = true
         self.layer.shadowOpacity = 0.5
         
@@ -32,7 +32,7 @@ class TabBarComponent: UIView {
         
         self.addSubview(stackView)
         stackView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 58, left: 0, bottom: 58, right: 0))
+            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 58, left: 16, bottom: 58, right: 16))
         }
         
         for _ in 0..<3 {

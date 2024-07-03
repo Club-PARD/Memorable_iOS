@@ -28,7 +28,7 @@ class HeaderComponent: UIView {
     private let searchBar = UISearchBar()
     private let searchButton = UIButton()
     private let searchButtonOverlayView = UIView()
-    private let plusButton = UIButton()
+    let plusButton = UIButton()
     private let plusButtonImageView = UIImageView()
     private let subButtonsContainer = UIView()
     private let subButton1 = UIButton()
@@ -234,7 +234,7 @@ class HeaderComponent: UIView {
         
         subButtonsContainer.isUserInteractionEnabled = true
     }
-
+    
     private func animateSearchBar() {
         UIView.animate(withDuration: 1,
                        delay: 0,
@@ -516,7 +516,7 @@ class HeaderComponent: UIView {
         
         if isExpanded {
             animateSearchBar()
-        } 
+        }
     }
     
     @objc private func plusButtonTapped() {
@@ -578,7 +578,7 @@ extension HeaderComponent: UISearchBarDelegate {
         var searchText = searchBar.text ?? ""
         searchText = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         let filteredDocuments = documents.filter { document in
-            searchText.isEmpty || document.fileName.contains(searchText) || document.fileType.contains(searchText)
+            searchText.isEmpty || document.name.contains(searchText) || document.fileType.contains(searchText)
         }
         
         delegate?.didSearchDocuments(with: filteredDocuments, searchText: searchText)

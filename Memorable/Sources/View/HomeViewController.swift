@@ -9,8 +9,10 @@ import SnapKit
 import UIKit
 
 class HomeViewController: UIViewController {
-    var userName = ""
-    var userEmail = ""
+    var userIdentifier: String = ""
+    var givenName: String = ""
+    var familyName: String = ""
+    var email: String = ""
     
     let tabBar = TabBarComponent()
     let containerView = UIView()
@@ -29,64 +31,34 @@ class HomeViewController: UIViewController {
     
     private var viewStack: [String] = ["home"]
     
-    let mockData = [
-        // 빈칸학습지
-        Document(fileName: "Document1", fileType: "빈칸학습지", category: "카테고리1", bookmark: true, date: makeDate(year: 2024, month: 1, day: 1)),
-        Document(fileName: "Document2", fileType: "빈칸학습지", category: "카테고리2", bookmark: false, date: makeDate(year: 2024, month: 1, day: 2)),
-        Document(fileName: "Document3", fileType: "빈칸학습지", category: "카테고리3", bookmark: true, date: makeDate(year: 2024, month: 1, day: 3)),
-        Document(fileName: "Document4", fileType: "빈칸학습지", category: "카테고리4", bookmark: false, date: makeDate(year: 2024, month: 1, day: 4)),
-        Document(fileName: "Document5", fileType: "빈칸학습지", category: "카테고리5", bookmark: true, date: makeDate(year: 2024, month: 1, day: 5)),
-        Document(fileName: "Document6", fileType: "빈칸학습지", category: "카테고리6", bookmark: false, date: makeDate(year: 2024, month: 1, day: 6)),
-        Document(fileName: "Document7", fileType: "빈칸학습지", category: "카테고리7", bookmark: true, date: makeDate(year: 2024, month: 1, day: 7)),
-        Document(fileName: "Document8", fileType: "빈칸학습지", category: "카테고리8", bookmark: false, date: makeDate(year: 2024, month: 1, day: 8)),
-        Document(fileName: "Document9", fileType: "빈칸학습지", category: "카테고리9", bookmark: true, date: makeDate(year: 2024, month: 1, day: 9)),
-        Document(fileName: "Document10", fileType: "빈칸학습지", category: "카테고리1", bookmark: false, date: makeDate(year: 2024, month: 1, day: 10)),
-        
-        // 나만의 시험지
-        Document(fileName: "Test1", fileType: "나만의 시험지", category: "카테고리2", bookmark: true, date: makeDate(year: 2024, month: 2, day: 1)),
-        Document(fileName: "Test2", fileType: "나만의 시험지", category: "카테고리3", bookmark: false, date: makeDate(year: 2024, month: 2, day: 2)),
-        Document(fileName: "Test3", fileType: "나만의 시험지", category: "카테고리4", bookmark: true, date: makeDate(year: 2024, month: 2, day: 3)),
-        Document(fileName: "Test4", fileType: "나만의 시험지", category: "카테고리5", bookmark: false, date: makeDate(year: 2024, month: 2, day: 4)),
-        Document(fileName: "Test5", fileType: "나만의 시험지", category: "카테고리6", bookmark: true, date: makeDate(year: 2024, month: 2, day: 5)),
-        Document(fileName: "Test6", fileType: "나만의 시험지", category: "카테고리7", bookmark: false, date: makeDate(year: 2024, month: 2, day: 6)),
-        
-        // 오답노트
-        Document(fileName: "Wrong1", fileType: "오답노트", category: "카테고리8", bookmark: true, date: makeDate(year: 2024, month: 3, day: 1)),
-        Document(fileName: "Wrong2", fileType: "오답노트", category: "카테고리9", bookmark: false, date: makeDate(year: 2024, month: 3, day: 2)),
-        Document(fileName: "Wrong3", fileType: "오답노트", category: "카테고리1", bookmark: true, date: makeDate(year: 2024, month: 3, day: 3)),
-        Document(fileName: "Wrong4", fileType: "오답노트", category: "카테고리2", bookmark: false, date: makeDate(year: 2024, month: 3, day: 4)),
-        Document(fileName: "Wrong5", fileType: "오답노트", category: "카테고리3", bookmark: true, date: makeDate(year: 2024, month: 3, day: 5)),
-        Document(fileName: "Wrong6", fileType: "오답노트", category: "카테고리4", bookmark: false, date: makeDate(year: 2024, month: 3, day: 6)),
-        Document(fileName: "Wrong7", fileType: "오답노트", category: "카테고리5", bookmark: true, date: makeDate(year: 2024, month: 3, day: 7)),
-        Document(fileName: "Wrong8", fileType: "오답노트", category: "카테고리6", bookmark: false, date: makeDate(year: 2024, month: 3, day: 8))
-    ]
+    var documents: [Document] = []
     
     let attendanceRecord: [Bool] = [true, true, true, false, false, true, false, true, false, false, false, false, false, false]
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        fetchDocuments()
         navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor = MemorableColor.Gray5
         headerComponent.delegate = self
-
+        
+        userIdentifier = UserDefaults.standard.string(forKey: SignInManager.userIdentifierKey)!
+        
         if let userData = UserDefaults.standard.data(forKey: "userInfo") {
             if let decodedData = try? JSONDecoder().decode(User.self, from: userData) {
-                userName = decodedData.givenName
-                userEmail = decodedData.email
+                print("User Info: \(decodedData)")
+                givenName = decodedData.givenName
+                familyName = decodedData.familyName
+                email = decodedData.email
             }
         }
         
         setUI()
         setupViews()
         
-        maskView.backgroundColor = MemorableColor.Black
-        maskView.alpha = 0
-        view.insertSubview(maskView, belowSubview: headerComponent)
-        maskView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        headerComponent.isUserInteractionEnabled = true
-        
+        view.addSubview(maskView)
+        view.bringSubviewToFront(headerComponent)
+        setupMaskView()
         setupHeaderComponent()
         setupLibraryViewComponent()
         hideKeyboardWhenTappedAround()
@@ -96,13 +68,65 @@ class HomeViewController: UIViewController {
         view.insertSubview(gradientView, belowSubview: maskView)
     }
     
+    func fetchDocuments() {
+        APIManagere.shared.getDocuments(userId: userIdentifier) { [weak self] result in
+            switch result {
+            case .success(let documents):
+                self?.documents = documents
+                DispatchQueue.main.async {
+                    self?.setupHeaderComponent()
+                    self?.setupLibraryViewComponent()
+                }
+            case .failure(let error):
+                print("Error fetching documents: \(error)")
+                // 에러 처리 로직 추가
+            }
+        }
+    }
+    
     func setUI() {
+        // header
+        view.addSubview(headerComponent)
+        headerComponent.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.height.equalTo(76)
+        }
+        
+        // 제목
+        view.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.top.equalTo(headerComponent.snp.bottom).offset(3)
+            make.leading.equalToSuperview().offset(182)
+        }
+        
+        // 제목 스타일
+        titleLabel.numberOfLines = 0
+        // TO DO: 디자인 시스템
+        
+        // 메인뷰
+        view.addSubview(containerView)
+        containerView.snp.makeConstraints { make in
+            make.leading.equalTo(titleLabel.snp.leading).offset(-16)
+            make.trailing.equalToSuperview().offset(-24)
+            make.top.equalTo(titleLabel.snp.bottom).offset(16)
+            //            make.width.equalTo(952)
+            make.height.equalTo(569)
+        }
+        
+        view.addSubview(gradientView)
+        gradientView.snp.makeConstraints { make in
+            make.leading.trailing.equalTo(containerView)
+            make.top.equalTo(containerView)
+            make.height.equalTo(15)
+        }
+        
         // 탭바
         view.addSubview(tabBar)
         tabBar.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(57)
-            make.centerY.equalTo(self.view)
-            make.width.equalTo(112)
+            make.top.equalTo(containerView).offset(109)
+            make.trailing.equalTo(containerView.snp.leading).offset(-33)
+            //            make.centerY.equalTo(self.view)
             make.height.equalTo(504)
         }
         
@@ -114,41 +138,6 @@ class HomeViewController: UIViewController {
         ]
         
         tabBar.configure(withItems: tabItems)
-        
-        // 메인뷰
-        view.addSubview(containerView)
-        containerView.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-24)
-            make.top.equalTo(tabBar)
-            make.width.equalTo(952)
-            make.height.equalTo(569)
-        }
-        
-        // header
-        view.addSubview(headerComponent)
-        headerComponent.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalTo(view.safeAreaLayoutGuide)
-            make.height.equalTo(76)
-        }
-        
-        view.addSubview(gradientView)
-        gradientView.snp.makeConstraints { make in
-            make.leading.trailing.equalTo(containerView)
-            make.top.equalTo(containerView)
-            make.height.equalTo(15)
-        }
-        
-        // 제목
-        view.addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(headerComponent.snp.bottom).offset(3)
-            make.leading.equalTo(tabBar.snp.trailing).offset(65)
-        }
-        
-        // 제목 스타일
-        titleLabel.numberOfLines = 0
-        // TO DO: 디자인 시스템
         
         // 초기화면
         libraryViewComponent.delegate = self // delegate 설정
@@ -179,16 +168,27 @@ class HomeViewController: UIViewController {
         action()
     }
     
+    func setupMaskView() {
+        maskView.backgroundColor = MemorableColor.Black
+        maskView.alpha = 0
+        maskView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        headerComponent.isUserInteractionEnabled = true
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleMaskViewTap))
+        maskView.addGestureRecognizer(tapGesture)
+    }
+    
     func setupHeaderComponent() {
-        let documents = mockData
         headerComponent.setDocuments(documents: documents)
     }
     
     func setupLibraryViewComponent() {
         containerView.snp.remakeConstraints { make in
-//            make.top.equalTo(headerComponent.snp.bottom)
+            //            make.top.equalTo(headerComponent.snp.bottom)
             make.top.equalTo(headerComponent.snp.bottom).offset(-15)
-            make.leading.equalTo(tabBar.snp.trailing).offset(49)
+            make.leading.equalTo(titleLabel.snp.leading).offset(-16)
             make.trailing.equalToSuperview().offset(-24)
             make.bottom.equalToSuperview()
         }
@@ -200,10 +200,9 @@ class HomeViewController: UIViewController {
         }
         
         // mockData를 필터링하여 각 타입별로 분류
-        let worksheetDocuments = mockData.filter { $0.fileType == "빈칸학습지" }
-        let testsheetDocuments = mockData.filter { $0.fileType == "나만의 시험지" }
-        let wrongsheetDocuments = mockData.filter { $0.fileType == "오답노트" }
-        
+        let worksheetDocuments = documents.filter { $0.fileType == "빈칸학습지" }
+        let testsheetDocuments = documents.filter { $0.fileType == "나만의 시험지" }
+        let wrongsheetDocuments = documents.filter { $0.fileType == "오답노트" }
         // LibraryViewComponent에 데이터 설정
         libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
                                           testsheet: testsheetDocuments,
@@ -211,22 +210,45 @@ class HomeViewController: UIViewController {
         
         // titleLabel 숨기기
         titleLabel.isHidden = true
+        
+        tabBar.snp.remakeConstraints { make in
+            make.top.equalTo(containerView.snp.top).offset(115.5)
+            make.trailing.equalTo(containerView.snp.leading).offset(-33)
+            //            make.centerY.equalTo(self.view)
+            make.height.equalTo(504)
+        }
     }
     
     private func setupDefaultView() {
         // 기본 레이아웃으로 되돌리기
         containerView.snp.remakeConstraints { make in
+            make.leading.equalTo(titleLabel.snp.leading).offset(-16)
             make.trailing.equalToSuperview().offset(-24)
-            make.top.equalTo(tabBar)
-            make.leading.equalTo(tabBar.snp.trailing).offset(49)
-            make.height.equalTo(580)
+            make.top.equalTo(titleLabel.snp.bottom).offset(16)
+            //            make.width.equalTo(952)
+            make.height.equalTo(569)
         }
         
         // titleLabel 보이기
         titleLabel.isHidden = false
+        tabBar.snp.remakeConstraints { make in
+            make.top.equalTo(containerView)
+            make.trailing.equalTo(containerView.snp.leading).offset(-33)
+            //            make.centerY.equalTo(self.view)
+            make.height.equalTo(504)
+        }
+    }
+    
+    func updateStarView() {
+        starView.setDocuments(documents: documents)
     }
     
     private func showView(config viewId: String) {
+        _ = documents.filter { $0.fileType == "빈칸학습지" }
+        _ = documents.filter { $0.fileType == "나만의 시험지" }
+        _ = documents.filter { $0.fileType == "오답노트" }
+        titleLabel.font = MemorableFont.LargeTitle()
+        titleLabel.textColor = MemorableColor.Black
         // 모든 뷰를 숨기고 선택된 뷰만 표시
         [libraryViewComponent, worksheetListViewComponent, starView, mypageView, searchedSheetView].forEach { $0.isHidden = true }
         
@@ -239,13 +261,15 @@ class HomeViewController: UIViewController {
         
         switch viewId {
         case "home":
+            // mockData를 필터링하여 각 타입별로 분류
+            // LibraryViewComponent에 데이터 설정
             viewStack = [viewId]
             headerComponent.showBackButton(false)
             libraryViewComponent.isHidden = false
             gradientView.isHidden = false
             setupLibraryViewComponent()
             titleLabel.text = ""
-            libraryViewComponent.titleLabel.text = "\(userName)님,\n오늘도 함께 학습해 볼까요?"
+            libraryViewComponent.titleLabel.text = "\(givenName)님,\n오늘도 함께 학습해 볼까요?"
         case "star":
             viewStack = [viewId]
             headerComponent.showBackButton(false)
@@ -253,15 +277,8 @@ class HomeViewController: UIViewController {
             titleLabel.isHidden = false
             gradientView.isHidden = true
             setupDefaultView()
-            titleLabel.text = "\(userName)님이\n즐겨찾기한 파일"
-            let worksheetDocuments = mockData.filter { $0.fileType == "빈칸학습지" }
-            let testsheetDocuments = mockData.filter { $0.fileType == "나만의 시험지" }
-            let wrongsheetDocuments = mockData.filter { $0.fileType == "오답노트" }
-            
-            // LibraryViewComponent에 데이터 설정
-            starView.setDocuments(worksheet: worksheetDocuments,
-                                  testsheet: testsheetDocuments,
-                                  wrongsheet: wrongsheetDocuments)
+            titleLabel.text = "\(givenName)님이\n즐겨찾기한 파일"
+            updateStarView() // StarView 업데이트 추가
         case "mypage":
             viewStack = [viewId]
             headerComponent.showBackButton(false)
@@ -270,9 +287,9 @@ class HomeViewController: UIViewController {
             gradientView.isHidden = false
             setupLibraryViewComponent()
             titleLabel.text = ""
-            mypageView.titleLabel.text = "\(userName)님,\n안녕하세요!"
-            mypageView.profileName.text = userName
-            mypageView.profileEmail.text = userEmail
+            mypageView.titleLabel.text = "\(givenName)님,\n안녕하세요!"
+            mypageView.profileName.text = givenName
+            mypageView.profileEmail.text = email
             if let streakView = mypageView.streakView as? StreakView {
                 streakView.setAttendanceRecord(attendanceRecord)
             }
@@ -359,6 +376,10 @@ extension HomeViewController: LibraryViewComponentDelegate {
     
     @objc private func handleTestCreateClicked() {
         tabBar.updateUIForFirstTab()
+    }
+    
+    @objc func handleMaskViewTap() {
+        headerComponent.plusButton.sendActions(for: .touchUpInside)
     }
 }
 
