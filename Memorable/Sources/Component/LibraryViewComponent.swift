@@ -73,6 +73,9 @@ class LibraryViewComponent: UIView {
     }
     
     private func setupViews() {
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.showsHorizontalScrollIndicator = false
+        
         addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubview(titleLabel)
@@ -295,7 +298,7 @@ class LibraryViewComponent: UIView {
         }
         
         titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(18)
+            make.top.equalToSuperview().offset(19)
             make.leading.equalToSuperview().offset(16)
         }
         
@@ -476,7 +479,7 @@ class LibraryViewComponent: UIView {
         wrongsheetDocuments = wrongsheet
 
         // 모든 문서를 결합한 후, 날짜를 기준으로 내림차순 정렬
-        currentDocuments = (worksheet + testsheet + wrongsheet).sorted(by: { $0.date > $1.date })
+        currentDocuments = (worksheet + testsheet + wrongsheet).sorted(by: { $0.createdDate > $1.createdDate })
 
         recentTableView.reloadData()
     }
@@ -515,7 +518,7 @@ class LibraryViewComponent: UIView {
         
         switch sender {
         case allFilterButton:
-            currentDocuments = worksheetDocuments + testsheetDocuments + wrongsheetDocuments
+            currentDocuments = (worksheetDocuments + testsheetDocuments + wrongsheetDocuments).sorted { $0.createdDate > $1.createdDate }
         case worksheetFilterButton:
             currentDocuments = worksheetDocuments
         case testsheetFilterButton:
@@ -562,7 +565,6 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
 //            testSheetVC.document = document
             navigateToViewController(testSheetVC)
         case "오답노트":
-            // 오답노트에 대한 처리를 여기에 추가할 수 있습니다.
             print("오답")
             let wrongSheetVC = WrongSheetViewController()
             navigateToViewController(wrongSheetVC)

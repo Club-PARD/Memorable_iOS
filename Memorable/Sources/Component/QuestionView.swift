@@ -14,7 +14,7 @@ class QuestionView: UIView {
     let questionNumberView: UIView = {
         let view = UIView()
         view.backgroundColor = MemorableColor.Blue2
-        view.layer.cornerRadius = 0.5 * 39
+        view.layer.cornerRadius = 0.5 * 25
         view.clipsToBounds = true
         return view
     }()
@@ -68,6 +68,13 @@ class QuestionView: UIView {
         return userAnswerLabel
     }()
     
+    let answerLengthLabel: UILabel = {
+        let answerLenghLabel = UILabel()
+        answerLenghLabel.textColor = MemorableColor.Gray1
+        answerLenghLabel.font = MemorableFont.BodyCaption()
+        return answerLenghLabel
+    }()
+    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -87,8 +94,8 @@ class QuestionView: UIView {
         
         questionNumberView.snp.makeConstraints{ make in
             make.leading.equalTo(0)
-            make.top.equalTo(3.5)
-            make.width.height.equalTo(39)
+            make.top.equalTo(0)
+            make.width.height.equalTo(25)
         }
         
         questionNumber.snp.makeConstraints{ make in
@@ -101,10 +108,9 @@ class QuestionView: UIView {
         }
         
         answerTextField.snp.makeConstraints { make in
-            make.trailing.equalToSuperview()
-            make.bottom.equalToSuperview()
-            make.width.equalTo(200)
-            make.height.equalTo(38)
+            make.top.equalTo(questionNumber.snp.bottom).offset(16)
+            make.bottom.equalToSuperview().offset(-8)
+            make.width.equalToSuperview()
         }
     }
     
@@ -114,21 +120,26 @@ class QuestionView: UIView {
         answerTextField.text = question.userAnswer
         
         correctAnswerLabel.text = question.answer
-        userAnswerLabel.text = "내가 쓴 답: \(question.userAnswer)"
+        userAnswerLabel.text = "내가 쓴 답: \(question.userAnswer ?? "")"  // Optional이 아닌 문자열로 설정
         
         // 답변 비교 및 색상 설정
         let normalizedCorrectAnswer = correctAnswerLabel.text?.lowercased().replacingOccurrences(of: " ", with: "") ?? ""
-        let normalizedUserAnswer = userAnswerLabel.text?.replacingOccurrences(of: "내가 쓴 답: ", with: "").lowercased().replacingOccurrences(of: " ", with: "") ?? ""
         
-        if normalizedCorrectAnswer == normalizedUserAnswer {
-            correctAnswerLabel.textColor = MemorableColor.Blue1
+        if let userAnswerText = userAnswerLabel.text?.replacingOccurrences(of: "내가 쓴 답: ", with: "").lowercased().replacingOccurrences(of: " ", with: "") {
+            if normalizedCorrectAnswer == userAnswerText {
+                correctAnswerLabel.textColor = MemorableColor.Blue1
+            } else {
+                correctAnswerLabel.textColor = MemorableColor.Red
+            }
         } else {
-            correctAnswerLabel.textColor = MemorableColor.Red
+            correctAnswerLabel.textColor = MemorableColor.Red  // 기본적으로 불일치로 설정
         }
         
         // Add target to handle text changes
         answerTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
     }
+
+
     
     func replaceTextFieldWithLabels() {
         if answerTextField.isHidden {
