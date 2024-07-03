@@ -9,10 +9,10 @@ import AuthenticationServices
 import Foundation
 
 enum SignInManager {
-    static let userIdentifierKey = "userIdentifier"
-    static let userGivenName = "givenName"
-    static let userFamilyName = "familyName"
-    static let userEmail = "email"
+    static var userIdentifierKey = "userIdentifier"
+    static var userGivenName = "givenName"
+    static var userFamilyName = "familyName"
+    static var userEmail = "email"
 
     static func checkUserAuth(completion: @escaping (AuthState)
         -> ())

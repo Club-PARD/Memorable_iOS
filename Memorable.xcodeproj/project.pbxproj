@@ -34,6 +34,12 @@
 		DD421DB32C33FABA00E4D320 /* Gifu in Frameworks */ = {isa = PBXBuildFile; productRef = DD421DB22C33FABA00E4D320 /* Gifu */; };
 		DD421DB52C33FB9000E4D320 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DB42C33FB9000E4D320 /* SplashViewController.swift */; };
 		DD421DB72C33FC2200E4D320 /* memorable_splash.gif in Resources */ = {isa = PBXBuildFile; fileRef = DD421DB62C33FC2200E4D320 /* memorable_splash.gif */; };
+		DD421DB92C34EB7C00E4D320 /* Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DB82C34EB7C00E4D320 /* Deprecated.swift */; };
+		DD421DC12C357E7600E4D320 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DC02C357E7600E4D320 /* Common.swift */; };
+		DD421DC42C3585DF00E4D320 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DC32C3585DF00E4D320 /* OnboardingViewController.swift */; };
+		DD421DC92C3586D200E4D320 /* Onboarding1.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DC82C3586D200E4D320 /* Onboarding1.swift */; };
+		DD421DCB2C3586D900E4D320 /* Onboarding2.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DCA2C3586D900E4D320 /* Onboarding2.swift */; };
+		DD421DCD2C3586E100E4D320 /* Onboarding3.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DCC2C3586E100E4D320 /* Onboarding3.swift */; };
 		DD4B40AF2C2BD38A00524757 /* WorkSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4B40AE2C2BD38A00524757 /* WorkSheetViewController.swift */; };
 		DD4B40B12C2BE30600524757 /* WorkSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4B40B02C2BE30600524757 /* WorkSheetView.swift */; };
 		DD4B40B32C2BE4AD00524757 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4B40B22C2BE4AD00524757 /* MockData.swift */; };
@@ -129,10 +135,6 @@
 		DBD820542C2C7CDA00A9B1C3 /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
 		DBEB96A02C32BACF00106866 /* StreakView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakView.swift; sourceTree = "<group>"; };
 		DBEB96A22C32BF8000106866 /* DayCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayCell.swift; sourceTree = "<group>"; };
-		DBEB96F52C34FA1A00106866 /* Memorable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Memorable.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		DBEB96F62C34FA1A00106866 /* PDFShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PDFShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		DBEB96F72C34FA1A00106866 /* MemorableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MemorableTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		DBEB96F82C34FA1A00106866 /* MemorableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MemorableUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBEB96F92C35764B00106866 /* APIManagere.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManagere.swift; sourceTree = "<group>"; };
 		DBEB96FB2C35770C00106866 /* Worksheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Worksheet.swift; sourceTree = "<group>"; };
 		DBEB96FD2C35774500106866 /* Testsheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Testsheet.swift; sourceTree = "<group>"; };
@@ -141,6 +143,13 @@
 		DD2F8B8D2C3089C8003F077D /* FloatingImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingImage.swift; sourceTree = "<group>"; };
 		DD421DB42C33FB9000E4D320 /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		DD421DB62C33FC2200E4D320 /* memorable_splash.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = memorable_splash.gif; sourceTree = "<group>"; };
+		DD421DB82C34EB7C00E4D320 /* Deprecated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deprecated.swift; sourceTree = "<group>"; };
+		DD421DBE2C351CCB00E4D320 /* Memorable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Memorable.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD421DC02C357E7600E4D320 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
+		DD421DC32C3585DF00E4D320 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		DD421DC82C3586D200E4D320 /* Onboarding1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding1.swift; sourceTree = "<group>"; };
+		DD421DCA2C3586D900E4D320 /* Onboarding2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding2.swift; sourceTree = "<group>"; };
+		DD421DCC2C3586E100E4D320 /* Onboarding3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding3.swift; sourceTree = "<group>"; };
 		DD4B40AE2C2BD38A00524757 /* WorkSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSheetViewController.swift; sourceTree = "<group>"; };
 		DD4B40B02C2BE30600524757 /* WorkSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSheetView.swift; sourceTree = "<group>"; };
 		DD4B40B22C2BE4AD00524757 /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
@@ -176,6 +185,10 @@
 		DDDA801A2C33ADB80077E5F2 /* Pretendard-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Light.otf"; sourceTree = "<group>"; };
 		DDDA801B2C33ADB80077E5F2 /* Pretendard-ExtraLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-ExtraLight.otf"; sourceTree = "<group>"; };
 		DDDA80272C33F0600077E5F2 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		DDEA00112C35D65F0007B03A /* Memorable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Memorable.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DDEA00122C35D65F0007B03A /* PDFShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PDFShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		DDEA00132C35D65F0007B03A /* MemorableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableTests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/Memorable.app/PlugIns/MemorableTests.xctest"; sourceTree = "<absolute>"; };
+		DDEA00142C35D65F0007B03A /* MemorableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableUITests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/MemorableUITests-Runner.app/PlugIns/MemorableUITests.xctest"; sourceTree = "<absolute>"; };
 		DDF67E852C32F9D900F37BFC /* WrongSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongSheetViewController.swift; sourceTree = "<group>"; };
 		DDF67E872C32FB3800F37BFC /* WrongSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongSheetView.swift; sourceTree = "<group>"; };
 		DDF67E892C330F3400F37BFC /* WrongQuestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongQuestionView.swift; sourceTree = "<group>"; };
@@ -226,9 +239,38 @@
 			path = Widget;
 			sourceTree = "<group>";
 		};
+		DD421DBF2C357E5700E4D320 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				DD421DC02C357E7600E4D320 /* Common.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		DD421DC22C3585B500E4D320 /* Initial */ = {
+			isa = PBXGroup;
+			children = (
+				DD421DB42C33FB9000E4D320 /* SplashViewController.swift */,
+				DDAC4BD92C2805AB006206EB /* LoginViewController.swift */,
+				DD421DC32C3585DF00E4D320 /* OnboardingViewController.swift */,
+			);
+			path = Initial;
+			sourceTree = "<group>";
+		};
+		DD421DC72C3586C200E4D320 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				DD421DC82C3586D200E4D320 /* Onboarding1.swift */,
+				DD421DCA2C3586D900E4D320 /* Onboarding2.swift */,
+				DD421DCC2C3586E100E4D320 /* Onboarding3.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
 		DD4B40AA2C2BCEEF00524757 /* Component */ = {
 			isa = PBXGroup;
 			children = (
+				DD421DC72C3586C200E4D320 /* Onboarding */,
 				DD4B40B02C2BE30600524757 /* WorkSheetView.swift */,
 				DDF67E872C32FB3800F37BFC /* WrongSheetView.swift */,
 				DDF67E892C330F3400F37BFC /* WrongQuestionView.swift */,
@@ -293,10 +335,9 @@
 				DDAB24CC2C3144DA00AAEDB6 /* PDFShareExtension */,
 				DDAC4BEE2C2805AC006206EB /* MemorableTests */,
 				DDAC4BF82C2805AC006206EB /* MemorableUITests */,
-				DBEB96F52C34FA1A00106866 /* Memorable.app */,
-				DBEB96F62C34FA1A00106866 /* PDFShareExtension.appex */,
-				DBEB96F72C34FA1A00106866 /* MemorableTests.xctest */,
-				DBEB96F82C34FA1A00106866 /* MemorableUITests.xctest */,
+				DD421DBE2C351CCB00E4D320 /* Memorable.app */,
+				DDEA00112C35D65F0007B03A /* Memorable.app */,
+				DDEA00122C35D65F0007B03A /* PDFShareExtension.appex */,
 			);
 			sourceTree = "<group>";
 		};
@@ -331,8 +372,7 @@
 		DDBD12ED2C298F61006E7D92 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				DD421DB42C33FB9000E4D320 /* SplashViewController.swift */,
-				DDAC4BD92C2805AB006206EB /* LoginViewController.swift */,
+				DD421DC22C3585B500E4D320 /* Initial */,
 				DDBD12FB2C29C6BC006E7D92 /* HomeViewController.swift */,
 				DD4B40AE2C2BD38A00524757 /* WorkSheetViewController.swift */,
 				DDF67E852C32F9D900F37BFC /* WrongSheetViewController.swift */,
@@ -359,6 +399,7 @@
 			isa = PBXGroup;
 			children = (
 				DDBD12F02C298FCD006E7D92 /* App */,
+				DD421DBF2C357E5700E4D320 /* Common */,
 				DDC1EE8E2C2AACE700C88CD7 /* Manager */,
 				DDBD12F62C29C586006E7D92 /* Model */,
 				DDBD12ED2C298F61006E7D92 /* View */,
@@ -396,8 +437,9 @@
 			children = (
 				DDC1EE8F2C2AACFB00C88CD7 /* AuthState.swift */,
 				DDC1EE912C2AAD2400C88CD7 /* SignInManager.swift */,
-				DDAB24DF2C3148A700AAEDB6 /* APIManager.swift */,
 				DB3CEC822C2E90FF00F8211C /* QuestionManager.swift */,
+				DDAB24DF2C3148A700AAEDB6 /* APIManager.swift */,
+				DD421DB82C34EB7C00E4D320 /* Deprecated.swift */,
 				DBEB96F92C35764B00106866 /* APIManagere.swift */,
 			);
 			path = Manager;
@@ -432,7 +474,7 @@
 				DDAB24DC2C31466500AAEDB6 /* Then */,
 			);
 			productName = PDFShareExtension;
-			productReference = DBEB96F62C34FA1A00106866 /* PDFShareExtension.appex */;
+			productReference = DDEA00122C35D65F0007B03A /* PDFShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		DDAC4BD12C2805AB006206EB /* Memorable */ = {
@@ -456,7 +498,7 @@
 				DD421DB22C33FABA00E4D320 /* Gifu */,
 			);
 			productName = Memorable;
-			productReference = DBEB96F52C34FA1A00106866 /* Memorable.app */;
+			productReference = DDEA00112C35D65F0007B03A /* Memorable.app */;
 			productType = "com.apple.product-type.application";
 		};
 		DDAC4BEA2C2805AC006206EB /* MemorableTests */ = {
@@ -474,7 +516,7 @@
 			);
 			name = MemorableTests;
 			productName = MemorableTests;
-			productReference = DBEB96F72C34FA1A00106866 /* MemorableTests.xctest */;
+			productReference = DDEA00132C35D65F0007B03A /* MemorableTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		DDAC4BF42C2805AC006206EB /* MemorableUITests */ = {
@@ -492,7 +534,7 @@
 			);
 			name = MemorableUITests;
 			productName = MemorableUITests;
-			productReference = DBEB96F82C34FA1A00106866 /* MemorableUITests.xctest */;
+			productReference = DDEA00142C35D65F0007B03A /* MemorableUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -615,11 +657,13 @@
 				DD4B40B12C2BE30600524757 /* WorkSheetView.swift in Sources */,
 				DDAC4BD62C2805AB006206EB /* AppDelegate.swift in Sources */,
 				DDAC4BE02C2805AB006206EB /* Memorable.xcdatamodeld in Sources */,
+				DD421DCB2C3586D900E4D320 /* Onboarding2.swift in Sources */,
 				DB3CEC912C314AAB00F8211C /* MypageView.swift in Sources */,
 				DBEB97002C35775900106866 /* Wrongsheet.swift in Sources */,
 				DDC1EE902C2AACFB00C88CD7 /* AuthState.swift in Sources */,
 				DD1A05FF2C2B1B4900DE0CB8 /* User.swift in Sources */,
 				DD4B40B32C2BE4AD00524757 /* MockData.swift in Sources */,
+				DD421DC42C3585DF00E4D320 /* OnboardingViewController.swift in Sources */,
 				DDAB24E02C3148A700AAEDB6 /* APIManager.swift in Sources */,
 				DDC1EE922C2AAD2400C88CD7 /* SignInManager.swift in Sources */,
 				DDDA80112C33A8820077E5F2 /* MemorableFont.swift in Sources */,
@@ -636,17 +680,21 @@
 				DB3CEC7B2C2E10E000F8211C /* WorksheetListViewComponent.swift in Sources */,
 				DDB3E3852C2FE16200AF9182 /* TestLoginViewController.swift in Sources */,
 				DBD820492C2A804700A9B1C3 /* TabViewComponent.swift in Sources */,
+				DD421DC12C357E7600E4D320 /* Common.swift in Sources */,
 				DB3CEC932C31655A00F8211C /* RecentsheetCell.swift in Sources */,
 				DDDA800F2C33A8110077E5F2 /* MemorableColor.swift in Sources */,
 				DBD820552C2C7CDA00A9B1C3 /* Document.swift in Sources */,
 				DBD8204D2C2ADF5C00A9B1C3 /* HeaderComponent.swift in Sources */,
+				DD421DC92C3586D200E4D320 /* Onboarding1.swift in Sources */,
 				DD421DB52C33FB9000E4D320 /* SplashViewController.swift in Sources */,
 				DBEB96A32C32BF8000106866 /* DayCell.swift in Sources */,
 				DBEB96FE2C35774500106866 /* Testsheet.swift in Sources */,
 				DBEB96FA2C35764B00106866 /* APIManagere.swift in Sources */,
 				DB3CEC972C31E16100F8211C /* GradientView.swift in Sources */,
+				DD421DB92C34EB7C00E4D320 /* Deprecated.swift in Sources */,
 				DBD8204F2C2BE31800A9B1C3 /* LibraryViewComponent.swift in Sources */,
 				DB3CEC832C2E90FF00F8211C /* QuestionManager.swift in Sources */,
+				DD421DCD2C3586E100E4D320 /* Onboarding3.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -890,6 +938,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -920,6 +969,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				LD_RUNPATH_SEARCH_PATHS = (

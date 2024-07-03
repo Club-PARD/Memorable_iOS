@@ -5,12 +5,11 @@
 //  Created by 김현기 on 6/23/24.
 //
 
-import UIKit
 import CoreData
+import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    
     func application(_ application: UIApplication, handleOpen url: URL) -> Bool {
         print("AppDelegate: handleOpen called with \(url)")
         // URL 처리 로직
@@ -20,7 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         print("AppDelegate: didFinishLaunchingWithOptions called")
         // Override point for customization after application launch.
-        
+
         return true
     }
 
@@ -44,7 +43,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "Memorable")
-        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+        container.loadPersistentStores(completionHandler: { _, error in
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
@@ -54,7 +53,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // MARK: - Core Data Saving support
 
-    func saveContext () {
+    func saveContext() {
         let context = persistentContainer.viewContext
         if context.hasChanges {
             do {
@@ -70,13 +69,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //
 //    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
 //        print("AppDelegate: open URL called with \(url)")
-//        
+//
 //        // URL 처리 로직
 //        if url.scheme == "memorable" && url.host == "open-shared-file" {
 //            // 공유된 파일 처리 로직
 //            handleSharedFile()
 //        }
-//        
+//
 //        return true
 //    }
 //
@@ -85,13 +84,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        if userDefaults?.bool(forKey: "isSharedFile") == true,
 //           let fileURLString = userDefaults?.string(forKey: "sharedFileURL"),
 //           let fileName = userDefaults?.string(forKey: "sharedFileName") {
-//            
+//
 //            print("Shared file detected: \(fileName)")
-//            
+//
 //            // 여기에서 파일 처리 로직을 구현하거나
 //            // 필요한 경우 NotificationCenter를 통해 다른 부분에 알림을 보낼 수 있습니다.
 //            NotificationCenter.default.post(name: .didReceiveSharedFile, object: nil, userInfo: ["fileURL": fileURLString, "fileName": fileName])
-//            
+//
 //            // 처리 후 flag를 리셋합니다.
 //            userDefaults?.set(false, forKey: "isSharedFile")
 //            userDefaults?.synchronize()
@@ -99,6 +98,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //    }
 }
 
-//extension Notification.Name {
+// extension Notification.Name {
 //    static let didReceiveSharedFile = Notification.Name("didReceiveSharedFile")
-//}
+// }
