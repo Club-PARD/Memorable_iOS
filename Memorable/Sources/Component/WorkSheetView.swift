@@ -162,6 +162,7 @@ class WorkSheetView: UIView {
             // Create and add text field
             let textField = UITextField().then {
                 $0.delegate = self
+                $0.textAlignment = .center
                 $0.font = .systemFont(ofSize: 13)
                 $0.layer.cornerRadius = 15
                 $0.backgroundColor = MemorableColor.Gray5
@@ -171,7 +172,6 @@ class WorkSheetView: UIView {
                     make.height.equalTo(30)
                 }
                 $0.placeholder = "                           "
-                $0.textAlignment = .center
             }
             self.userAnswers.append(textField)
 
