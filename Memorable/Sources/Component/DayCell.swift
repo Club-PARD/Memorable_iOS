@@ -47,27 +47,21 @@ class DayCell: UICollectionViewCell {
     
     func configure(day: String, date: Date, isToday: Bool, attended: Bool, isFuture: Bool) {
         dayLabel.text = day
-        dayLabel.textColor = .gray
+        dayLabel.font = MemorableFont.Body1()
+        dayLabel.textColor = MemorableColor.Gray1
         dateLabel.text = String(Calendar.current.component(.day, from: date))
-        
-        if isToday {
-            dayLabel.font = UIFont.boldSystemFont(ofSize: 12)
-            dateLabel.font = UIFont.boldSystemFont(ofSize: 14)
-        } else {
-            dayLabel.font = UIFont.systemFont(ofSize: 12)
-            dateLabel.font = UIFont.systemFont(ofSize: 14)
-        }
+        dateLabel.font = MemorableFont.Body1()
         
         if isFuture {
             circleView.backgroundColor = .clear
-            dateLabel.textColor = .black
+            dateLabel.textColor = MemorableColor.Black
         } else {
             setAttended(attended)
         }
     }
     
     func setAttended(_ attended: Bool) {
-        circleView.backgroundColor = attended ? .blue : .lightGray
-        dateLabel.textColor = .white
+        circleView.backgroundColor = attended ? MemorableColor.Blue2 : MemorableColor.Gray1
+        dateLabel.textColor = MemorableColor.White
     }
 }
