@@ -35,6 +35,11 @@ class MypageView: UIView {
     private let purchaseButton = UIButton(type: .system)
     private let toastLabel = UILabel()
     
+    private let inquiryDropdownView: UIView = UIView()
+        private let phoneLabel: UILabel = UILabel()
+        private let emailLabel: UILabel = UILabel()
+        private var isDropdownVisible = false
+    
     override init(frame: CGRect) {
         scrollView = UIScrollView()
         contentView = UIView()
@@ -70,6 +75,9 @@ class MypageView: UIView {
     }
     
     private func setupView() {
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.showsHorizontalScrollIndicator = false
+        
         addSubview(scrollView)
         scrollView.addSubview(contentView)
         
@@ -295,7 +303,7 @@ class MypageView: UIView {
         serviceLabel.font = UIFont.boldSystemFont(ofSize: 20)
         
         setupServiceButton(logoutButton, title: "로그아웃하기", imageName: "logout", action: #selector(showLogoutAlert))
-        setupServiceButton(inquiryButton, title: "문의하기", imageName: "inquiry", action: #selector(showInquiryToast))
+        setupServiceButton(inquiryButton, title: "문의하기", imageName: "inquiry", action: #selector(showInquiryActionSheet))
         setupServiceButton(removeUserButton, title: "회원 탈퇴하기", imageName: "removeuser", action: #selector(showRemoveUserAlert))
         
         contentView.addSubview(logoutButton)
@@ -382,7 +390,8 @@ class MypageView: UIView {
         }
         
         titleLabel.snp.makeConstraints { make in
-            make.top.leading.equalToSuperview()
+            make.top.equalToSuperview().offset(19)
+            make.leading.equalToSuperview().offset(16)
         }
         
         profileView.snp.makeConstraints { make in
@@ -672,6 +681,16 @@ class MypageView: UIView {
 //
 //            navController.setViewControllers([HomeViewController()], animated: false)
 //        }
+    }
+    
+    @objc private func showInquiryActionSheet() {
+        let inquiryVC = InquiryViewController()
+        inquiryVC.modalPresentationStyle = .overFullScreen
+        inquiryVC.modalTransitionStyle = .coverVertical
+        
+        if let viewController = window?.rootViewController {
+            viewController.present(inquiryVC, animated: true, completion: nil)
+        }
     }
     
     // 문의하기 토스트 메시지 표시 메서드
