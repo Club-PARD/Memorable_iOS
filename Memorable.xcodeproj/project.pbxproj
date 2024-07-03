@@ -29,14 +29,19 @@
 		DD421DB32C33FABA00E4D320 /* Gifu in Frameworks */ = {isa = PBXBuildFile; productRef = DD421DB22C33FABA00E4D320 /* Gifu */; };
 		DD421DB52C33FB9000E4D320 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DB42C33FB9000E4D320 /* SplashViewController.swift */; };
 		DD421DB72C33FC2200E4D320 /* memorable_splash.gif in Resources */ = {isa = PBXBuildFile; fileRef = DD421DB62C33FC2200E4D320 /* memorable_splash.gif */; };
-		DD421DB92C34EB7C00E4D320 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DB82C34EB7C00E4D320 /* APIManager.swift */; };
+		DD421DB92C34EB7C00E4D320 /* Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DB82C34EB7C00E4D320 /* Deprecated.swift */; };
+		DD421DC12C357E7600E4D320 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DC02C357E7600E4D320 /* Common.swift */; };
+		DD421DC42C3585DF00E4D320 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DC32C3585DF00E4D320 /* OnboardingViewController.swift */; };
+		DD421DC92C3586D200E4D320 /* Onboarding1.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DC82C3586D200E4D320 /* Onboarding1.swift */; };
+		DD421DCB2C3586D900E4D320 /* Onboarding2.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DCA2C3586D900E4D320 /* Onboarding2.swift */; };
+		DD421DCD2C3586E100E4D320 /* Onboarding3.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DCC2C3586E100E4D320 /* Onboarding3.swift */; };
 		DD4B40AF2C2BD38A00524757 /* WorkSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4B40AE2C2BD38A00524757 /* WorkSheetViewController.swift */; };
 		DD4B40B12C2BE30600524757 /* WorkSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4B40B02C2BE30600524757 /* WorkSheetView.swift */; };
 		DD4B40B32C2BE4AD00524757 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4B40B22C2BE4AD00524757 /* MockData.swift */; };
 		DDAB24CE2C3144DA00AAEDB6 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAB24CD2C3144DA00AAEDB6 /* ShareViewController.swift */; };
 		DDAB24DB2C31465500AAEDB6 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = DDAB24DA2C31465500AAEDB6 /* SnapKit */; };
 		DDAB24DD2C31466500AAEDB6 /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = DDAB24DC2C31466500AAEDB6 /* Then */; };
-		DDAB24E02C3148A700AAEDB6 /* TempAPIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAB24DF2C3148A700AAEDB6 /* TempAPIManager.swift */; };
+		DDAB24E02C3148A700AAEDB6 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAB24DF2C3148A700AAEDB6 /* APIManager.swift */; };
 		DDAC4BD62C2805AB006206EB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC4BD52C2805AB006206EB /* AppDelegate.swift */; };
 		DDAC4BD82C2805AB006206EB /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC4BD72C2805AB006206EB /* SceneDelegate.swift */; };
 		DDAC4BDA2C2805AB006206EB /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC4BD92C2805AB006206EB /* LoginViewController.swift */; };
@@ -128,17 +133,22 @@
 		DD2F8B8D2C3089C8003F077D /* FloatingImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingImage.swift; sourceTree = "<group>"; };
 		DD421DB42C33FB9000E4D320 /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		DD421DB62C33FC2200E4D320 /* memorable_splash.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = memorable_splash.gif; sourceTree = "<group>"; };
-		DD421DB82C34EB7C00E4D320 /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
+		DD421DB82C34EB7C00E4D320 /* Deprecated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deprecated.swift; sourceTree = "<group>"; };
 		DD421DBB2C34FAF700E4D320 /* PDFShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; name = PDFShareExtension.appex; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/PDFShareExtension.appex"; sourceTree = "<absolute>"; };
 		DD421DBC2C34FAF700E4D320 /* MemorableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableTests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/Memorable.app/PlugIns/MemorableTests.xctest"; sourceTree = "<absolute>"; };
 		DD421DBD2C34FAF700E4D320 /* MemorableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableUITests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/MemorableUITests-Runner.app/PlugIns/MemorableUITests.xctest"; sourceTree = "<absolute>"; };
 		DD421DBE2C351CCB00E4D320 /* Memorable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Memorable.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD421DC02C357E7600E4D320 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
+		DD421DC32C3585DF00E4D320 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		DD421DC82C3586D200E4D320 /* Onboarding1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding1.swift; sourceTree = "<group>"; };
+		DD421DCA2C3586D900E4D320 /* Onboarding2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding2.swift; sourceTree = "<group>"; };
+		DD421DCC2C3586E100E4D320 /* Onboarding3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding3.swift; sourceTree = "<group>"; };
 		DD4B40AE2C2BD38A00524757 /* WorkSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSheetViewController.swift; sourceTree = "<group>"; };
 		DD4B40B02C2BE30600524757 /* WorkSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSheetView.swift; sourceTree = "<group>"; };
 		DD4B40B22C2BE4AD00524757 /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
 		DDAB24CD2C3144DA00AAEDB6 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		DDAB24D22C3144DA00AAEDB6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DDAB24DF2C3148A700AAEDB6 /* TempAPIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TempAPIManager.swift; sourceTree = "<group>"; };
+		DDAB24DF2C3148A700AAEDB6 /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
 		DDAB24E82C315C0100AAEDB6 /* PDFShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PDFShareExtension.entitlements; sourceTree = "<group>"; };
 		DDAC4BD52C2805AB006206EB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DDAC4BD72C2805AB006206EB /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -218,9 +228,38 @@
 			path = Widget;
 			sourceTree = "<group>";
 		};
+		DD421DBF2C357E5700E4D320 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				DD421DC02C357E7600E4D320 /* Common.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		DD421DC22C3585B500E4D320 /* Initial */ = {
+			isa = PBXGroup;
+			children = (
+				DD421DB42C33FB9000E4D320 /* SplashViewController.swift */,
+				DDAC4BD92C2805AB006206EB /* LoginViewController.swift */,
+				DD421DC32C3585DF00E4D320 /* OnboardingViewController.swift */,
+			);
+			path = Initial;
+			sourceTree = "<group>";
+		};
+		DD421DC72C3586C200E4D320 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				DD421DC82C3586D200E4D320 /* Onboarding1.swift */,
+				DD421DCA2C3586D900E4D320 /* Onboarding2.swift */,
+				DD421DCC2C3586E100E4D320 /* Onboarding3.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
 		DD4B40AA2C2BCEEF00524757 /* Component */ = {
 			isa = PBXGroup;
 			children = (
+				DD421DC72C3586C200E4D320 /* Onboarding */,
 				DD4B40B02C2BE30600524757 /* WorkSheetView.swift */,
 				DDF67E872C32FB3800F37BFC /* WrongSheetView.swift */,
 				DDF67E892C330F3400F37BFC /* WrongQuestionView.swift */,
@@ -320,8 +359,7 @@
 		DDBD12ED2C298F61006E7D92 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				DD421DB42C33FB9000E4D320 /* SplashViewController.swift */,
-				DDAC4BD92C2805AB006206EB /* LoginViewController.swift */,
+				DD421DC22C3585B500E4D320 /* Initial */,
 				DDBD12FB2C29C6BC006E7D92 /* HomeViewController.swift */,
 				DD4B40AE2C2BD38A00524757 /* WorkSheetViewController.swift */,
 				DDF67E852C32F9D900F37BFC /* WrongSheetViewController.swift */,
@@ -347,6 +385,7 @@
 			isa = PBXGroup;
 			children = (
 				DDBD12F02C298FCD006E7D92 /* App */,
+				DD421DBF2C357E5700E4D320 /* Common */,
 				DDC1EE8E2C2AACE700C88CD7 /* Manager */,
 				DDBD12F62C29C586006E7D92 /* Model */,
 				DDBD12ED2C298F61006E7D92 /* View */,
@@ -382,8 +421,8 @@
 				DDC1EE8F2C2AACFB00C88CD7 /* AuthState.swift */,
 				DDC1EE912C2AAD2400C88CD7 /* SignInManager.swift */,
 				DB3CEC822C2E90FF00F8211C /* QuestionManager.swift */,
-				DDAB24DF2C3148A700AAEDB6 /* TempAPIManager.swift */,
-				DD421DB82C34EB7C00E4D320 /* APIManager.swift */,
+				DDAB24DF2C3148A700AAEDB6 /* APIManager.swift */,
+				DD421DB82C34EB7C00E4D320 /* Deprecated.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -599,11 +638,13 @@
 				DD4B40B12C2BE30600524757 /* WorkSheetView.swift in Sources */,
 				DDAC4BD62C2805AB006206EB /* AppDelegate.swift in Sources */,
 				DDAC4BE02C2805AB006206EB /* Memorable.xcdatamodeld in Sources */,
+				DD421DCB2C3586D900E4D320 /* Onboarding2.swift in Sources */,
 				DB3CEC912C314AAB00F8211C /* MypageView.swift in Sources */,
 				DDC1EE902C2AACFB00C88CD7 /* AuthState.swift in Sources */,
 				DD1A05FF2C2B1B4900DE0CB8 /* User.swift in Sources */,
 				DD4B40B32C2BE4AD00524757 /* MockData.swift in Sources */,
-				DDAB24E02C3148A700AAEDB6 /* TempAPIManager.swift in Sources */,
+				DD421DC42C3585DF00E4D320 /* OnboardingViewController.swift in Sources */,
+				DDAB24E02C3148A700AAEDB6 /* APIManager.swift in Sources */,
 				DDC1EE922C2AAD2400C88CD7 /* SignInManager.swift in Sources */,
 				DDDA80112C33A8820077E5F2 /* MemorableFont.swift in Sources */,
 				DB3CEC812C2E90BE00F8211C /* TestQuestion.swift in Sources */,
@@ -618,16 +659,19 @@
 				DB3CEC7B2C2E10E000F8211C /* WorksheetListViewComponent.swift in Sources */,
 				DDB3E3852C2FE16200AF9182 /* TestLoginViewController.swift in Sources */,
 				DBD820492C2A804700A9B1C3 /* TabViewComponent.swift in Sources */,
+				DD421DC12C357E7600E4D320 /* Common.swift in Sources */,
 				DB3CEC932C31655A00F8211C /* RecentsheetCell.swift in Sources */,
 				DDDA800F2C33A8110077E5F2 /* MemorableColor.swift in Sources */,
 				DBD820552C2C7CDA00A9B1C3 /* Document.swift in Sources */,
 				DBD8204D2C2ADF5C00A9B1C3 /* HeaderComponent.swift in Sources */,
+				DD421DC92C3586D200E4D320 /* Onboarding1.swift in Sources */,
 				DD421DB52C33FB9000E4D320 /* SplashViewController.swift in Sources */,
 				DBEB96A32C32BF8000106866 /* DayCell.swift in Sources */,
 				DB3CEC972C31E16100F8211C /* GradientView.swift in Sources */,
-				DD421DB92C34EB7C00E4D320 /* APIManager.swift in Sources */,
+				DD421DB92C34EB7C00E4D320 /* Deprecated.swift in Sources */,
 				DBD8204F2C2BE31800A9B1C3 /* LibraryViewComponent.swift in Sources */,
 				DB3CEC832C2E90FF00F8211C /* QuestionManager.swift in Sources */,
+				DD421DCD2C3586E100E4D320 /* Onboarding3.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

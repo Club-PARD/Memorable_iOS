@@ -288,21 +288,22 @@ class WorkSheetViewController: UIViewController {
 
     @objc func didTapBackButton() {
         print("GO BACK")
-        let alert = UIAlertController(title: "빈칸 학습지 나가기", message: "빈칸 학습지를 나가시겠습니까?\n지금까지의 기록이 저장되지 않고\n라이브러리로 되돌아갑니다.", preferredStyle: .alert)
-
-        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
-            print("PRESS CANCEL")
-        }
-
-        let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
-            print("PRESS CONFIRM")
-            self.navigationController?.popViewController(animated: true)
-        }
-
-        alert.addAction(cancelAction)
-        alert.addAction(confirmAction)
-
-        present(alert, animated: true)
+        navigationController?.popViewController(animated: true)
+//        let alert = UIAlertController(title: "빈칸 학습지 나가기", message: "빈칸 학습지를 나가시겠습니까?\n지금까지의 기록이 저장되지 않고\n라이브러리로 되돌아갑니다.", preferredStyle: .alert)
+//
+//        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
+//            print("PRESS CANCEL")
+//        }
+//
+//        let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
+//            print("PRESS CONFIRM")
+//            self.navigationController?.popViewController(animated: true)
+//        }
+//
+//        alert.addAction(cancelAction)
+//        alert.addAction(confirmAction)
+//
+//        present(alert, animated: true)
     }
 
     @objc func didTapReExtractButton() {

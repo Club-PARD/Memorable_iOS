@@ -12,7 +12,7 @@ import UIKit
 class WrongQuestionView: UIView {
     let questionNumberView = UIView().then {
         $0.backgroundColor = MemorableColor.Blue2
-        $0.layer.cornerRadius = 0.5 * 39
+        $0.layer.cornerRadius = 0.5 * 32
         $0.clipsToBounds = true
     }
     
@@ -25,11 +25,13 @@ class WrongQuestionView: UIView {
     }
     
     var answerTextField = UITextField().then {
-        $0.layer.cornerRadius = 19
+        $0.layer.cornerRadius = 24
         $0.layer.masksToBounds = true
         $0.borderStyle = .none
         $0.backgroundColor = MemorableColor.Gray5
-        $0.textAlignment = .center
+        $0.textAlignment = .left
+        $0.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 24, height: $0.frame.height))
+        $0.leftViewMode = .always
     }
     
     var answerValue: String = ""
@@ -37,6 +39,7 @@ class WrongQuestionView: UIView {
     var myAnswerWhenChecking = UILabel().then {
         $0.isHidden = true
         $0.textColor = MemorableColor.Gray1
+        $0.font = MemorableFont.BodyCaption()
     }
     
     init(frame: CGRect, idx: Int, question: String, answer: String) {
@@ -44,6 +47,8 @@ class WrongQuestionView: UIView {
         questionNumber.text = "\(idx)"
         questionLabel.text = question
         answerValue = answer
+        
+        answerTextField.delegate = self
         
         addSubViews()
         setupConstraints()
@@ -65,12 +70,12 @@ class WrongQuestionView: UIView {
     
     func setupConstraints() {
         snp.makeConstraints { make in
-            make.height.equalTo(120)
+            make.height.equalTo(130)
         }
         
         questionNumberView.snp.makeConstraints { make in
             make.top.leading.equalToSuperview()
-            make.width.height.equalTo(39)
+            make.width.height.equalTo(32)
         }
         questionNumber.snp.makeConstraints { make in
             make.center.equalTo(questionNumberView)
@@ -82,14 +87,28 @@ class WrongQuestionView: UIView {
         }
         
         answerTextField.snp.makeConstraints { make in
-            make.trailing.bottom.equalToSuperview()
-            make.width.equalTo(200)
-            make.height.equalTo(38)
+            make.top.equalTo(questionNumberView.snp.bottom).offset(24)
+            make.width.equalToSuperview()
+            make.height.equalTo(48)
         }
         
         myAnswerWhenChecking.snp.makeConstraints { make in
-            make.trailing.equalTo(answerTextField.snp.leading).offset(-10)
-            make.centerY.equalTo(answerTextField.snp.centerY)
+            make.top.equalTo(answerTextField.snp.bottom).offset(5)
+            make.leading.equalTo(answerTextField.snp.leading).offset(24)
         }
+    }
+}
+
+extension WrongQuestionView: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        textField.backgroundColor = MemorableColor.Yellow3
+    }
+
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        textField.backgroundColor = MemorableColor.Gray5
+    }
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        return textField.resignFirstResponder()
     }
 }

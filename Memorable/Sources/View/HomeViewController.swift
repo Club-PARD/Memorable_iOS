@@ -9,10 +9,8 @@ import SnapKit
 import UIKit
 
 class HomeViewController: UIViewController {
-    var userIdentifier: String = ""
-    var givenName: String = ""
-    var familyName: String = ""
-    var email: String = ""
+    var userName = ""
+    var userEmail = ""
     
     let tabBar = TabBarComponent()
     let containerView = UIView()
@@ -70,15 +68,11 @@ class HomeViewController: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor = MemorableColor.Gray5
         headerComponent.delegate = self
-        
-        userIdentifier = UserDefaults.standard.string(forKey: SignInManager.userIdentifierKey)!
 
         if let userData = UserDefaults.standard.data(forKey: "userInfo") {
             if let decodedData = try? JSONDecoder().decode(User.self, from: userData) {
-                print("User Info: \(decodedData)")
-                givenName = decodedData.givenName
-                familyName = decodedData.familyName
-                email = decodedData.email
+                userName = decodedData.givenName
+                userEmail = decodedData.email
             }
         }
         
@@ -251,7 +245,7 @@ class HomeViewController: UIViewController {
             gradientView.isHidden = false
             setupLibraryViewComponent()
             titleLabel.text = ""
-            libraryViewComponent.titleLabel.text = "\(givenName)님,\n오늘도 함께 학습해 볼까요?"
+            libraryViewComponent.titleLabel.text = "\(userName)님,\n오늘도 함께 학습해 볼까요?"
         case "star":
             viewStack = [viewId]
             headerComponent.showBackButton(false)
@@ -259,7 +253,7 @@ class HomeViewController: UIViewController {
             titleLabel.isHidden = false
             gradientView.isHidden = true
             setupDefaultView()
-            titleLabel.text = "\(givenName)님이\n즐겨찾기한 파일"
+            titleLabel.text = "\(userName)님이\n즐겨찾기한 파일"
             let worksheetDocuments = mockData.filter { $0.fileType == "빈칸학습지" }
             let testsheetDocuments = mockData.filter { $0.fileType == "나만의 시험지" }
             let wrongsheetDocuments = mockData.filter { $0.fileType == "오답노트" }
@@ -276,9 +270,9 @@ class HomeViewController: UIViewController {
             gradientView.isHidden = false
             setupLibraryViewComponent()
             titleLabel.text = ""
-            mypageView.titleLabel.text = "\(givenName)님,\n안녕하세요!"
-            mypageView.profileName.text = givenName
-            mypageView.profileEmail.text = email
+            mypageView.titleLabel.text = "\(userName)님,\n안녕하세요!"
+            mypageView.profileName.text = userName
+            mypageView.profileEmail.text = userEmail
             if let streakView = mypageView.streakView as? StreakView {
                 streakView.setAttendanceRecord(attendanceRecord)
             }
