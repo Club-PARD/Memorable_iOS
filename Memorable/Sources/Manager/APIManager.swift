@@ -2,86 +2,52 @@
 //  APIManager.swift
 //  Memorable
 //
-//  Created by 김현기 on 7/3/24.
+//  Created by 김현기 on 6/30/24.
 //
 
 import Foundation
 
-enum APIError: Error {
-    case invalidURL
-    case noData
-    case encodingError
-    case decodingError
-}
-
-// MARK: - 사용 예시
-
-// MARK: - GET
-
-/*
-    do {
-        let users: [User] = try await API.get(.path("/users"))
-        print(users)
-    } catch {
-        print("Error: \(error)")
-    }
- */
-
-// MARK: - POST
-
-/*
- do {
-     let newUser = User(name: "John", age: 30)
-     try await API.post(.path("/users"), body: newUser)
-     print("User created successfully")
- } catch {
-     print("Error: \(error)")
- }
- */
-
-// MARK: - DELETE
-
-/*
- do {
-     try await API.delete(.path("/users/1"))
-     print("User deleted successfully")
- } catch {
-     print("Error: \(error)")
- }
- */
-
-enum APIManager {
-    static let baseURL = "172.30.1.11:8080"
+class APIManager {
+    static let shared = APIManager()
     
-    static func get<T: Decodable>(path: String) async throws -> T {
-        guard let url = URL(string: "\(baseURL)\(path)") else {
-            throw APIError.invalidURL
-        }
-            
-        let (data, response) = try await URLSession.shared.data(from: url)
-            
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw APIError.noData
-        }
-            
-        guard (200 ... 299).contains(httpResponse.statusCode) else {
-            throw APIError.noData
-        }
-            
-        do {
-            let decoder = JSONDecoder()
-            print("✅ Successfully Got Data! (\(httpResponse.statusCode))")
-            
-            return try decoder.decode(T.self, from: data)
-        } catch {
-            throw APIError.decodingError
-        }
-    }
+    let baseURL = "http://172.30.1.11:8080"
     
-    static func post<T: Encodable>(path: String, body: T) async throws {
-        let urlString = "\(baseURL)\(path)"
-        print(urlString)
+    // 각 function 의 endpoint는 rootUrl 뒤의 나머지
+    func getData<T: Decodable>(to endpoint: String, completion: @escaping (T?, Error?) -> Void) {
+        let urlString = "\(baseURL)\(endpoint)"
+        
         guard let url = URL(string: urlString) else {
+            completion(nil, NSError(domain: "Invalid URL", code: 0, userInfo: nil))
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: url) { data, _, error in
+            if let error = error {
+                completion(nil, error)
+                return
+            }
+            
+            guard let data = data else {
+                completion(nil, NSError(domain: "No data returned", code: 0, userInfo: nil))
+                return
+            }
+            
+            do {
+                let decoder = JSONDecoder()
+                let decodedData = try decoder.decode(T.self, from: data)
+                completion(decodedData, nil)
+            } catch {
+                completion(nil, error)
+            }
+        }
+        task.resume()
+    }
+    
+    func postData<T: Encodable>(to endpoint: String, body: T, completion: @escaping (Result<Void, Error>) -> Void) {
+        let urlString = "\(baseURL)\(endpoint)"
+            
+        guard let url = URL(string: urlString) else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 0, userInfo: nil)))
             return
         }
             
@@ -91,122 +57,52 @@ enum APIManager {
             
         do {
             let encoder = JSONEncoder()
-            request.httpBody = try encoder.encode(body)
+            let jsonData = try encoder.encode(body)
+            request.httpBody = jsonData
+                
+            let task = URLSession.shared.dataTask(with: request) { _, response, error in
+                if let error = error {
+                    completion(.failure(error))
+                    return
+                }
+                    
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    completion(.failure(NSError(domain: "Invalid Response", code: 0, userInfo: nil)))
+                    return
+                }
+                    
+                if (200 ... 299).contains(httpResponse.statusCode) {
+                    completion(.success(()))
+                    print("Server response success: \(httpResponse.statusCode)")
+                } else {
+                    completion(.failure(NSError(domain: "HTTP Error", code: httpResponse.statusCode, userInfo: nil)))
+                    print("Server response failure: \(httpResponse.statusCode)")
+                }
+            }
+            task.resume()
         } catch {
-            throw APIError.encodingError
+            completion(.failure(error))
         }
-            
-        let (_, response) = try await URLSession.shared.data(for: request)
-            
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw APIError.noData
-        }
-            
-        guard (200 ... 299).contains(httpResponse.statusCode) else {
-            throw APIError.noData
+    }
+
+    func deleteData(endpoint: String, completion: @escaping (Error?) -> Void) {
+        let urlString = "\(baseURL)\(endpoint)"
+        
+        guard let url = URL(string: urlString) else {
+            completion(NSError(domain: "Invalid URL", code: 0, userInfo: nil))
+            return
         }
         
-        print("✅ Successfully Posted! (\(httpResponse.statusCode))")
-    }
-    
-    static func update<T: Encodable>(path: String, body: T) async throws {
-        guard let url = URL(string: "\(baseURL)\(path)") else {
-            throw APIError.invalidURL
-        }
-            
-        var request = URLRequest(url: url)
-        request.httpMethod = "PATCH"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            
-        do {
-            let encoder = JSONEncoder()
-            request.httpBody = try encoder.encode(body)
-        } catch {
-            throw APIError.encodingError
-        }
-            
-        let (_, response) = try await URLSession.shared.data(for: request)
-            
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw APIError.noData
-        }
-            
-        guard (200 ... 299).contains(httpResponse.statusCode) else {
-            throw APIError.noData
-        }
-            
-        print("✅ Successfully Updated! (\(httpResponse.statusCode))")
-    }
-    
-    static func delete(path: String) async throws {
-        guard let url = URL(string: "\(baseURL)\(path)") else {
-            throw APIError.invalidURL
-        }
-            
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
-            
-        let (_, response) = try await URLSession.shared.data(for: request)
-            
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw APIError.noData
-        }
-            
-        guard (200 ... 299).contains(httpResponse.statusCode) else {
-            throw APIError.noData
-        }
         
-        print("✅ Successfully Deleted! (\(httpResponse.statusCode))")
-    }
-}
-
-extension APIManager {
-    // GET 래퍼 함수
-    static func get<T: Decodable>(path: String, completion: @escaping (Result<T, Error>) -> Void) {
-        Task {
-            do {
-                let result: T = try await get(path: path)
-                completion(.success(result))
-            } catch {
-                completion(.failure(error))
+        let task = URLSession.shared.dataTask(with: request) { _, _, error in
+            if let error = error {
+                completion(error)
+                return
             }
+            completion(nil)
         }
-    }
-    
-    // POST 래퍼 함수
-    static func post<T: Encodable>(path: String, body: T, completion: @escaping (Result<Void, Error>) -> Void) {
-        print("Path: \(path)")
-        Task {
-            do {
-                try await post(path: path, body: body)
-                completion(.success(()))
-            } catch {
-                completion(.failure(error))
-            }
-        }
-    }
-
-    // UPDATE 래퍼 함수
-    static func update<T: Encodable>(path: String, body: T, completion: @escaping (Result<Void, Error>) -> Void) {
-        Task {
-            do {
-                try await update(path: path, body: body)
-                completion(.success(()))
-            } catch {
-                completion(.failure(error))
-            }
-        }
-    }
-
-    // DELETE 래퍼 함수
-    static func delete(path: String, completion: @escaping (Result<Void, Error>) -> Void) {
-        Task {
-            do {
-                try await delete(path: path)
-                completion(.success(()))
-            } catch {
-                completion(.failure(error))
-            }
-        }
+        task.resume()
     }
 }

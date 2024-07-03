@@ -38,6 +38,7 @@ class LoginViewController: UIViewController {
     func addSubViews() {
         view.addSubview(logoImageView)
         view.addSubview(appleLoginButton)
+        view.addSubview(activityIndicator)
     }
     
     func setupConstraints() {
@@ -51,6 +52,10 @@ class LoginViewController: UIViewController {
             make.width.equalTo(375)
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview().offset(150)
+        }
+        activityIndicator.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview()
         }
     }
     
@@ -86,14 +91,7 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
             email: email
         )
         
-//        print(userData.toJSON())
-        
-//        do {
-//            try await APIManager.post(.path("/api/users"), body: userData.toJSON())
-//        } catch {
-//            print("Error updating user data: \(error)")
-//        }
-        APIManager.post(path: "/api/users", body: userData.toJSON()) { result in
+        APIManager.shared.postData(to: "/api/users", body: userData) { result in
             switch result {
             case .success:
                 print("User successfully posted")
@@ -103,44 +101,55 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
         }
         
         dismiss(animated: true)
-        navigationController?.setViewControllers([HomeViewController()], animated: true)
+        navigationController?.setViewControllers([OnboardingViewController()], animated: true)
     }
     
     private func signInWithExistingAccount(credential: ASAuthorizationAppleIDCredential) {
         print("Signing in with existing account with user: \(credential.user)")
         
-        let userData = User(
-            identifier: "userIdentifier",
-            givenName: "dd",
-            familyName: "ee",
-            email: "eeee"
-        )
-        
-//        APIManager.post(path: "/api/users", body: userData.toJSON()) { result in
-//            switch result {
-//            case .success:
-//                print("User successfully posted")
-//            case .failure(let error):
-//                print("Error posting user: \(error)")
-//            }
-//        }
-        let userInfo = userData.toJSON()
-        
-        TempAPIManager.shared.postData(to: "/api/users", body: userInfo) { result in
-            switch result {
-            case .success:
+        dismiss(animated: true) { [weak self] in
+            guard let self = self else { return }
+            
+            activityIndicator.startAnimating()
+    
+            APIManager.shared.getData(to: "/api/users/\(credential.user)") { [weak self] (info: User?, error: Error?) in
+                guard let self = self else { return }
+                
                 DispatchQueue.main.async {
-                    print("성공적 등록 완료")
-                }
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    print("에러: \(error.localizedDescription)")
+                    // 3. 받아온 데이터 처리
+                    if let error = error {
+                        print("Error fetching data: \(error)")
+                        return
+                    }
+                    
+                    guard let info = info else {
+                        print("No data received")
+                        return
+                    }
+                    
+                    // 사용자 데이터 사용
+                    let user = User(
+                        identifier: info.identifier,
+                        givenName: info.givenName,
+                        familyName: info.familyName,
+                        email: info.email
+                    )
+                    
+                    if let encodeData = try? JSONEncoder().encode(user) {
+                        UserDefaults.standard.set(encodeData, forKey: "userInfo")
+                        print("👥 User Info Saved")
+                    }
+                    
+                    print("GET: \(info.identifier)")
+                    print("GET: \(info.givenName)")
+                    print("GET: \(info.familyName)")
+                    print("GET: \(info.email)")
+                    
+                    activityIndicator.stopAnimating()
+                    self.navigationController?.setViewControllers([HomeViewController()], animated: true)
                 }
             }
         }
-//
-        dismiss(animated: true)
-        navigationController?.setViewControllers([HomeViewController()], animated: true)
     }
     
     private func signInWithUserAndPassword(credential: ASPasswordCredential) {
