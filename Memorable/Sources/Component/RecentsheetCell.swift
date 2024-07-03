@@ -65,20 +65,25 @@ class RecentsheetCell: UITableViewCell {
         self.document = document
         
         categoryLabel.text = document.category
-        categoryLabel.textColor = .blue
+        categoryLabel.textColor = MemorableColor.Blue2
+        categoryLabel.font = MemorableFont.BodyCaption()
         categoryLabel.backgroundColor = .clear
         categoryLabel.textAlignment = .center
         categoryLabel.layer.cornerRadius = 14
         categoryLabel.layer.masksToBounds = true
-        categoryLabel.layer.borderColor = UIColor.blue.cgColor
+        categoryLabel.layer.borderColor = MemorableColor.Blue2?.cgColor
         categoryLabel.layer.borderWidth = 1
 
         titleLabel.text = document.fileName
+        titleLabel.font = MemorableFont.Body1()
+        titleLabel.textColor = MemorableColor.Black
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd"
         let dateString = dateFormatter.string(from: document.date)
         dateLabel.text = dateString
+        dateLabel.font = MemorableFont.BodyCaption()
+        dateLabel.textColor = MemorableColor.Gray1
         
         updateBookmarkButton()
     }

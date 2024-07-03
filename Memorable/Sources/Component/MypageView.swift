@@ -86,23 +86,24 @@ class MypageView: UIView {
         contentView.addSubview(titleLabel)
         titleLabel.text = "사용자님,\n안녕하세요!"
         titleLabel.numberOfLines = 0
-        titleLabel.font = UIFont.boldSystemFont(ofSize: 24)
+        titleLabel.font = MemorableFont.LargeTitle()
+        titleLabel.textColor = MemorableColor.Black
     }
     
     private func setupProfile() {
         contentView.addSubview(profileView)
-        profileView.backgroundColor = .black
+        profileView.backgroundColor = MemorableColor.Black
         profileView.layer.cornerRadius = 120 / 2
         
         profileView.addSubview(profileName)
         profileName.text = "사용자 이름"
-        profileName.textColor = .white
-        profileName.font = UIFont.boldSystemFont(ofSize: 18)
+        profileName.textColor = MemorableColor.White
+        profileName.font = MemorableFont.LargeTitle()
         
         profileView.addSubview(profileEmail)
         profileEmail.text = "memorable@ozosama.com"
-        profileEmail.textColor = .white
-        profileEmail.font = UIFont.systemFont(ofSize: 14)
+        profileEmail.textColor = MemorableColor.White
+        profileEmail.font = MemorableFont.Body1()
         
         profileView.addSubview(streakView)
         streakView.layer.cornerRadius = 120 / 2
@@ -110,12 +111,12 @@ class MypageView: UIView {
         
         // Adding gradient layers
         let streakLeftGradientView = CAGradientLayer()
-        streakLeftGradientView.colors = [UIColor.white.withAlphaComponent(0.8).cgColor, UIColor.white.withAlphaComponent(0).cgColor]
+        streakLeftGradientView.colors = [MemorableColor.White?.withAlphaComponent(0.8).cgColor ?? UIColor.white.withAlphaComponent(0.8).cgColor, MemorableColor.White?.withAlphaComponent(0).cgColor ?? UIColor.white.withAlphaComponent(0).cgColor]
         streakLeftGradientView.startPoint = CGPoint(x: 0, y: 0.5)
         streakLeftGradientView.endPoint = CGPoint(x: 0.5, y: 0.5)
         
         let streakRightGradientView = CAGradientLayer()
-        streakRightGradientView.colors = [UIColor.white.withAlphaComponent(0).cgColor, UIColor.white.withAlphaComponent(0.8).cgColor]
+        streakRightGradientView.colors = [MemorableColor.White?.withAlphaComponent(0).cgColor ?? UIColor.white.withAlphaComponent(0).cgColor, MemorableColor.White?.withAlphaComponent(0.8).cgColor ?? UIColor.white.withAlphaComponent(0.8).cgColor]
         streakRightGradientView.startPoint = CGPoint(x: 0.5, y: 0.5)
         streakRightGradientView.endPoint = CGPoint(x: 1, y: 0.5)
         
@@ -137,12 +138,12 @@ class MypageView: UIView {
 
     private func setupNotificationBanner() {
         contentView.addSubview(notificationBanner)
-        notificationBanner.backgroundColor = .systemYellow
+        notificationBanner.backgroundColor = MemorableColor.Yellow1
         notificationBanner.layer.cornerRadius = 18
         
         let notificationLabel = UILabel()
-        notificationLabel.text = "이번주에 벌써 3일이나 출석했어요! 짝짝짝!"
-        notificationLabel.textColor = .black
+        notificationLabel.text = "이번주에 벌써 3일이나 출석했어요!🎉 짝짝짝!"
+        notificationLabel.textColor = MemorableColor.White
         notificationLabel.font = UIFont.systemFont(ofSize: 14)
         notificationBanner.addSubview(notificationLabel)
         
@@ -158,8 +159,8 @@ class MypageView: UIView {
             
             let notificationLabel = UILabel()
             notificationLabel.text = "이번주에 벌써 \(score)일이나 출석했어요! 짝짝짝!"
-            notificationLabel.textColor = .black
-            notificationLabel.font = UIFont.systemFont(ofSize: 14)
+            notificationLabel.textColor = MemorableColor.Black
+            notificationLabel.font = MemorableFont.BodyCaption()
             notificationBanner.addSubview(notificationLabel)
             
             notificationLabel.snp.makeConstraints { make in
@@ -171,7 +172,7 @@ class MypageView: UIView {
     private func setupMemberships() {
         contentView.addSubview(membershipTitle)
         membershipTitle.text = "멤버십 플랜"
-        membershipTitle.font = UIFont.boldSystemFont(ofSize: 20)
+        membershipTitle.font = MemorableFont.Title()
         
         setupMembershipButton(membershipStandardButton, title: "Standard", details: "· PDF 파일 10개 업로드\n· 빈칸학습지, 시험지 재추출 1회\n· 오답노트 사용 제한", sale: "", price: "10,000원")
         setupMembershipButton(membershipProButton, title: "Pro", details: "· PDF 파일 50개 업로드\n· 빈칸학습지, 시험지 재추출 3회\n· 오답노트 사용 가능", sale: "36,000", price: "25,000원", isSelected: true)
@@ -185,42 +186,43 @@ class MypageView: UIView {
     }
     
     private func setupMembershipButton(_ button: UIView, title: String, details: String, sale: String, price: String, isSelected: Bool = false) {
-        button.backgroundColor = .white
+        button.backgroundColor = MemorableColor.White
         button.layer.cornerRadius = 40
         
         let titleLabel = UILabel()
         titleLabel.text = title
         titleLabel.textAlignment = .center
-        titleLabel.textColor = .white
-        titleLabel.font = UIFont.boldSystemFont(ofSize: 18)
-        titleLabel.backgroundColor = .black
+        titleLabel.textColor = MemorableColor.White
+        titleLabel.font = MemorableFont.Body1()
+        titleLabel.backgroundColor = MemorableColor.Black
         titleLabel.layer.cornerRadius = 16.5
         titleLabel.clipsToBounds = true
         
         let detailsLabel = UILabel()
         detailsLabel.text = details
-        detailsLabel.textColor = .gray
-        detailsLabel.font = UIFont.systemFont(ofSize: 14)
+        detailsLabel.textColor = MemorableColor.Gray1
+        detailsLabel.font = MemorableFont.BodyCaption()
         detailsLabel.numberOfLines = 0
         
         let saleLabel = UILabel()
         saleLabel.text = sale
-        saleLabel.textColor = .gray
-        saleLabel.font = UIFont.systemFont(ofSize: 16)
+        saleLabel.textColor = MemorableColor.Gray3
+        saleLabel.font = MemorableFont.Title()
         
         let priceLabel = UILabel()
         priceLabel.text = price
-        priceLabel.font = UIFont.boldSystemFont(ofSize: 20)
+        priceLabel.font = MemorableFont.LargeTitle()
+        priceLabel.textColor = MemorableColor.Black
         
         let periodLabel = UILabel()
         periodLabel.text = "연간"
-        periodLabel.textColor = .gray
-        periodLabel.font = UIFont.systemFont(ofSize: 14)
+        periodLabel.textColor = MemorableColor.Gray1
+        periodLabel.font = MemorableFont.BodyCaption()
         
         let optionLabel = UILabel()
         optionLabel.text = "VAT 별도"
-        optionLabel.textColor = .gray
-        optionLabel.font = UIFont.systemFont(ofSize: 14)
+        optionLabel.textColor = MemorableColor.Gray1
+        optionLabel.font = MemorableFont.BodyCaption()
         
         button.addSubview(titleLabel)
         button.addSubview(detailsLabel)
@@ -233,9 +235,9 @@ class MypageView: UIView {
             let selectedLabel = UILabel()
             selectedLabel.text = "사용중인 플랜"
             selectedLabel.textAlignment = .center
-            selectedLabel.font = UIFont.systemFont(ofSize: 12)
+            selectedLabel.font = MemorableFont.Body1()
             selectedLabel.textColor = .gray
-            selectedLabel.backgroundColor = .lightGray
+            selectedLabel.backgroundColor = MemorableColor.Gray5
             selectedLabel.layer.cornerRadius = 16.5
             selectedLabel.clipsToBounds = true
             button.addSubview(selectedLabel)
@@ -303,18 +305,19 @@ class MypageView: UIView {
     
     private func setupPurchaseButton() {
         purchaseButton.setTitle("구매하기", for: .normal)
-        purchaseButton.setTitleColor(.white, for: .normal)
-        purchaseButton.backgroundColor = .systemBlue
-        purchaseButton.layer.cornerRadius = 20
+        purchaseButton.setTitleColor(MemorableColor.White, for: .normal)
+        purchaseButton.titleLabel?.font = MemorableFont.Button()
+        purchaseButton.backgroundColor = MemorableColor.Blue1
+        purchaseButton.layer.cornerRadius = 30
         purchaseButton.addTarget(self, action: #selector(purchaseButtonTapped), for: .touchUpInside)
         purchaseButton.isHidden = true
         contentView.addSubview(purchaseButton)
         
         purchaseButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.width.equalTo(120)
-            make.height.equalTo(40)
-            make.top.equalTo(membershipPremiumButton.snp.bottom).offset(20)
+            make.width.equalTo(268)
+            make.height.equalTo(60)
+            make.bottom.equalTo(membershipPremiumButton).offset(-24)
         }
     }
     
@@ -328,18 +331,25 @@ class MypageView: UIView {
         buttonConfig.title = title
         buttonConfig.titleAlignment = .leading
         
-        if let image = UIImage(named: imageName)?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 12, weight: .regular)) {
-            buttonConfig.image = image
+        if let originalImage = UIImage(named: imageName) {
+            let desiredSize = CGSize(width: 24, height: 24) // 원하는 이미지 크기
+            UIGraphicsBeginImageContextWithOptions(desiredSize, false, 0.0)
+            originalImage.draw(in: CGRect(origin: .zero, size: desiredSize))
+            let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            
+            let configuredImage = resizedImage?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 12, weight: .regular))
+            buttonConfig.image = configuredImage
         }
         
-        buttonConfig.baseForegroundColor = .black
+        buttonConfig.baseForegroundColor = MemorableColor.Black
         buttonConfig.imagePadding = 12
         buttonConfig.imagePlacement = .leading
         buttonConfig.contentInsets = NSDirectionalEdgeInsets(top: 12, leading: 24, bottom: 12, trailing: 24)
         
         buttonConfig.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
             var outgoing = incoming
-            outgoing.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+            outgoing.font = MemorableFont.Body2()
             return outgoing
         }
         
@@ -348,7 +358,7 @@ class MypageView: UIView {
         // UIButton에 직접 적용
         button.contentHorizontalAlignment = .leading
         
-        button.backgroundColor = .white
+        button.backgroundColor = MemorableColor.White
         button.layer.cornerRadius = 40
         button.clipsToBounds = true
         
@@ -500,16 +510,17 @@ class MypageView: UIView {
     }
     
     private func resetButtonUI(_ button: UIView) {
-        button.backgroundColor = .white
+        button.backgroundColor = MemorableColor.White
         button.layer.borderWidth = 0
         for view in button.subviews {
             if let label = view as? UILabel {
                 label.isHidden = false
                 if label == button.subviews.first {
-                    label.backgroundColor = .black
+                    label.backgroundColor = MemorableColor.Black
+                    label.textColor = MemorableColor.White
                 }
                 if label.text == "사용중인 플랜" {
-                    label.backgroundColor = .lightGray
+                    label.backgroundColor = MemorableColor.Gray5
                 }
             }
         }
@@ -525,19 +536,19 @@ class MypageView: UIView {
     
     // updateButtonUI 메서드 수정
     private func updateButtonUI(_ button: UIView) {
-        button.backgroundColor = .blue.withAlphaComponent(0.5)
-        button.layer.borderColor = UIColor.blue.cgColor
-        button.layer.borderWidth = 2
+        button.backgroundColor = MemorableColor.Blue2?.withAlphaComponent(0.5)
+        button.layer.borderColor = MemorableColor.Blue2?.cgColor
+        button.layer.borderWidth = 1
 
         for view in button.subviews {
             if let label = view as? UILabel {
                 switch label.text {
                 case "사용중인 플랜":
-                    label.backgroundColor = .blue
-                    label.textColor = .white
-                case _ where label == button.subviews.first(where: { $0 is UILabel && $0.tag == 1 }):
-                    label.backgroundColor = .blue
-                    label.textColor = .white
+                    label.backgroundColor = MemorableColor.Gray5
+                    label.textColor = MemorableColor.Gray1
+                case _ where label == button.subviews.first:
+                    label.backgroundColor = MemorableColor.Blue2
+                    label.textColor = MemorableColor.White
                 case _ where label.text == "사용중인 플랜":
                     label.isHidden = false
                 default:

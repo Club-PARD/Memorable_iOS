@@ -27,7 +27,7 @@ class HomeViewController: UIViewController {
     let blockView = UIView()
     var plusTrailing = -24
     private let maskView = UIView()
-    let gradientView = GradientView(startColor: .lightGray, endColor: .lightGray)
+    let gradientView = GradientView(startColor: MemorableColor.Gray5 ?? UIColor.lightGray, endColor: MemorableColor.Gray5 ?? UIColor.lightGray)
     
     private var viewStack: [String] = ["home"]
     
@@ -68,7 +68,7 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(true, animated: false)
-        view.backgroundColor = UIColor.lightGray
+        view.backgroundColor = MemorableColor.Gray5
         headerComponent.delegate = self
         
         userIdentifier = UserDefaults.standard.string(forKey: SignInManager.userIdentifierKey)!
@@ -85,7 +85,7 @@ class HomeViewController: UIViewController {
         setUI()
         setupViews()
         
-        maskView.backgroundColor = .black
+        maskView.backgroundColor = MemorableColor.Black
         maskView.alpha = 0
         view.insertSubview(maskView, belowSubview: headerComponent)
         maskView.snp.makeConstraints { make in

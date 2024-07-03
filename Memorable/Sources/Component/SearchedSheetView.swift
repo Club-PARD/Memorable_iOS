@@ -34,7 +34,7 @@ class SearchedSheetView: UIView {
     }
     
     private func setupView() {
-        self.backgroundColor = .white
+        self.backgroundColor = MemorableColor.White
         self.layer.cornerRadius = 40
         self.layer.masksToBounds = true
         
@@ -81,7 +81,7 @@ class SearchedSheetView: UIView {
         // 폰트 크기 설정 및 라인 제한
         config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
             var outgoing = incoming
-            outgoing.font = UIFont.systemFont(ofSize: 14)
+            outgoing.font = MemorableFont.BodyCaption()
             return outgoing
         }
         
@@ -158,25 +158,25 @@ class SearchedSheetView: UIView {
         [allFilterButton, worksheetFilterButton, testsheetFilterButton, wrongsheetFilterButton].forEach { button in
             var config = button.configuration
             if button == selectedButton && isSelected {
-                config?.baseForegroundColor = .white
-                config?.baseBackgroundColor = .black
+                config?.baseForegroundColor = MemorableColor.White
+                config?.baseBackgroundColor = MemorableColor.Black
             } else {
-                config?.baseForegroundColor = .gray
-                config?.baseBackgroundColor = .lightGray
+                config?.baseForegroundColor = MemorableColor.Gray1
+                config?.baseBackgroundColor = MemorableColor.Gray5
             }
             button.configuration = config
         }
     }
     
     func resetFilterButtonState() {
-        allFilterButton.configuration?.baseBackgroundColor = .black
-        allFilterButton.configuration?.baseForegroundColor = .white
-        worksheetFilterButton.configuration?.baseBackgroundColor = .lightGray
-        worksheetFilterButton.configuration?.baseForegroundColor = .gray
-        testsheetFilterButton.configuration?.baseBackgroundColor = .lightGray
-        testsheetFilterButton.configuration?.baseForegroundColor = .gray
-        wrongsheetFilterButton.configuration?.baseBackgroundColor = .lightGray
-        wrongsheetFilterButton.configuration?.baseForegroundColor = .gray
+        allFilterButton.configuration?.baseBackgroundColor = MemorableColor.Black
+        allFilterButton.configuration?.baseForegroundColor = MemorableColor.White
+        worksheetFilterButton.configuration?.baseBackgroundColor = MemorableColor.Gray5
+        worksheetFilterButton.configuration?.baseForegroundColor = MemorableColor.Gray1
+        testsheetFilterButton.configuration?.baseBackgroundColor = MemorableColor.Gray5
+        testsheetFilterButton.configuration?.baseForegroundColor = MemorableColor.Gray1
+        wrongsheetFilterButton.configuration?.baseBackgroundColor = MemorableColor.Gray5
+        wrongsheetFilterButton.configuration?.baseForegroundColor = MemorableColor.Gray1
     }
 }
 
