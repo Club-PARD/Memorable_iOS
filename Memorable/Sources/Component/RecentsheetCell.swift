@@ -74,13 +74,13 @@ class RecentsheetCell: UITableViewCell {
         categoryLabel.layer.borderColor = MemorableColor.Blue2?.cgColor
         categoryLabel.layer.borderWidth = 1
 
-        titleLabel.text = document.fileName
+        titleLabel.text = document.name
         titleLabel.font = MemorableFont.Body1()
         titleLabel.textColor = MemorableColor.Black
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd"
-        let dateString = dateFormatter.string(from: document.date)
+        let dateString = dateFormatter.string(from: document.createdDate)
         dateLabel.text = dateString
         dateLabel.font = MemorableFont.BodyCaption()
         dateLabel.textColor = MemorableColor.Gray1
@@ -92,7 +92,7 @@ class RecentsheetCell: UITableViewCell {
         guard let document = document else { return }
         
         let bookmarkImageName: String
-        if document.bookmark {
+        if document.isBookmarked {
             switch document.fileType {
             case "빈칸학습지":
                 bookmarkImageName = "bookmark-blue"
@@ -112,7 +112,7 @@ class RecentsheetCell: UITableViewCell {
     
     @objc private func bookmarkTapped() {
         guard var document = document else { return }
-        document.bookmark.toggle()
+        document.isBookmarked.toggle()
         self.document = document
         updateBookmarkButton()
         delegate?.didTapBookmark(for: document)
