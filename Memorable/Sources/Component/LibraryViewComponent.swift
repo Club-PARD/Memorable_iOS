@@ -84,7 +84,7 @@ class LibraryViewComponent: UIView {
         contentView.addSubview(recentsheetLabel)
         
         for item in [worksheetButton, testsheetButton, wrongsheetButton] {
-            item.backgroundColor = .white
+            item.backgroundColor = MemorableColor.White
             item.layer.cornerRadius = 40
             item.layer.masksToBounds = true
         }
@@ -100,7 +100,7 @@ class LibraryViewComponent: UIView {
     }
     
     private func setupRecentView() {
-        recentView.backgroundColor = .black
+        recentView.backgroundColor = MemorableColor.Black
         recentView.layer.cornerRadius = 46
         recentView.clipsToBounds = true
         
@@ -116,25 +116,43 @@ class LibraryViewComponent: UIView {
         let attributedString = NSMutableAttributedString(string: fullText)
 
         // 전체 텍스트를 흰색으로 설정
-        attributedString.addAttribute(.foregroundColor, value: UIColor.white, range: NSRange(location: 0, length: fullText.count))
+        attributedString.addAttribute(.foregroundColor, value: MemorableColor.White ?? .white, range: NSRange(location: 0, length: fullText.count))
 
         // coloredText 부분만 파란색으로 설정
         let range = (fullText as NSString).range(of: coloredText)
-        attributedString.addAttribute(.foregroundColor, value: UIColor.blue, range: range)
+        attributedString.addAttribute(.foregroundColor, value: MemorableColor.Blue2 ?? .blue, range: range)
 
+        recentLabel.font = MemorableFont.Body2()
         recentLabel.attributedText = attributedString
         recentLabel.numberOfLines = 0
         
         var recentButtonConfig = UIButton.Configuration.filled()
         recentButtonConfig.title = "시작하기"
-        if let image = UIImage(systemName: "chevron.right")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 12, weight: .regular)) {
+        if let image = UIImage(systemName: "chevron.right")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 14, weight: .semibold)) {
             recentButtonConfig.image = image
         }
-        recentButtonConfig.baseForegroundColor = .white
-        recentButtonConfig.baseBackgroundColor = .blue
+        recentButtonConfig.baseForegroundColor = MemorableColor.White
+        recentButtonConfig.baseBackgroundColor = MemorableColor.Blue2
         recentButtonConfig.imagePadding = 4
         recentButtonConfig.cornerStyle = .capsule
         recentButtonConfig.imagePlacement = .trailing
+
+        // Attributed title 설정
+        let titleFont = MemorableFont.Button() // 원하는 폰트와 사이즈 설정
+        let titleColor = MemorableColor.White // 원하는 색상 설정
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: titleFont,
+            .foregroundColor: titleColor ?? .white
+        ]
+        let attributedTitle = NSAttributedString(string: "시작하기", attributes: attributes)
+
+        // NSAttributedString을 AttributedString으로 변환
+        if let attributedTitle = try? AttributedString(attributedTitle) {
+            recentButtonConfig.attributedTitle = attributedTitle
+        }
+
+        recentButton.configuration = recentButtonConfig
+
         recentButton.configuration = recentButtonConfig
         
         recentView.addSubview(recentLabel)
@@ -145,16 +163,22 @@ class LibraryViewComponent: UIView {
         // titleLabel
         titleLabel.numberOfLines = 0
         titleLabel.text = "사용자님,\n오늘도 함께 학습해볼까요?"
+        titleLabel.font = MemorableFont.LargeTitle()
+        titleLabel.textColor = MemorableColor.Black
         
         // sheetLabel
         sheetLabel.text = "학습하기"
+        sheetLabel.font = MemorableFont.Title()
+        sheetLabel.textColor = MemorableColor.Black
         
         recentsheetLabel.text = "최근 본 파일"
+        recentsheetLabel.font = MemorableFont.Title()
+        recentsheetLabel.textColor = MemorableColor.Black
     }
     
     private func setupButtons() {
         // worksheetButton
-        worksheetButton.backgroundColor = .white
+        worksheetButton.backgroundColor = MemorableColor.White
         worksheetButton.layer.cornerRadius = 40
         worksheetButton.layer.masksToBounds = true
         
@@ -168,7 +192,7 @@ class LibraryViewComponent: UIView {
             }
         }
         
-        let worksheetButtonLabel2 = createLabel(text: "AI가 자료에서 중요한 단어를 추출하여\n자동으로 빈칸을 생성해줘요📚", fontSize: 14, weight: .regular)
+        let worksheetButtonLabel2 = createLabel(text: "AI가 자료에서 중요한 단어를 추출하여\n자동으로 빈칸을 생성해줘요📚", font: MemorableFont.BodyCaption(), color: MemorableColor.Gray1 ?? .lightGray)
         worksheetButtonLabel2.numberOfLines = 0
         worksheetButton.addSubview(worksheetButtonLabel2)
         worksheetButtonLabel2.snp.makeConstraints { make in
@@ -176,7 +200,7 @@ class LibraryViewComponent: UIView {
             make.bottom.equalToSuperview().offset(-24)
         }
         
-        let worksheetButtonLabel1 = createLabel(text: "빈칸학습지", fontSize: 18, weight: .bold)
+        let worksheetButtonLabel1 = createLabel(text: "빈칸학습지", font: MemorableFont.LargeTitle(), color: MemorableColor.Black ?? .black)
         worksheetButton.addSubview(worksheetButtonLabel1)
         worksheetButtonLabel1.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(24)
@@ -184,7 +208,7 @@ class LibraryViewComponent: UIView {
         }
         
         // testsheetButton
-        testsheetButton.backgroundColor = .white
+        testsheetButton.backgroundColor = MemorableColor.White
         testsheetButton.layer.cornerRadius = 40
         testsheetButton.layer.masksToBounds = true
         
@@ -198,15 +222,16 @@ class LibraryViewComponent: UIView {
             }
         }
         
-        let testsheetButtonLabel2 = createLabel(text: "빈칸 학습지로 학습 후 맞춤형 시험지로\n시험을 칠 수 있어요📝", fontSize: 14, weight: .regular)
+        let testsheetButtonLabel2 = createLabel(text: "빈칸 학습지로 학습 후 맞춤형 시험지로\n시험을 칠 수 있어요📝", font: MemorableFont.BodyCaption(), color: MemorableColor.Gray1 ?? .lightGray)
         testsheetButtonLabel2.numberOfLines = 0
+        testsheetButtonLabel2.font = MemorableFont.BodyCaption()
         testsheetButton.addSubview(testsheetButtonLabel2)
         testsheetButtonLabel2.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(24)
             make.bottom.equalToSuperview().offset(-24)
         }
         
-        let testsheetButtonLabel1 = createLabel(text: "나만의 시험지", fontSize: 18, weight: .bold)
+        let testsheetButtonLabel1 = createLabel(text: "나만의 시험지", font: MemorableFont.LargeTitle(), color: MemorableColor.Black ?? .black)
         testsheetButton.addSubview(testsheetButtonLabel1)
         testsheetButtonLabel1.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(24)
@@ -228,15 +253,16 @@ class LibraryViewComponent: UIView {
             }
         }
         
-        let wrongsheetButtonLabel2 = createLabel(text: "오답노트로 틀린 문제만 모아서\n시험 직전에 볼 수 있어요🖍", fontSize: 14, weight: .regular)
+        let wrongsheetButtonLabel2 = createLabel(text: "오답노트로 틀린 문제만 모아서\n시험 직전에 볼 수 있어요🖍", font: MemorableFont.BodyCaption(), color: MemorableColor.Gray1 ?? .lightGray)
         wrongsheetButtonLabel2.numberOfLines = 0
+        
         wrongsheetButton.addSubview(wrongsheetButtonLabel2)
         wrongsheetButtonLabel2.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(24)
             make.bottom.equalToSuperview().offset(-24)
         }
         
-        let wrongsheetButtonLabel1 = createLabel(text: "오답노트", fontSize: 18, weight: .bold)
+        let wrongsheetButtonLabel1 = createLabel(text: "오답노트", font: MemorableFont.LargeTitle(), color: MemorableColor.Black ?? .black)
         wrongsheetButton.addSubview(wrongsheetButtonLabel1)
         wrongsheetButtonLabel1.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(24)
@@ -249,10 +275,11 @@ class LibraryViewComponent: UIView {
         wrongsheetButton.addTarget(self, action: #selector(wrongsheetButtonTapped), for: .touchUpInside)
     }
     
-    private func createLabel(text: String, fontSize: CGFloat, weight: UIFont.Weight) -> UILabel {
+    private func createLabel(text: String, font: UIFont, color: UIColor) -> UILabel {
         let label = UILabel()
         label.text = text
-        label.font = UIFont.systemFont(ofSize: fontSize, weight: weight)
+        label.font = font
+        label.textColor = color
         return label
     }
     
@@ -388,7 +415,7 @@ class LibraryViewComponent: UIView {
         // 폰트 크기 설정 및 라인 제한
         config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
             var outgoing = incoming
-            outgoing.font = UIFont.systemFont(ofSize: 14)
+            outgoing.font = MemorableFont.BodyCaption()
             return outgoing
         }
         
@@ -406,8 +433,8 @@ class LibraryViewComponent: UIView {
         config.cornerStyle = .capsule
         
         // 기본 상태 (선택되지 않은 상태)
-        config.baseForegroundColor = .gray
-        config.baseBackgroundColor = .lightGray
+        config.baseForegroundColor = MemorableColor.Gray1
+        config.baseBackgroundColor = MemorableColor.Gray5
         
         // 콘텐츠 패딩 설정
         config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8)
@@ -433,11 +460,11 @@ class LibraryViewComponent: UIView {
         for button in [allFilterButton, worksheetFilterButton, testsheetFilterButton, wrongsheetFilterButton] {
             var config = button.configuration
             if button == selectedButton && isSelected {
-                config?.baseForegroundColor = .white
-                config?.baseBackgroundColor = .black
+                config?.baseForegroundColor = MemorableColor.White
+                config?.baseBackgroundColor = MemorableColor.Black
             } else {
-                config?.baseForegroundColor = .gray
-                config?.baseBackgroundColor = .lightGray
+                config?.baseForegroundColor = MemorableColor.Gray1
+                config?.baseBackgroundColor = MemorableColor.Gray5
             }
             button.configuration = config
         }
@@ -455,7 +482,7 @@ class LibraryViewComponent: UIView {
     }
 
     private func setupGradientView() {
-        let gradientView = GradientView(startColor: .white, endColor: .white)
+        let gradientView = GradientView(startColor: MemorableColor.White ?? .white, endColor: MemorableColor.White ?? .white)
         recentsheetView.addSubview(gradientView)
         
         gradientView.snp.makeConstraints { make in

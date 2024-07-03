@@ -90,7 +90,8 @@ class HeaderComponent: UIView {
         addSubview(backButton)
         let image = UIImage(systemName: "chevron.left")
         backButton.setImage(image, for: .normal)
-        backButton.backgroundColor = .white
+        backButton.tintColor = MemorableColor.Gray1
+        backButton.backgroundColor = MemorableColor.White
         backButton.contentMode = .scaleAspectFit
         backButton.layer.cornerRadius = 0.5 * 44
         backButton.clipsToBounds = true
@@ -128,7 +129,7 @@ class HeaderComponent: UIView {
             let resizedImage = originalImage.resized(to: CGSize(width: 24, height: 24))
             plusButtonImageView.image = resizedImage
         }
-        plusButton.backgroundColor = .cyan
+        plusButton.backgroundColor = MemorableColor.Blue2
         plusButton.layer.cornerRadius = 22
         plusButton.addTarget(self, action: #selector(plusButtonTapped), for: .touchUpInside)
     }
@@ -144,13 +145,13 @@ class HeaderComponent: UIView {
             searchButton.setImage(searchImage, for: .normal)
         }
         searchButton.imageView?.contentMode = .center
-        searchButton.backgroundColor = .black
+        searchButton.backgroundColor = MemorableColor.Black
         searchButton.layer.cornerRadius = 22
         searchButton.addTarget(self, action: #selector(searchButtonTapped), for: .touchUpInside)
     }
     
     private func setupOverlayViews() {
-        searchButtonOverlayView.backgroundColor = .black
+        searchButtonOverlayView.backgroundColor = MemorableColor.Black
         searchButtonOverlayView.alpha = 0
         addSubview(searchButtonOverlayView)
         searchButtonOverlayView.snp.makeConstraints { make in
@@ -172,7 +173,7 @@ class HeaderComponent: UIView {
     }
     
     private func setupSearchBarStyle() {
-        searchBar.barTintColor = .black
+        searchBar.barTintColor = MemorableColor.Black
         searchBar.backgroundImage = UIImage()
         searchBar.layer.cornerRadius = 22
         searchBar.layer.masksToBounds = true
@@ -181,11 +182,11 @@ class HeaderComponent: UIView {
         }
         
         if let textField = searchBar.value(forKey: "searchField") as? UITextField {
-            textField.backgroundColor = .black
-            textField.textColor = .black
+            textField.backgroundColor = MemorableColor.Black
+            textField.textColor = MemorableColor.Black
             textField.layer.cornerRadius = 22
             textField.clipsToBounds = true
-            textField.font = UIFont.systemFont(ofSize: 16)
+            textField.font = MemorableFont.Body1()
         }
         
         searchBar.delegate = self
@@ -216,8 +217,9 @@ class HeaderComponent: UIView {
         }
         
         [subButton1, subButton2].forEach {
-            $0.backgroundColor = .white
+            $0.backgroundColor = MemorableColor.White
             $0.setTitleColor(.black, for: .normal)
+            $0.titleLabel?.font = MemorableFont.Body1()
             $0.layer.cornerRadius = 22
             $0.alpha = 0
             $0.isUserInteractionEnabled = true
@@ -252,9 +254,9 @@ class HeaderComponent: UIView {
             }
             
             // Change colors
-            self.searchBar.backgroundColor = .white
-            self.searchBar.searchTextField.backgroundColor = .white
-            self.searchButton.backgroundColor = .white
+            self.searchBar.backgroundColor = MemorableColor.White
+            self.searchBar.searchTextField.backgroundColor = MemorableColor.White
+            self.searchButton.backgroundColor = MemorableColor.White
             
             // Show search bar
             self.searchBar.alpha = 1
@@ -262,7 +264,9 @@ class HeaderComponent: UIView {
             // Change plus button to cancel button
             self.plusButtonImageView.isHidden = true
             self.plusButton.setTitle("취소", for: .normal)
-            self.plusButton.backgroundColor = .gray
+            self.plusButton.titleLabel?.font = MemorableFont.Body1()
+            self.plusButton.titleLabel?.textColor = MemorableColor.Gray1
+            self.plusButton.backgroundColor = MemorableColor.Gray4
             
             self.layoutIfNeeded()
         })
@@ -286,9 +290,9 @@ class HeaderComponent: UIView {
             }
             
             // Change colors back
-            self.searchBar.backgroundColor = .black
-            self.searchBar.searchTextField.backgroundColor = .black
-            self.searchButton.backgroundColor = .black
+            self.searchBar.backgroundColor = MemorableColor.Black
+            self.searchBar.searchTextField.backgroundColor = MemorableColor.Black
+            self.searchButton.backgroundColor = MemorableColor.Black
             
             // Hide search bar
             self.searchBar.alpha = 0
@@ -296,7 +300,7 @@ class HeaderComponent: UIView {
             // Change cancel button back to plus button
             self.plusButtonImageView.isHidden = false
             self.plusButton.setTitle(nil, for: .normal)
-            self.plusButton.backgroundColor = .cyan
+            self.plusButton.backgroundColor = MemorableColor.Blue2
             
             self.layoutIfNeeded()
         })
@@ -304,7 +308,7 @@ class HeaderComponent: UIView {
     
     private func rotatePlusButton() {
         UIView.animate(withDuration: 0.3) {
-            self.plusButton.backgroundColor = .black
+            self.plusButton.backgroundColor = MemorableColor.Black
             self.plusButtonImageView.transform = CGAffineTransform(rotationAngle: .pi / 4)
             self.searchButtonOverlayView.alpha = 0.5
         }
@@ -313,7 +317,7 @@ class HeaderComponent: UIView {
     
     private func deRotatePlusButton() {
         UIView.animate(withDuration: 0.3) {
-            self.plusButton.backgroundColor = .cyan
+            self.plusButton.backgroundColor = MemorableColor.Blue2
             self.plusButtonImageView.transform = CGAffineTransform.identity
             self.searchButtonOverlayView.alpha = 0
         }
@@ -342,7 +346,7 @@ class HeaderComponent: UIView {
         documentPicker.delegate = self
         documentPicker.allowsMultipleSelection = false
         documentPicker.modalPresentationStyle = .formSheet
-        documentPicker.view.tintColor = .black // 다큐먼트픽커 테마색
+        documentPicker.view.tintColor = MemorableColor.Blue2 // 다큐먼트픽커 테마색
         
         if let rootViewController = UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })
