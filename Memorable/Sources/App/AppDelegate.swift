@@ -45,7 +45,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "Memorable")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
-            if let error = error as NSError? {
+            if let error = error as NSError? {#imageLiteral(resourceName: "simulator_screenshot_45498BFF-D1BD-4E9B-979B-3E07FF4FC8A4.png")
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
         })
