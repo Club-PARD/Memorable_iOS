@@ -74,6 +74,34 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
     private func registerNewAccount(credential: ASAuthorizationAppleIDCredential) {
         print("Registering New Account with User: \(credential.user)")
         
+        let userIdentifier: String = credential.user
+        let givenName: String = credential.fullName?.givenName ?? "NIL"
+        let familyName: String = credential.fullName?.familyName ?? "NIL"
+        let email: String = credential.email ?? "NIL"
+        
+        let userData = User(
+            identifier: userIdentifier,
+            givenName: givenName,
+            familyName: familyName,
+            email: email
+        )
+        
+//        print(userData.toJSON())
+        
+//        do {
+//            try await APIManager.post(.path("/api/users"), body: userData.toJSON())
+//        } catch {
+//            print("Error updating user data: \(error)")
+//        }
+        APIManager.post(path: "/api/users", body: userData.toJSON()) { result in
+            switch result {
+            case .success:
+                print("User successfully posted")
+            case .failure(let error):
+                print("Error posting user: \(error)")
+            }
+        }
+        
         dismiss(animated: true)
         navigationController?.setViewControllers([HomeViewController()], animated: true)
     }
@@ -81,6 +109,36 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
     private func signInWithExistingAccount(credential: ASAuthorizationAppleIDCredential) {
         print("Signing in with existing account with user: \(credential.user)")
         
+        let userData = User(
+            identifier: "userIdentifier",
+            givenName: "dd",
+            familyName: "ee",
+            email: "eeee"
+        )
+        
+//        APIManager.post(path: "/api/users", body: userData.toJSON()) { result in
+//            switch result {
+//            case .success:
+//                print("User successfully posted")
+//            case .failure(let error):
+//                print("Error posting user: \(error)")
+//            }
+//        }
+        let userInfo = userData.toJSON()
+        
+        TempAPIManager.shared.postData(to: "/api/users", body: userInfo) { result in
+            switch result {
+            case .success:
+                DispatchQueue.main.async {
+                    print("성공적 등록 완료")
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    print("에러: \(error.localizedDescription)")
+                }
+            }
+        }
+//
         dismiss(animated: true)
         navigationController?.setViewControllers([HomeViewController()], animated: true)
     }

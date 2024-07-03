@@ -150,7 +150,7 @@ class LibraryViewComponent: UIView {
         if let attributedTitle = try? AttributedString(attributedTitle) {
             recentButtonConfig.attributedTitle = attributedTitle
         }
-
+            
         recentButton.configuration = recentButtonConfig
 
         recentButton.configuration = recentButtonConfig

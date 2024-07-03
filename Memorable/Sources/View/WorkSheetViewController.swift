@@ -349,21 +349,21 @@ class WorkSheetViewController: UIViewController {
 
     func setupConstraints() {
         logoImageView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(24)
-            make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
-            make.height.equalTo(24)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(28.21)
+            make.leading.equalTo(view.safeAreaLayoutGuide).offset(40)
+            make.width.equalTo(126)
         }
 
         backButton.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(14)
-            make.leading.equalTo(logoImageView.snp.trailing).offset(20)
-            make.height.equalTo(40)
-            make.width.equalTo(40)
+            make.top.equalTo(logoImageView.snp.bottom).offset(33.72)
+            make.leading.equalTo(view.safeAreaLayoutGuide).offset(40)
+            make.height.equalTo(44)
+            make.width.equalTo(44)
         }
 
         doneButton.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(13)
-            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-24)
+            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-40)
             make.height.equalTo(44)
             make.width.equalTo(132)
         }
@@ -376,8 +376,8 @@ class WorkSheetViewController: UIViewController {
         }
 
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(logoImageView.snp.bottom).offset(28)
-            make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
+            make.leading.equalTo(backButton.snp.trailing).offset(12)
+            make.top.equalTo(logoImageView.snp.bottom).offset(32.72)
         }
 
         categoryLabel.snp.makeConstraints { make in
@@ -387,7 +387,7 @@ class WorkSheetViewController: UIViewController {
 
         showAnswerButton.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
-            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-32)
+            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-40)
             make.height.equalTo(50)
             make.width.equalTo(160)
         }
@@ -401,14 +401,14 @@ class WorkSheetViewController: UIViewController {
 
         workSheetView!.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(28)
-            make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
-            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-24)
-            make.bottom.equalTo(showAnswerButton.snp.top).offset(-24)
+            make.leading.equalTo(view.safeAreaLayoutGuide).offset(40)
+            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-40)
+            make.bottom.equalTo(showAnswerButton.snp.top).offset(-26)
         }
 
         reExtractButton.snp.makeConstraints { make in
-            make.top.equalTo(workSheetView!.snp.top).offset(24)
-            make.trailing.equalTo(workSheetView!.snp.trailing).offset(-20)
+            make.top.equalTo(workSheetView!.snp.top).offset(20)
+            make.trailing.equalTo(workSheetView!.snp.trailing).offset(-28)
         }
     }
 }
