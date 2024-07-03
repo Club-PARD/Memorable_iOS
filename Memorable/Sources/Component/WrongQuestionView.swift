@@ -11,7 +11,7 @@ import UIKit
 
 class WrongQuestionView: UIView {
     let questionNumberView = UIView().then {
-        $0.backgroundColor = .blue
+        $0.backgroundColor = MemorableColor.Blue2
         $0.layer.cornerRadius = 0.5 * 39
         $0.clipsToBounds = true
     }
@@ -28,7 +28,7 @@ class WrongQuestionView: UIView {
         $0.layer.cornerRadius = 19
         $0.layer.masksToBounds = true
         $0.borderStyle = .none
-        $0.backgroundColor = .lightGray.withAlphaComponent(0.5)
+        $0.backgroundColor = MemorableColor.Gray5
         $0.textAlignment = .center
     }
     
@@ -36,7 +36,7 @@ class WrongQuestionView: UIView {
     
     var myAnswerWhenChecking = UILabel().then {
         $0.isHidden = true
-        $0.textColor = .lightGray.withAlphaComponent(0.5)
+        $0.textColor = MemorableColor.Gray1
     }
     
     init(frame: CGRect, idx: Int, question: String, answer: String) {

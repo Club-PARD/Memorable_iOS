@@ -19,7 +19,7 @@ class WrongSheetViewController: UIViewController {
         let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .medium)
         let image = UIImage(systemName: "chevron.left", withConfiguration: config)?.withTintColor(.black, renderingMode: .alwaysOriginal)
         $0.setImage(image, for: .normal)
-        $0.backgroundColor = .white
+        $0.backgroundColor = MemorableColor.White
         $0.contentMode = .scaleAspectFit
         $0.layer.cornerRadius = 0.5 * 40
         $0.clipsToBounds = true
@@ -27,47 +27,55 @@ class WrongSheetViewController: UIViewController {
 
     private let categoryTitleLabel = UILabel().then {
         $0.text = "카테고리명"
-        $0.font = UIFont.systemFont(ofSize: 34, weight: .bold)
+        $0.font = MemorableFont.LargeTitle()
+        $0.textColor = MemorableColor.Black
     }
 
     private let fileNameLabel = UILabel().then {
         $0.text = "파일명 외 4개 파일"
-        $0.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        $0.textColor = .gray
+        $0.font = MemorableFont.Body1()
+        $0.textColor = MemorableColor.Gray1
     }
 
     private var wrongSheetView: UIView?
 
     private let resetButton = UIButton().then {
         $0.setTitle("초기화하기", for: .normal)
+        $0.titleLabel?.font = MemorableFont.Body1()
+
         $0.contentMode = .scaleAspectFit
 
         var config = UIButton.Configuration.filled()
         config.baseBackgroundColor = .black
         config.baseForegroundColor = .white
-        config.cornerStyle = .large
 
         $0.configuration = config
+
+        // 버튼의 layer에 직접 cornerRadius를 설정합니다.
+        $0.layer.cornerRadius = 25
+        $0.clipsToBounds = true
     }
 
     private var isShowingAnswer = false
 
     private let showAnswerButton = UIButton().then {
         $0.setTitle("정답 보기", for: .normal)
-        $0.setTitle("정댭 가리기", for: .selected)
+        $0.setTitle("정답 가리기", for: .selected)
 
-//        $0.layer.cornerRadius = 30
         $0.contentMode = .scaleAspectFit
 
         var config = UIButton.Configuration.filled()
         config.image = UIImage(systemName: "eye")
         config.imagePadding = 10
         config.imagePlacement = .leading
-        config.baseBackgroundColor = .blue.withAlphaComponent(0.5)
-        config.baseForegroundColor = .white
-        config.cornerStyle = .large
+        config.baseBackgroundColor = MemorableColor.Blue2
+        config.baseForegroundColor = MemorableColor.White
 
         $0.configuration = config
+
+        // 버튼의 layer에 직접 cornerRadius를 설정합니다.
+        $0.layer.cornerRadius = 25
+        $0.clipsToBounds = true
     }
 
     private var userAnswer: [String] = []
@@ -77,7 +85,7 @@ class WrongSheetViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .lightGray
+        view.backgroundColor = MemorableColor.Gray5
 
         wrongSheetView = WrongSheetView(
             frame: CGRect.zero,
@@ -150,12 +158,14 @@ class WrongSheetViewController: UIViewController {
         if isShowingAnswer {
             showAnswer()
 
-            var config = UIButton.Configuration.gray()
+            resetButton.isHidden = true
+
+            var config = UIButton.Configuration.filled()
             config.image = UIImage(systemName: "eye.slash")
             config.imagePadding = 10
             config.imagePlacement = .leading
-//            config.baseBackgroundColor = .blue.withAlphaComponent(0.5)
-            config.baseForegroundColor = .gray
+            config.baseBackgroundColor = MemorableColor.Gray4
+            config.baseForegroundColor = MemorableColor.Gray1
             config.cornerStyle = .large
 
             showAnswerButton.configuration = config
@@ -163,12 +173,14 @@ class WrongSheetViewController: UIViewController {
         else {
             hideAnswer()
 
+            resetButton.isHidden = false
+
             var config = UIButton.Configuration.filled()
             config.image = UIImage(systemName: "eye")
             config.imagePadding = 10
             config.imagePlacement = .leading
-            config.baseBackgroundColor = .blue.withAlphaComponent(0.5)
-            config.baseForegroundColor = .white
+            config.baseBackgroundColor = MemorableColor.Blue2
+            config.baseForegroundColor = MemorableColor.White
             config.cornerStyle = .large
 
             showAnswerButton.configuration = config
@@ -196,18 +208,22 @@ class WrongSheetViewController: UIViewController {
                 let myAnswerLabel = wrongsheet.wrongQuestionViews[idx].myAnswerWhenChecking
 
                 // 값을 안 쓴 부분
-                if self.userAnswer[idx].isEmpty {
-                    textField.textColor = .lightGray
+                if self.userAnswer[idx].replacingOccurrences(of: " ", with: "")
+                    .isEmpty
+                {
+                    textField.textColor = MemorableColor.Gray2
                     textField.text = mockWrongQuestionAnswers[idx]
                 }
                 // 값이 동일
-                else if mockWrongQuestionAnswers[idx] == self.userAnswer[idx] {
+                else if mockWrongQuestionAnswers[idx].replacingOccurrences(of: " ", with: "")
+                    == self.userAnswer[idx].replacingOccurrences(of: " ", with: "")
+                {
                     self.correctCount += 1
-                    textField.textColor = .blue
+                    textField.textColor = MemorableColor.Blue
                 }
                 // 나머지 (= 틀림)
                 else {
-                    textField.textColor = .red
+                    textField.textColor = MemorableColor.Red
                     textField.text = mockWrongQuestionAnswers[idx]
 
                     myAnswerLabel.text = "내가 쓴 답: \(self.userAnswer[idx])"
@@ -217,10 +233,6 @@ class WrongSheetViewController: UIViewController {
                 textField.isEnabled = false
                 textField.setNeedsDisplay()
             }
-
-//            if self.correctCount == self.answerLength {
-//                self.correctAll()
-//            }
 
             wrongsheet.layoutIfNeeded()
         }
@@ -239,7 +251,7 @@ class WrongSheetViewController: UIViewController {
                 let myAnswerLabel = wrongsheet.wrongQuestionViews[idx].myAnswerWhenChecking
 
                 wrongsheet.wrongQuestionViews[idx].answerTextField.text = self.userAnswer[idx]
-                wrongsheet.wrongQuestionViews[idx].answerTextField.textColor = .black
+                wrongsheet.wrongQuestionViews[idx].answerTextField.textColor = MemorableColor.Black
                 wrongsheet.wrongQuestionViews[idx].answerTextField.isEnabled = true
                 wrongsheet.wrongQuestionViews[idx].answerTextField.setNeedsDisplay()
 
@@ -300,15 +312,15 @@ class WrongSheetViewController: UIViewController {
         showAnswerButton.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
             make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-24)
-            make.height.equalTo(44)
-            make.width.equalTo(140)
+            make.height.equalTo(50)
+            make.width.equalTo(160)
         }
 
         resetButton.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
             make.trailing.equalTo(showAnswerButton.snp.leading).offset(-10)
-            make.height.equalTo(44)
-            make.width.equalTo(140)
+            make.height.equalTo(50)
+            make.width.equalTo(160)
         }
     }
 }
