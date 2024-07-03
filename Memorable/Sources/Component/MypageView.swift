@@ -649,7 +649,7 @@ class MypageView: UIView {
         UserDefaults.standard.removeObject(forKey: SignInManager.userIdentifierKey)
         
         guard let navigationController = window?.rootViewController as? UINavigationController else { return }
-        navigationController.setViewControllers([HomeViewController()], animated: false)
+        navigationController.setViewControllers([LoginViewController()], animated: false)
 
 //        userIdentifier = ""
 //        givenName = ""
