@@ -27,6 +27,9 @@
 		DBEB96A32C32BF8000106866 /* DayCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEB96A22C32BF8000106866 /* DayCell.swift */; };
 		DD1A05FF2C2B1B4900DE0CB8 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1A05FE2C2B1B4900DE0CB8 /* User.swift */; };
 		DD2F8B8E2C3089C8003F077D /* FloatingImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2F8B8D2C3089C8003F077D /* FloatingImage.swift */; };
+		DD421DB32C33FABA00E4D320 /* Gifu in Frameworks */ = {isa = PBXBuildFile; productRef = DD421DB22C33FABA00E4D320 /* Gifu */; };
+		DD421DB52C33FB9000E4D320 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DB42C33FB9000E4D320 /* SplashViewController.swift */; };
+		DD421DB72C33FC2200E4D320 /* memorable_splash.gif in Resources */ = {isa = PBXBuildFile; fileRef = DD421DB62C33FC2200E4D320 /* memorable_splash.gif */; };
 		DD4B40AF2C2BD38A00524757 /* WorkSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4B40AE2C2BD38A00524757 /* WorkSheetViewController.swift */; };
 		DD4B40B12C2BE30600524757 /* WorkSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4B40B02C2BE30600524757 /* WorkSheetView.swift */; };
 		DD4B40B32C2BE4AD00524757 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4B40B22C2BE4AD00524757 /* MockData.swift */; };
@@ -124,6 +127,12 @@
 		DBEB96A22C32BF8000106866 /* DayCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayCell.swift; sourceTree = "<group>"; };
 		DD1A05FE2C2B1B4900DE0CB8 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		DD2F8B8D2C3089C8003F077D /* FloatingImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingImage.swift; sourceTree = "<group>"; };
+		DD421DAD2C33F61000E4D320 /* Memorable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Memorable.app; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/Memorable.app"; sourceTree = "<absolute>"; };
+		DD421DAE2C33F61000E4D320 /* PDFShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; name = PDFShareExtension.appex; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/PDFShareExtension.appex"; sourceTree = "<absolute>"; };
+		DD421DAF2C33F61000E4D320 /* MemorableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableTests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/Memorable.app/PlugIns/MemorableTests.xctest"; sourceTree = "<absolute>"; };
+		DD421DB02C33F61000E4D320 /* MemorableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableUITests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/MemorableUITests-Runner.app/PlugIns/MemorableUITests.xctest"; sourceTree = "<absolute>"; };
+		DD421DB42C33FB9000E4D320 /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
+		DD421DB62C33FC2200E4D320 /* memorable_splash.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = memorable_splash.gif; sourceTree = "<group>"; };
 		DD4B40AE2C2BD38A00524757 /* WorkSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSheetViewController.swift; sourceTree = "<group>"; };
 		DD4B40B02C2BE30600524757 /* WorkSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSheetView.swift; sourceTree = "<group>"; };
 		DD4B40B22C2BE4AD00524757 /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
@@ -159,10 +168,6 @@
 		DDDA801A2C33ADB80077E5F2 /* Pretendard-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Light.otf"; sourceTree = "<group>"; };
 		DDDA801B2C33ADB80077E5F2 /* Pretendard-ExtraLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-ExtraLight.otf"; sourceTree = "<group>"; };
 		DDDA80272C33F0600077E5F2 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		DDDA80282C33F0600077E5F2 /* Memorable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Memorable.app; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/Memorable.app"; sourceTree = "<absolute>"; };
-		DDDA80292C33F0600077E5F2 /* MemorableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableTests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/Memorable.app/PlugIns/MemorableTests.xctest"; sourceTree = "<absolute>"; };
-		DDDA802A2C33F0600077E5F2 /* MemorableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableUITests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/MemorableUITests-Runner.app/PlugIns/MemorableUITests.xctest"; sourceTree = "<absolute>"; };
-		DDDA802B2C33F0600077E5F2 /* PDFShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; name = PDFShareExtension.appex; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/PDFShareExtension.appex"; sourceTree = "<absolute>"; };
 		DDF67E852C32F9D900F37BFC /* WrongSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongSheetViewController.swift; sourceTree = "<group>"; };
 		DDF67E872C32FB3800F37BFC /* WrongSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongSheetView.swift; sourceTree = "<group>"; };
 		DDF67E892C330F3400F37BFC /* WrongQuestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongQuestionView.swift; sourceTree = "<group>"; };
@@ -184,6 +189,7 @@
 			files = (
 				DDBD12EC2C298EF8006E7D92 /* Then in Frameworks */,
 				DDBD12F52C29BBD8006E7D92 /* SnapKit in Frameworks */,
+				DD421DB32C33FABA00E4D320 /* Gifu in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -314,12 +320,13 @@
 		DDBD12ED2C298F61006E7D92 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				DD421DB42C33FB9000E4D320 /* SplashViewController.swift */,
 				DDAC4BD92C2805AB006206EB /* LoginViewController.swift */,
 				DDBD12FB2C29C6BC006E7D92 /* HomeViewController.swift */,
-				DDB3E3842C2FE16200AF9182 /* TestLoginViewController.swift */,
-				DB3CEC8A2C30457A00F8211C /* TestSheetViewController.swift */,
 				DD4B40AE2C2BD38A00524757 /* WorkSheetViewController.swift */,
 				DDF67E852C32F9D900F37BFC /* WrongSheetViewController.swift */,
+				DDB3E3842C2FE16200AF9182 /* TestLoginViewController.swift */,
+				DB3CEC8A2C30457A00F8211C /* TestSheetViewController.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -330,6 +337,7 @@
 				DDAC4BDE2C2805AB006206EB /* Memorable.xcdatamodeld */,
 				DDAC4BE62C2805AC006206EB /* Info.plist */,
 				DDAC4BE12C2805AC006206EB /* Assets.xcassets */,
+				DD421DB62C33FC2200E4D320 /* memorable_splash.gif */,
 				DDAC4BE32C2805AC006206EB /* LaunchScreen.storyboard */,
 			);
 			path = Resources;
@@ -408,7 +416,7 @@
 				DDAB24DC2C31466500AAEDB6 /* Then */,
 			);
 			productName = PDFShareExtension;
-			productReference = DDDA802B2C33F0600077E5F2 /* PDFShareExtension.appex */;
+			productReference = DD421DAE2C33F61000E4D320 /* PDFShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		DDAC4BD12C2805AB006206EB /* Memorable */ = {
@@ -429,9 +437,10 @@
 			packageProductDependencies = (
 				DDBD12EB2C298EF8006E7D92 /* Then */,
 				DDBD12F42C29BBD7006E7D92 /* SnapKit */,
+				DD421DB22C33FABA00E4D320 /* Gifu */,
 			);
 			productName = Memorable;
-			productReference = DDDA80282C33F0600077E5F2 /* Memorable.app */;
+			productReference = DD421DAD2C33F61000E4D320 /* Memorable.app */;
 			productType = "com.apple.product-type.application";
 		};
 		DDAC4BEA2C2805AC006206EB /* MemorableTests */ = {
@@ -449,7 +458,7 @@
 			);
 			name = MemorableTests;
 			productName = MemorableTests;
-			productReference = DDDA80292C33F0600077E5F2 /* MemorableTests.xctest */;
+			productReference = DD421DAF2C33F61000E4D320 /* MemorableTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		DDAC4BF42C2805AC006206EB /* MemorableUITests */ = {
@@ -467,7 +476,7 @@
 			);
 			name = MemorableUITests;
 			productName = MemorableUITests;
-			productReference = DDDA802A2C33F0600077E5F2 /* MemorableUITests.xctest */;
+			productReference = DD421DB02C33F61000E4D320 /* MemorableUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -509,6 +518,7 @@
 			packageReferences = (
 				DDBD12EA2C298EF8006E7D92 /* XCRemoteSwiftPackageReference "Then" */,
 				DDBD12F32C29BBD7006E7D92 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				DD421DB12C33FABA00E4D320 /* XCRemoteSwiftPackageReference "Gifu" */,
 			);
 			productRefGroup = DDAC4BC92C2805AB006206EB;
 			projectDirPath = "";
@@ -541,6 +551,7 @@
 				DDDA80132C33AD810077E5F2 /* Pretendard-Black.otf in Resources */,
 				DDDA80222C33ADB80077E5F2 /* Pretendard-Light.otf in Resources */,
 				DDDA80232C33ADB80077E5F2 /* Pretendard-ExtraLight.otf in Resources */,
+				DD421DB72C33FC2200E4D320 /* memorable_splash.gif in Resources */,
 				DDDA801D2C33ADB80077E5F2 /* Pretendard-Thin.otf in Resources */,
 				DDDA801E2C33ADB80077E5F2 /* Pretendard-Regular.otf in Resources */,
 				DDDA80202C33ADB80077E5F2 /* Pretendard-SemiBold.otf in Resources */,
@@ -611,6 +622,7 @@
 				DDDA800F2C33A8110077E5F2 /* MemorableColor.swift in Sources */,
 				DBD820552C2C7CDA00A9B1C3 /* Document.swift in Sources */,
 				DBD8204D2C2ADF5C00A9B1C3 /* HeaderComponent.swift in Sources */,
+				DD421DB52C33FB9000E4D320 /* SplashViewController.swift in Sources */,
 				DBEB96A32C32BF8000106866 /* DayCell.swift in Sources */,
 				DB3CEC972C31E16100F8211C /* GradientView.swift in Sources */,
 				DBD8204F2C2BE31800A9B1C3 /* LibraryViewComponent.swift in Sources */,
@@ -1030,6 +1042,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		DD421DB12C33FABA00E4D320 /* XCRemoteSwiftPackageReference "Gifu" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kaishin/Gifu.git";
+			requirement = {
+				kind = exactVersion;
+				version = 3.2.2;
+			};
+		};
 		DDBD12EA2C298EF8006E7D92 /* XCRemoteSwiftPackageReference "Then" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/devxoul/Then";
@@ -1049,6 +1069,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		DD421DB22C33FABA00E4D320 /* Gifu */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DD421DB12C33FABA00E4D320 /* XCRemoteSwiftPackageReference "Gifu" */;
+			productName = Gifu;
+		};
 		DDAB24DA2C31465500AAEDB6 /* SnapKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = DDBD12F32C29BBD7006E7D92 /* XCRemoteSwiftPackageReference "SnapKit" */;

@@ -11,8 +11,6 @@ import Then
 import UIKit
 
 class LoginViewController: UIViewController {
-    var delegate: LoginViewControllerDelegate?
-    
     let logoImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
         $0.image = UIImage(named: "login_applogo")
@@ -75,20 +73,23 @@ class LoginViewController: UIViewController {
 extension LoginViewController: ASAuthorizationControllerDelegate {
     private func registerNewAccount(credential: ASAuthorizationAppleIDCredential) {
         print("Registering New Account with User: \(credential.user)")
-        delegate?.didFinishAuth()
-        dismiss(animated: false, completion: nil)
+        
+        dismiss(animated: true)
+        navigationController?.setViewControllers([HomeViewController()], animated: true)
     }
     
     private func signInWithExistingAccount(credential: ASAuthorizationAppleIDCredential) {
         print("Signing in with existing account with user: \(credential.user)")
-        delegate?.didFinishAuth()
-        dismiss(animated: false, completion: nil)
+        
+        dismiss(animated: true)
+        navigationController?.setViewControllers([HomeViewController()], animated: true)
     }
     
     private func signInWithUserAndPassword(credential: ASPasswordCredential) {
         print("Signing in using an existing iCloud Keychain credential with user: \(credential.user)")
-        delegate?.didFinishAuth()
-        dismiss(animated: false, completion: nil)
+        
+        dismiss(animated: true)
+        navigationController?.setViewControllers([HomeViewController()], animated: true)
     }
     
     // Authorization 과정이 끝났을 때
@@ -101,16 +102,16 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
             let fullName = appleIDCredential.fullName
             let email = appleIDCredential.email
             
-            if let authorizationCode = appleIDCredential.authorizationCode,
-               let identityToken = appleIDCredential.identityToken,
-               let authCodeString = String(data: authorizationCode, encoding: .utf8),
-               let identifyTokenString = String(data: identityToken, encoding: .utf8)
-            {
-                print("authorizationCode: \(authorizationCode)")
-                print("identityToken: \(identityToken)")
-                print("authCodeString: \(authCodeString)")
-                print("identifyTokenString: \(identifyTokenString)")
-            }
+//            if let authorizationCode = appleIDCredential.authorizationCode,
+//               let identityToken = appleIDCredential.identityToken,
+//               let authCodeString = String(data: authorizationCode, encoding: .utf8),
+//               let identifyTokenString = String(data: identityToken, encoding: .utf8)
+//            {
+//                print("authorizationCode: \(authorizationCode)")
+//                print("identityToken: \(identityToken)")
+//                print("authCodeString: \(authCodeString)")
+//                print("identifyTokenString: \(identifyTokenString)")
+//            }
             
             print("User Identifier: \(userIdentifier)")
             
@@ -166,17 +167,5 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
 extension LoginViewController: ASAuthorizationControllerPresentationContextProviding {
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
         return view.window!
-    }
-}
-
-protocol LoginViewControllerDelegate: AnyObject {
-    func didFinishAuth()
-}
-
-extension UIViewController {
-    func showLoginViewController() {
-        guard let navController = navigationController else { return }
-        
-        navController.setViewControllers([HomeViewController()], animated: false)
     }
 }

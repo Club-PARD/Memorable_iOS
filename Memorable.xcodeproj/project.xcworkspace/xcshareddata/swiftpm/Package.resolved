@@ -1,6 +1,15 @@
 {
-  "originHash" : "dc78d9f78c6dffeef10c87cabc223dde5b29ad30f0c1897eba28f817c2359a8a",
+  "originHash" : "bebbc01bb92bb3a5904b3ac2443b83195e5e35e19cb2a1fd987df449db57978b",
   "pins" : [
+    {
+      "identity" : "gifu",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kaishin/Gifu.git",
+      "state" : {
+        "revision" : "b6fc594b30d0949a788338c54b07c26ae40c3444",
+        "version" : "3.2.2"
+      }
+    },
     {
       "identity" : "snapkit",
       "kind" : "remoteSourceControl",

@@ -71,6 +71,17 @@ class HomeViewController: UIViewController {
         view.backgroundColor = UIColor.lightGray
         headerComponent.delegate = self
         
+        userIdentifier = UserDefaults.standard.string(forKey: SignInManager.userIdentifierKey)!
+
+        if let userData = UserDefaults.standard.data(forKey: "userInfo") {
+            if let decodedData = try? JSONDecoder().decode(User.self, from: userData) {
+                print("User Info: \(decodedData)")
+                givenName = decodedData.givenName
+                familyName = decodedData.familyName
+                email = decodedData.email
+            }
+        }
+        
         setUI()
         setupViews()
         
@@ -89,27 +100,6 @@ class HomeViewController: UIViewController {
         headerComponent.subButton2.addTarget(self, action: #selector(handleTestCreateClicked), for: .touchUpInside)
         
         view.insertSubview(gradientView, belowSubview: maskView)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        SignInManager.checkUserAuth { authState in
-            switch authState {
-            case .undefined:
-                let controller = LoginViewController()
-                controller.modalPresentationStyle = .fullScreen
-                controller.delegate = self
-                self.present(controller, animated: false, completion: nil)
-            case .signedOut:
-                let controller = LoginViewController()
-                controller.modalPresentationStyle = .fullScreen
-                controller.delegate = self
-                self.present(controller, animated: false, completion: nil)
-            case .signedIn:
-                print("✅ Signed In")
-                self.didFinishAuth()
-            }
-        }
     }
     
     func setUI() {
@@ -393,20 +383,5 @@ extension UIViewController {
     
     @objc func dismissKeyboard() {
         view.endEditing(true)
-    }
-}
-
-extension HomeViewController: LoginViewControllerDelegate {
-    func didFinishAuth() {
-        userIdentifier = UserDefaults.standard.string(forKey: SignInManager.userIdentifierKey)!
-
-        if let userData = UserDefaults.standard.data(forKey: "userInfo") {
-            if let decodedData = try? JSONDecoder().decode(User.self, from: userData) {
-                print("User Info: \(decodedData)")
-                givenName = decodedData.givenName
-                familyName = decodedData.familyName
-                email = decodedData.email
-            }
-        }
     }
 }
