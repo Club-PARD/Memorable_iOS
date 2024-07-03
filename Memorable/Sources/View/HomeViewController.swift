@@ -85,7 +85,6 @@ class HomeViewController: UIViewController {
     }
     
     func setUI() {
-        
         // header
         view.addSubview(headerComponent)
         headerComponent.snp.makeConstraints { make in
@@ -212,7 +211,7 @@ class HomeViewController: UIViewController {
         // titleLabel 숨기기
         titleLabel.isHidden = true
         
-        tabBar.snp.remakeConstraints{ make in
+        tabBar.snp.remakeConstraints { make in
             make.top.equalTo(containerView.snp.top).offset(115.5)
             make.trailing.equalTo(containerView.snp.leading).offset(-33)
             //            make.centerY.equalTo(self.view)
@@ -232,7 +231,7 @@ class HomeViewController: UIViewController {
         
         // titleLabel 보이기
         titleLabel.isHidden = false
-        tabBar.snp.remakeConstraints{ make in
+        tabBar.snp.remakeConstraints { make in
             make.top.equalTo(containerView)
             make.trailing.equalTo(containerView.snp.leading).offset(-33)
             //            make.centerY.equalTo(self.view)
@@ -310,8 +309,8 @@ class HomeViewController: UIViewController {
             titleLabel.isHidden = false
             gradientView.isHidden = true
             setupDefaultView()
-            // 여기서 worksheetListViewComponent에 대한 추가 설정을 할 수 있습니다.
-            // 예: worksheetListViewComponent.reloadData()
+        // 여기서 worksheetListViewComponent에 대한 추가 설정을 할 수 있습니다.
+        // 예: worksheetListViewComponent.reloadData()
         default:
             break
         }

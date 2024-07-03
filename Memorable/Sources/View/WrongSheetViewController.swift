@@ -164,8 +164,8 @@ class WrongSheetViewController: UIViewController {
             config.image = UIImage(systemName: "eye.slash")
             config.imagePadding = 10
             config.imagePlacement = .leading
-            config.baseBackgroundColor = MemorableColor.Gray4
-            config.baseForegroundColor = MemorableColor.Gray1
+            config.baseBackgroundColor = MemorableColor.Blue1?.withAlphaComponent(0.35)
+            config.baseForegroundColor = MemorableColor.White
             config.cornerStyle = .large
 
             showAnswerButton.configuration = config
@@ -226,7 +226,7 @@ class WrongSheetViewController: UIViewController {
                     textField.textColor = MemorableColor.Red
                     textField.text = mockWrongQuestionAnswers[idx]
 
-                    myAnswerLabel.text = "내가 쓴 답: \(self.userAnswer[idx])"
+                    myAnswerLabel.text = "사용자가 입력한 답: \(self.userAnswer[idx])"
                     myAnswerLabel.isHidden = false
                 }
 
@@ -280,21 +280,21 @@ class WrongSheetViewController: UIViewController {
 
     func setupConstraints() {
         logoImageView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(24)
-            make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
-            make.height.equalTo(24)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(28.21)
+            make.leading.equalTo(view.safeAreaLayoutGuide).offset(40)
+            make.width.equalTo(126)
         }
 
         backButton.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(14)
-            make.leading.equalTo(logoImageView.snp.trailing).offset(20)
-            make.height.equalTo(40)
-            make.width.equalTo(40)
+            make.top.equalTo(logoImageView.snp.bottom).offset(33.72)
+            make.leading.equalTo(view.safeAreaLayoutGuide).offset(40)
+            make.height.equalTo(44)
+            make.width.equalTo(44)
         }
 
         categoryTitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(logoImageView.snp.bottom).offset(28)
-            make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
+            make.leading.equalTo(backButton.snp.trailing).offset(12)
+            make.top.equalTo(logoImageView.snp.bottom).offset(32.72)
         }
 
         fileNameLabel.snp.makeConstraints { make in
@@ -304,9 +304,9 @@ class WrongSheetViewController: UIViewController {
 
         wrongSheetView!.snp.makeConstraints { make in
             make.top.equalTo(categoryTitleLabel.snp.bottom).offset(28)
-            make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
-            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-24)
-            make.bottom.equalTo(showAnswerButton.snp.top).offset(-24)
+            make.leading.equalTo(view.safeAreaLayoutGuide).offset(40)
+            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-40)
+            make.bottom.equalTo(showAnswerButton.snp.top).offset(-26)
         }
 
         showAnswerButton.snp.makeConstraints { make in

@@ -26,7 +26,7 @@ class WorkSheetViewController: UIViewController {
     }
 
     private let finishImage = FloatingImage(frame: CGRect(x: 0, y: 0, width: 260, height: 36)).then {
-        $0.image = UIImage(named: "finishStudy")
+        $0.image = UIImage(named: "finish_study")
         $0.contentMode = .scaleAspectFit
         $0.isHidden = true
     }
@@ -51,16 +51,40 @@ class WorkSheetViewController: UIViewController {
         $0.textColor = .gray
     }
 
+    private var isFirstSheetSelected: Bool = true
+
+    private let firstSheetButton = UIButton().then {
+        $0.setTitle("1", for: .normal)
+        $0.layer.cornerRadius = 25 * 0.5
+        $0.contentMode = .scaleAspectFit
+        $0.isHidden = true
+        $0.isEnabled = false
+    }
+
+    private let secondSheetButton = UIButton().then {
+        $0.setTitle("2", for: .normal)
+        $0.layer.cornerRadius = 25 * 0.5
+        $0.contentMode = .scaleAspectFit
+        $0.isHidden = true
+        $0.isEnabled = false
+    }
+
     private var workSheetView: UIView?
 
-    private let reExtractButton = UIButton().then {
+    private let finishAddImage = FloatingImage(frame: CGRect(x: 0, y: 0, width: 260, height: 36)).then {
+        $0.image = UIImage(named: "finish_add")
+        $0.contentMode = .scaleAspectFit
+        $0.isHidden = true
+    }
+
+    private let addWorkSheetButton = UIButton().then {
         var config = UIButton.Configuration.plain()
         config.baseForegroundColor = MemorableColor.Blue1
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 12)
         config.image = UIImage(systemName: "arrow.counterclockwise", withConfiguration: imageConfig)
         config.imagePadding = 5
-        config.imagePlacement = .trailing
-        config.title = "빈칸 재추출하기"
+        config.imagePlacement = .leading
+        config.title = "추가 학습지 만들기"
         $0.configuration = config
     }
 
@@ -98,7 +122,6 @@ class WorkSheetViewController: UIViewController {
 
         $0.configuration = config
 
-        // 버튼의 layer에 직접 cornerRadius를 설정합니다.
         $0.layer.cornerRadius = 25
         $0.clipsToBounds = true
     }
@@ -128,7 +151,11 @@ class WorkSheetViewController: UIViewController {
     // MARK: - Button Action
 
     @objc func didTapResetButton() {
-        let alert = UIAlertController(title: "초기화하기", message: "작성한 키워드를 초기화하시겠습니까?\n이 작업은 복구할 수 없습니다.", preferredStyle: .alert)
+        let alert = UIAlertController(
+            title: "초기화하기",
+            message: "작성한 키워드를 초기화하시겠습니까?\n이 작업은 복구할 수 없습니다.",
+            preferredStyle: .alert
+        )
 
         let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
             print("PRESS CANCEL")
@@ -165,8 +192,8 @@ class WorkSheetViewController: UIViewController {
             config.image = UIImage(systemName: "eye.slash")
             config.imagePadding = 10
             config.imagePlacement = .leading
-            config.baseBackgroundColor = MemorableColor.Gray4
-            config.baseForegroundColor = MemorableColor.Gray1
+            config.baseBackgroundColor = MemorableColor.Blue1?.withAlphaComponent(0.35)
+            config.baseForegroundColor = MemorableColor.White
             config.cornerStyle = .large
 
             showAnswerButton.configuration = config
@@ -197,45 +224,89 @@ class WorkSheetViewController: UIViewController {
             return
         }
 
-        userAnswer = worksheet.userAnswers.map { $0.text ?? "" }
-        answerLength = worksheet.userAnswers.count
+        if isFirstSheetSelected {
+            userAnswer = worksheet.userAnswers.map { $0.text ?? "" }
+            answerLength = worksheet.userAnswers.count
 
-        print("✅ 실제 답안: \(mockAnswers)")
-        print("☑️ 유저 답안: \(userAnswer)")
+            print("✅ 실제 답안: \(mockAnswers)")
+            print("☑️ 유저 답안: \(userAnswer)")
 
-        DispatchQueue.main.async {
-            for idx in 0 ..< self.answerLength {
-                let textField = worksheet.userAnswers[idx]
+            DispatchQueue.main.async {
+                for idx in 0 ..< self.answerLength {
+                    let textField = worksheet.userAnswers[idx]
 
-                // 값을 안 쓴 부분
-                if self.userAnswer[idx].replacingOccurrences(of: " ", with: "")
-                    .isEmpty
-                {
-                    textField.textColor = .lightGray
-                    textField.text = mockAnswers[idx]
+                    // 값을 안 쓴 부분
+                    if self.userAnswer[idx].replacingOccurrences(of: " ", with: "")
+                        .isEmpty
+                    {
+                        textField.textColor = .lightGray
+                        textField.text = mockAnswers[idx]
+                    }
+                    // 값이 동일
+                    else if mockAnswers[idx].replacingOccurrences(of: " ", with: "")
+                        == self.userAnswer[idx].replacingOccurrences(of: " ", with: "")
+                    {
+                        self.correctCount += 1
+                        textField.textColor = .blue
+                    }
+                    // 나머지 (= 틀림)
+                    else {
+                        textField.textColor = .red
+                        textField.text = mockAnswers[idx]
+                    }
+
+                    textField.isEnabled = false
+                    textField.setNeedsDisplay()
                 }
-                // 값이 동일
-                else if mockAnswers[idx].replacingOccurrences(of: " ", with: "")
-                    == self.userAnswer[idx].replacingOccurrences(of: " ", with: "")
-                {
-                    self.correctCount += 1
-                    textField.textColor = .blue
-                }
-                // 나머지 (= 틀림)
-                else {
-                    textField.textColor = .red
-                    textField.text = mockAnswers[idx]
+
+                if self.correctCount == self.answerLength {
+                    self.correctAll()
                 }
 
-                textField.isEnabled = false
-                textField.setNeedsDisplay()
+                worksheet.layoutIfNeeded()
             }
+        }
+        else {
+            userAnswer = worksheet.userAnswers.map { $0.text ?? "" }
+            answerLength = worksheet.userAnswers.count
 
-            if self.correctCount == self.answerLength {
-                self.correctAll()
+            print("✅ 실제 답안: \(mockAnswers2)")
+            print("☑️ 유저 답안: \(userAnswer)")
+
+            DispatchQueue.main.async {
+                for idx in 0 ..< self.answerLength {
+                    let textField = worksheet.userAnswers[idx]
+
+                    // 값을 안 쓴 부분
+                    if self.userAnswer[idx].replacingOccurrences(of: " ", with: "")
+                        .isEmpty
+                    {
+                        textField.textColor = .lightGray
+                        textField.text = mockAnswers2[idx]
+                    }
+                    // 값이 동일
+                    else if mockAnswers2[idx].replacingOccurrences(of: " ", with: "")
+                        == self.userAnswer[idx].replacingOccurrences(of: " ", with: "")
+                    {
+                        self.correctCount += 1
+                        textField.textColor = .blue
+                    }
+                    // 나머지 (= 틀림)
+                    else {
+                        textField.textColor = .red
+                        textField.text = mockAnswers2[idx]
+                    }
+
+                    textField.isEnabled = false
+                    textField.setNeedsDisplay()
+                }
+
+                if self.correctCount == self.answerLength {
+                    self.correctAll()
+                }
+
+                worksheet.layoutIfNeeded()
             }
-
-            worksheet.layoutIfNeeded()
         }
     }
 
@@ -288,7 +359,22 @@ class WorkSheetViewController: UIViewController {
 
     @objc func didTapBackButton() {
         print("GO BACK")
-        let alert = UIAlertController(title: "빈칸 학습지 나가기", message: "빈칸 학습지를 나가시겠습니까?\n지금까지의 기록이 저장되지 않고\n라이브러리로 되돌아갑니다.", preferredStyle: .alert)
+        navigationController?.popViewController(animated: true)
+    }
+
+    func finishReExtract() {
+        addWorkSheetButton.backgroundColor = MemorableColor.Gray2
+        addWorkSheetButton.isEnabled = false
+    }
+
+    @objc func didTapReExtractButton() {
+        print("REEXTRACT KEYWORD")
+
+        let alert = UIAlertController(
+            title: "추가 학습지 만들기",
+            message: "빈칸을 새롭게 생성하시겠습니까?\n이전 학습지도 저장됩니다.",
+            preferredStyle: .alert
+        )
 
         let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
             print("PRESS CANCEL")
@@ -296,7 +382,64 @@ class WorkSheetViewController: UIViewController {
 
         let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
             print("PRESS CONFIRM")
-            self.navigationController?.popViewController(animated: true)
+            self.firstSheetButton.isHidden = false
+            self.firstSheetButton.isEnabled = true
+            self.secondSheetButton.isHidden = false
+            self.secondSheetButton.isEnabled = true
+
+            self.firstSheetButton.backgroundColor = MemorableColor.Gray2
+            self.secondSheetButton.backgroundColor = MemorableColor.Yellow1
+
+            self.isFirstSheetSelected.toggle()
+
+            self.workSheetView?.removeFromSuperview()
+            self.addWorkSheetButton.removeFromSuperview()
+            self.firstSheetButton.removeFromSuperview()
+            self.secondSheetButton.removeFromSuperview()
+
+            self.workSheetView = WorkSheetView(
+                frame: self.view.bounds,
+                viewWidth: self.view.frame.width - 48,
+                text: mockText,
+                answers: mockAnswers2
+            )
+
+            if let newWorkSheetView = self.workSheetView {
+                self.view.addSubview(newWorkSheetView)
+                self.view.addSubview(self.addWorkSheetButton)
+                self.view.addSubview(self.firstSheetButton)
+                self.view.addSubview(self.secondSheetButton)
+
+                newWorkSheetView.snp.makeConstraints { make in
+                    make.top.equalTo(self.titleLabel.snp.bottom).offset(28)
+                    make.leading.equalTo(self.view.safeAreaLayoutGuide).offset(40)
+                    make.trailing.equalTo(self.view.safeAreaLayoutGuide).offset(-40)
+                    make.bottom.equalTo(self.showAnswerButton.snp.top).offset(-26)
+                }
+
+                self.addWorkSheetButton.snp.makeConstraints { make in
+                    make.bottom.equalTo(self.workSheetView!.snp.top).offset(-10)
+                    make.trailing.equalTo(self.workSheetView!.snp.trailing).offset(-28)
+                }
+
+                self.secondSheetButton.snp.makeConstraints { make in
+                    make.top.equalTo(self.workSheetView!.snp.top).offset(18)
+                    make.trailing.equalTo(self.workSheetView!.snp.trailing).offset(-45)
+                    make.width.height.equalTo(25)
+                }
+
+                self.firstSheetButton.snp.makeConstraints { make in
+                    make.top.equalTo(self.workSheetView!.snp.top).offset(18)
+                    make.trailing.equalTo(self.secondSheetButton.snp.leading).offset(-10)
+                    make.width.height.equalTo(25)
+                }
+            }
+
+            self.view.setNeedsLayout()
+            self.view.layoutIfNeeded()
+
+            self.addWorkSheetButton.isEnabled = false
+            self.addWorkSheetButton.setTitleColor(MemorableColor.Gray2, for: .normal)
         }
 
         alert.addAction(cancelAction)
@@ -305,23 +448,124 @@ class WorkSheetViewController: UIViewController {
         present(alert, animated: true)
     }
 
-    @objc func didTapReExtractButton() {
-        print("REEXTRACT KEYWORD")
+    @objc func didTapFirstSheetButton() {
+        print("FirstSheetButton")
+        isFirstSheetSelected = true
 
-        let alert = UIAlertController(title: "키워드 재추출", message: "키워드를 새롭게 생성하시겠습니까?\n이 작업은 파일 당 1회만 가능합니다.", preferredStyle: .alert)
+        firstSheetButton.backgroundColor = MemorableColor.Yellow1
+        secondSheetButton.backgroundColor = MemorableColor.Gray2
 
-        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
-            print("PRESS CANCEL")
+        workSheetView?.removeFromSuperview()
+        addWorkSheetButton.removeFromSuperview()
+        firstSheetButton.removeFromSuperview()
+        secondSheetButton.removeFromSuperview()
+
+        workSheetView = WorkSheetView(
+            frame: view.bounds,
+            viewWidth: view.frame.width - 48,
+            text: mockText,
+            answers: mockAnswers
+        )
+
+        if let newWorkSheetView = workSheetView {
+            view.addSubview(newWorkSheetView)
+            view.addSubview(addWorkSheetButton)
+            view.addSubview(firstSheetButton)
+            view.addSubview(secondSheetButton)
+
+            newWorkSheetView.snp.makeConstraints { make in
+                make.top.equalTo(titleLabel.snp.bottom).offset(28)
+                make.leading.equalTo(view.safeAreaLayoutGuide).offset(40)
+                make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-40)
+                make.bottom.equalTo(showAnswerButton.snp.top).offset(-26)
+            }
+
+            addWorkSheetButton.snp.makeConstraints { make in
+                make.bottom.equalTo(workSheetView!.snp.top).offset(-10)
+                make.trailing.equalTo(workSheetView!.snp.trailing).offset(-28)
+            }
+
+            secondSheetButton.snp.makeConstraints { make in
+                make.top.equalTo(workSheetView!.snp.top).offset(18)
+                make.trailing.equalTo(workSheetView!.snp.trailing).offset(-45)
+                make.width.height.equalTo(25)
+            }
+
+            firstSheetButton.snp.makeConstraints { make in
+                make.top.equalTo(workSheetView!.snp.top).offset(18)
+                make.trailing.equalTo(secondSheetButton.snp.leading).offset(-10)
+                make.width.height.equalTo(25)
+            }
         }
 
-        let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
-            print("PRESS CONFIRM")
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
+    }
+
+    @objc func didTapSecondSheetButton() {
+        print("SecondSheetButton")
+        isFirstSheetSelected = false
+
+        firstSheetButton.backgroundColor = MemorableColor.Gray2
+        secondSheetButton.backgroundColor = MemorableColor.Yellow1
+
+        workSheetView?.removeFromSuperview()
+        addWorkSheetButton.removeFromSuperview()
+        firstSheetButton.removeFromSuperview()
+        secondSheetButton.removeFromSuperview()
+        finishAddImage.removeFromSuperview()
+
+        workSheetView = WorkSheetView(
+            frame: view.bounds,
+            viewWidth: view.frame.width - 48,
+            text: mockText,
+            answers: mockAnswers2
+        )
+
+        if let newWorkSheetView = workSheetView {
+            view.addSubview(newWorkSheetView)
+            view.addSubview(addWorkSheetButton)
+            view.addSubview(firstSheetButton)
+            view.addSubview(secondSheetButton)
+            view.addSubview(finishAddImage)
+
+            newWorkSheetView.snp.makeConstraints { make in
+                make.top.equalTo(titleLabel.snp.bottom).offset(28)
+                make.leading.equalTo(view.safeAreaLayoutGuide).offset(40)
+                make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-40)
+                make.bottom.equalTo(showAnswerButton.snp.top).offset(-26)
+            }
+
+            addWorkSheetButton.snp.makeConstraints { make in
+                make.bottom.equalTo(workSheetView!.snp.top).offset(-10)
+                make.trailing.equalTo(workSheetView!.snp.trailing).offset(-28)
+            }
+
+            finishAddImage.snp.makeConstraints { make in
+                make.trailing.equalTo(addWorkSheetButton.snp.leading).offset(-10)
+                make.bottom.equalTo(workSheetView!.snp.top).offset(-10)
+            }
+
+            secondSheetButton.snp.makeConstraints { make in
+                make.top.equalTo(workSheetView!.snp.top).offset(18)
+                make.trailing.equalTo(workSheetView!.snp.trailing).offset(-45)
+                make.width.height.equalTo(25)
+            }
+
+            firstSheetButton.snp.makeConstraints { make in
+                make.top.equalTo(workSheetView!.snp.top).offset(18)
+                make.trailing.equalTo(secondSheetButton.snp.leading).offset(-10)
+                make.width.height.equalTo(25)
+            }
         }
 
-        alert.addAction(cancelAction)
-        alert.addAction(confirmAction)
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
 
-        present(alert, animated: true)
+        finishAddImage.isHidden = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+            self.finishAddImage.isHidden = true
+        }
     }
 
     // MARK: - Default Setting
@@ -329,9 +573,20 @@ class WorkSheetViewController: UIViewController {
     func setupButtons() {
         backButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
         doneButton.addTarget(self, action: #selector(didTapDoneButton), for: .touchUpInside)
-        reExtractButton.addTarget(self, action: #selector(didTapReExtractButton), for: .touchUpInside)
+        addWorkSheetButton.addTarget(self, action: #selector(didTapReExtractButton), for: .touchUpInside)
+        firstSheetButton.addTarget(self, action: #selector(didTapFirstSheetButton), for: .touchUpInside)
+        secondSheetButton.addTarget(self, action: #selector(didTapSecondSheetButton), for: .touchUpInside)
         resetButton.addTarget(self, action: #selector(didTapResetButton), for: .touchUpInside)
         showAnswerButton.addTarget(self, action: #selector(didTapShowAnswerButton), for: .touchUpInside)
+
+        if isFirstSheetSelected {
+            firstSheetButton.backgroundColor = MemorableColor.Yellow1
+            secondSheetButton.backgroundColor = MemorableColor.Gray2
+        }
+        else {
+            firstSheetButton.backgroundColor = MemorableColor.Gray2
+            secondSheetButton.backgroundColor = MemorableColor.Yellow1
+        }
     }
 
     func addSubViews() {
@@ -342,28 +597,31 @@ class WorkSheetViewController: UIViewController {
         view.addSubview(titleLabel)
         view.addSubview(categoryLabel)
         view.addSubview(workSheetView!)
-        view.addSubview(reExtractButton)
+        view.addSubview(firstSheetButton)
+        view.addSubview(secondSheetButton)
+        view.addSubview(finishAddImage)
+        view.addSubview(addWorkSheetButton)
         view.addSubview(resetButton)
         view.addSubview(showAnswerButton)
     }
 
     func setupConstraints() {
         logoImageView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(24)
-            make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
-            make.height.equalTo(24)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(28.21)
+            make.leading.equalTo(view.safeAreaLayoutGuide).offset(40)
+            make.width.equalTo(126)
         }
 
         backButton.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(14)
-            make.leading.equalTo(logoImageView.snp.trailing).offset(20)
-            make.height.equalTo(40)
-            make.width.equalTo(40)
+            make.top.equalTo(logoImageView.snp.bottom).offset(33.72)
+            make.leading.equalTo(view.safeAreaLayoutGuide).offset(40)
+            make.height.equalTo(44)
+            make.width.equalTo(44)
         }
 
         doneButton.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(13)
-            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-24)
+            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-40)
             make.height.equalTo(44)
             make.width.equalTo(132)
         }
@@ -376,8 +634,8 @@ class WorkSheetViewController: UIViewController {
         }
 
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(logoImageView.snp.bottom).offset(28)
-            make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
+            make.leading.equalTo(backButton.snp.trailing).offset(12)
+            make.top.equalTo(logoImageView.snp.bottom).offset(32.72)
         }
 
         categoryLabel.snp.makeConstraints { make in
@@ -387,7 +645,7 @@ class WorkSheetViewController: UIViewController {
 
         showAnswerButton.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
-            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-32)
+            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-40)
             make.height.equalTo(50)
             make.width.equalTo(160)
         }
@@ -401,14 +659,31 @@ class WorkSheetViewController: UIViewController {
 
         workSheetView!.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(28)
-            make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
-            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-24)
-            make.bottom.equalTo(showAnswerButton.snp.top).offset(-24)
+            make.leading.equalTo(view.safeAreaLayoutGuide).offset(40)
+            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-40)
+            make.bottom.equalTo(showAnswerButton.snp.top).offset(-26)
         }
 
-        reExtractButton.snp.makeConstraints { make in
-            make.top.equalTo(workSheetView!.snp.top).offset(24)
-            make.trailing.equalTo(workSheetView!.snp.trailing).offset(-20)
+        addWorkSheetButton.snp.makeConstraints { make in
+            make.bottom.equalTo(workSheetView!.snp.top).offset(-10)
+            make.trailing.equalTo(workSheetView!.snp.trailing).offset(-28)
+        }
+
+        finishAddImage.snp.makeConstraints { make in
+            make.trailing.equalTo(addWorkSheetButton.snp.leading)
+            make.bottom.equalTo(workSheetView!.snp.top).offset(-10)
+        }
+
+        secondSheetButton.snp.makeConstraints { make in
+            make.top.equalTo(workSheetView!.snp.top).offset(18)
+            make.trailing.equalTo(workSheetView!.snp.trailing).offset(-45)
+            make.width.height.equalTo(25)
+        }
+
+        firstSheetButton.snp.makeConstraints { make in
+            make.top.equalTo(workSheetView!.snp.top).offset(18)
+            make.trailing.equalTo(secondSheetButton.snp.leading).offset(-10)
+            make.width.height.equalTo(25)
         }
     }
 }
