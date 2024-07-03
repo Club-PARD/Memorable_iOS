@@ -161,13 +161,17 @@ class WorkSheetView: UIView {
 
             // Create and add text field
             let textField = UITextField().then {
-                $0.borderStyle = .roundedRect
-                $0.placeholder = "Keyword"
-                $0.textAlignment = .center
-                $0.font = .systemFont(ofSize: 13)
-                $0.backgroundColor = .clear
-                $0.widthAnchor.constraint(equalToConstant: 100).isActive = true
                 $0.delegate = self
+                $0.font = .systemFont(ofSize: 13)
+                $0.layer.cornerRadius = 15
+                $0.backgroundColor = MemorableColor.Gray5
+
+                $0.snp.makeConstraints { make in
+                    make.width.equalTo(100)
+                    make.height.equalTo(30)
+                }
+                $0.placeholder = "                           "
+                $0.textAlignment = .center
             }
             self.userAnswers.append(textField)
 
@@ -252,11 +256,11 @@ class WorkSheetView: UIView {
 
 extension WorkSheetView: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        textField.backgroundColor = .yellow
+        textField.backgroundColor = MemorableColor.Yellow3
     }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
-        textField.backgroundColor = .clear
+        textField.backgroundColor = MemorableColor.Gray5
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

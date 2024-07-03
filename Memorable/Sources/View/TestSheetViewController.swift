@@ -170,7 +170,7 @@ class TestSheetViewController: UIViewController {
         }
         
         view.addSubview(scoreLabel)
-        scoreLabel.snp.makeConstraints{ make in
+        scoreLabel.snp.makeConstraints { make in
             make.trailing.equalTo(resultLabel.snp.leading).offset(-12)
             make.centerY.equalTo(resultLabel)
         }
@@ -205,7 +205,7 @@ class TestSheetViewController: UIViewController {
         backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
         
         containerView.addSubview(pagingLabel)
-        pagingLabel.snp.makeConstraints{ make in
+        pagingLabel.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-24)
             make.bottom.equalToSuperview().offset(-24)
         }
@@ -253,7 +253,7 @@ class TestSheetViewController: UIViewController {
             make.height.equalTo(44)
         }
         submitButton.addTarget(self, action: #selector(submitAnswers), for: .touchUpInside)
-        submitButton.isHidden = true  // 초기에는 숨김 처리
+        submitButton.isHidden = true // 초기에는 숨김 처리
         
         view.addSubview(sendWrongAnswersButton)
         sendWrongAnswersButton.snp.makeConstraints { make in
@@ -306,6 +306,7 @@ class TestSheetViewController: UIViewController {
             19: ["question": "교육 시스템의 변혁을 중심으로 논지를 전개한 철학자는 누구인가?", "answer": "자크 랑시에르", "userAnswer": ""],
             20: ["question": "자크 랑시에르는 구조주의 이후의 철학적 접근에도 영향을 받았다. 이 접근법은 무엇인가?", "answer": "포스트구조주의", "userAnswer": ""]
         ]
+            
         questionManager.parseQuestions(from: jsonData)
         print("Loaded questions: \(questionManager.questions.count)")
     }
@@ -498,7 +499,7 @@ class TestSheetViewController: UIViewController {
     
     @objc private func retryTest() {
         // 모든 답변 초기화
-        for index in 0..<questionManager.questions.count {
+        for index in 0 ..< questionManager.questions.count {
             questionManager.questions[index].userAnswer = ""
         }
         
@@ -542,7 +543,7 @@ class TestSheetViewController: UIViewController {
         showRemakeAlert()
     }
     
-    @objc internal override func dismissKeyboard() {
+    @objc override func dismissKeyboard() {
         view.endEditing(true) // 현재 화면에서 활성화된 키보드를 내림
     }
     
