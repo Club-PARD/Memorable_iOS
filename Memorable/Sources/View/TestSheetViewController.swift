@@ -10,6 +10,10 @@ import Then
 import UIKit
 
 class TestSheetViewController: UIViewController {
+    var sharedName: String?
+    var sharedCategory: String?
+    var sharedText: String?
+    
     private let questionManager = QuestionManager()
     private var currentPage = 0
     private let questionsPerPage = 3
@@ -113,6 +117,12 @@ class TestSheetViewController: UIViewController {
         // 키보드 내리기 (작성 밖 터치)
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
+        
+        // Example: Display data in a toast message or UI
+        if let fileName = sharedName, let category = sharedCategory, let extractedText = sharedText {
+            print("File: \(fileName)\nCategory: \(category)\nExtracted Text: \(extractedText)")
+            showToast("File: \(fileName)\nCategory: \(category)\nExtracted Text: \(extractedText)")
+        }
     }
     
     private func setupUI() {
@@ -535,5 +545,25 @@ class TestSheetViewController: UIViewController {
     
     @objc override func dismissKeyboard() {
         view.endEditing(true) // 현재 화면에서 활성화된 키보드를 내림
+    }
+    
+    private func showToast(_ message: String) {
+        let toastLabel = UILabel(frame: CGRect(x: self.view.frame.size.width/2 - 150, y: self.view.frame.size.height-100, width: 300, height: 70))
+        toastLabel.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+        toastLabel.textColor = UIColor.white
+        toastLabel.textAlignment = .center;
+        toastLabel.font = UIFont.systemFont(ofSize: 15.0)
+        toastLabel.text = message
+        toastLabel.numberOfLines = 0 // Allow multiple lines
+        toastLabel.alpha = 1.0
+        toastLabel.layer.cornerRadius = 10;
+        toastLabel.clipsToBounds = true
+        self.view.addSubview(toastLabel)
+        
+        UIView.animate(withDuration: 4.0, delay: 0.1, options: .curveEaseOut, animations: {
+            toastLabel.alpha = 0.0
+        }, completion: {(isCompleted) in
+            toastLabel.removeFromSuperview()
+        })
     }
 }
