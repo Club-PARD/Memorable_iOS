@@ -48,24 +48,13 @@ enum APIError: Error {
  } catch {
      print("Error: \(error)")
  }
-*/
+ */
 
 enum APIManager {
-    static let baseURL = "rootUrl"
+    static let baseURL = "172.30.1.11:8080"
     
-    enum Endpoint {
-        case path(String)
-        
-        var url: URL? {
-            switch self {
-            case .path(let path):
-                return URL(string: APIManager.baseURL + path)
-            }
-        }
-    }
-    
-    static func get<T: Decodable>(_ endpoint: Endpoint) async throws -> T {
-        guard let url = endpoint.url else {
+    static func get<T: Decodable>(path: String) async throws -> T {
+        guard let url = URL(string: "\(baseURL)\(path)") else {
             throw APIError.invalidURL
         }
             
@@ -89,9 +78,11 @@ enum APIManager {
         }
     }
     
-    static func post<T: Encodable>(_ endpoint: Endpoint, body: T) async throws {
-        guard let url = endpoint.url else {
-            throw APIError.invalidURL
+    static func post<T: Encodable>(path: String, body: T) async throws {
+        let urlString = "\(baseURL)\(path)"
+        print(urlString)
+        guard let url = URL(string: urlString) else {
+            return
         }
             
         var request = URLRequest(url: url)
@@ -118,8 +109,37 @@ enum APIManager {
         print("✅ Successfully Posted! (\(httpResponse.statusCode))")
     }
     
-    static func delete(_ endpoint: Endpoint) async throws {
-        guard let url = endpoint.url else {
+    static func update<T: Encodable>(path: String, body: T) async throws {
+        guard let url = URL(string: "\(baseURL)\(path)") else {
+            throw APIError.invalidURL
+        }
+            
+        var request = URLRequest(url: url)
+        request.httpMethod = "PATCH"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            
+        do {
+            let encoder = JSONEncoder()
+            request.httpBody = try encoder.encode(body)
+        } catch {
+            throw APIError.encodingError
+        }
+            
+        let (_, response) = try await URLSession.shared.data(for: request)
+            
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.noData
+        }
+            
+        guard (200 ... 299).contains(httpResponse.statusCode) else {
+            throw APIError.noData
+        }
+            
+        print("✅ Successfully Updated! (\(httpResponse.statusCode))")
+    }
+    
+    static func delete(path: String) async throws {
+        guard let url = URL(string: "\(baseURL)\(path)") else {
             throw APIError.invalidURL
         }
             
@@ -137,5 +157,56 @@ enum APIManager {
         }
         
         print("✅ Successfully Deleted! (\(httpResponse.statusCode))")
+    }
+}
+
+extension APIManager {
+    // GET 래퍼 함수
+    static func get<T: Decodable>(path: String, completion: @escaping (Result<T, Error>) -> Void) {
+        Task {
+            do {
+                let result: T = try await get(path: path)
+                completion(.success(result))
+            } catch {
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    // POST 래퍼 함수
+    static func post<T: Encodable>(path: String, body: T, completion: @escaping (Result<Void, Error>) -> Void) {
+        print("Path: \(path)")
+        Task {
+            do {
+                try await post(path: path, body: body)
+                completion(.success(()))
+            } catch {
+                completion(.failure(error))
+            }
+        }
+    }
+
+    // UPDATE 래퍼 함수
+    static func update<T: Encodable>(path: String, body: T, completion: @escaping (Result<Void, Error>) -> Void) {
+        Task {
+            do {
+                try await update(path: path, body: body)
+                completion(.success(()))
+            } catch {
+                completion(.failure(error))
+            }
+        }
+    }
+
+    // DELETE 래퍼 함수
+    static func delete(path: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        Task {
+            do {
+                try await delete(path: path)
+                completion(.success(()))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
 }
