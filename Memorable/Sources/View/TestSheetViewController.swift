@@ -25,7 +25,7 @@ class TestSheetViewController: UIViewController {
     private var progressBarView: ProgressBarView?
     
     private var containerView = UIView().then {
-        $0.backgroundColor = .white
+        $0.backgroundColor = MemorableColor.White
         $0.contentMode = .scaleAspectFit
         $0.layer.cornerRadius = 40
         $0.clipsToBounds = true
@@ -39,7 +39,7 @@ class TestSheetViewController: UIViewController {
     private let backButton = UIButton().then {
         let image = UIImage(systemName: "chevron.left")
         $0.setImage(image, for: .normal)
-        $0.backgroundColor = .white
+        $0.backgroundColor = MemorableColor.White
         $0.contentMode = .scaleAspectFit
         $0.layer.cornerRadius = 0.5 * 44
         $0.clipsToBounds = true
@@ -47,31 +47,34 @@ class TestSheetViewController: UIViewController {
     
     private let titleLabel = UILabel().then {
         $0.text = "사회학개론 1-1"
-        $0.font = UIFont.systemFont(ofSize: 34, weight: .bold)
+        $0.font = MemorableFont.LargeTitle()
     }
     
     private let categoryLabel = UILabel().then {
         $0.text = "카테고리명"
-        $0.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        $0.textColor = .gray
+        $0.font = MemorableFont.Body1()
+        $0.textColor = MemorableColor.Gray1
     }
     
     private let pagingLabel = UILabel().then {
-        $0.textAlignment = .right
-        $0.font = UIFont.systemFont(ofSize: 14)
-        $0.textColor = .gray
+        $0.font = MemorableFont.Body1()
+        $0.textColor = MemorableColor.Gray1
     }
     
     private let submitButton = UIButton().then {
         $0.setTitle("제출하기", for: .normal)
-        $0.backgroundColor = .systemBlue
+        $0.titleLabel?.font = MemorableFont.Body1()
+        $0.setTitleColor(MemorableColor.White, for: .normal)
+        $0.backgroundColor = MemorableColor.Blue2
         $0.layer.cornerRadius = 22
         $0.contentMode = .scaleAspectFit
     }
     
     private let retryButton = UIButton().then {
         $0.setTitle("재응시하기", for: .normal)
-        $0.backgroundColor = .systemBlue
+        $0.titleLabel?.font = MemorableFont.Body1()
+        $0.setTitleColor(MemorableColor.White, for: .normal)
+        $0.backgroundColor = MemorableColor.Black
         $0.layer.cornerRadius = 22
         $0.contentMode = .scaleAspectFit
         $0.isHidden = true
@@ -79,7 +82,9 @@ class TestSheetViewController: UIViewController {
     
     private let sendWrongAnswersButton = UIButton().then {
         $0.setTitle("오답노트 보내기", for: .normal)
-        $0.backgroundColor = .systemGreen
+        $0.titleLabel?.font = MemorableFont.Body1()
+        $0.setTitleColor(MemorableColor.White, for: .normal)
+        $0.backgroundColor = MemorableColor.Blue2
         $0.layer.cornerRadius = 22
         $0.contentMode = .scaleAspectFit
         $0.isHidden = true
@@ -87,21 +92,23 @@ class TestSheetViewController: UIViewController {
     
     private let remakeButton = UIButton().then {
         $0.setTitle("재추출하기", for: .normal)
-        $0.backgroundColor = .systemGreen
+        $0.titleLabel?.font = MemorableFont.Body1()
+        $0.setTitleColor(MemorableColor.White, for: .normal)
+        $0.backgroundColor = MemorableColor.Blue2
         $0.layer.cornerRadius = 22
         $0.contentMode = .scaleAspectFit
         $0.isHidden = true
     }
     
     private let resultLabel = UILabel().then {
-        $0.font = UIFont.systemFont(ofSize: 30, weight: .bold)
-        $0.textColor = .black
+        $0.font = MemorableFont.Body1()
+        $0.textColor = MemorableColor.Gray1
         $0.isHidden = true // 초기에는 숨김 처리
     }
     
     private let scoreLabel = UILabel().then {
-        $0.font = UIFont.systemFont(ofSize: 20)
-        $0.textColor = .black
+        $0.font = MemorableFont.LargeTitle()
+        $0.textColor = MemorableColor.Black
         $0.isHidden = true // 초기에는 숨김 처리
         $0.text = "점수"
     }
@@ -109,7 +116,7 @@ class TestSheetViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(true, animated: false)
-        view.backgroundColor = .lightGray
+        view.backgroundColor = MemorableColor.Gray5
         setupUI()
         loadQuestions()
         updateUI()
@@ -214,7 +221,8 @@ class TestSheetViewController: UIViewController {
         previousButton = UIButton()
         let previousButtonImage = UIImage(systemName: "chevron.left")
         previousButton.setImage(previousButtonImage, for: .normal)
-        previousButton.backgroundColor = .white
+        previousButton.tintColor = MemorableColor.Blue2
+        previousButton.backgroundColor = MemorableColor.White
         previousButton.contentMode = .scaleAspectFit
         previousButton.layer.cornerRadius = 32 // 64의 절반
         previousButton.clipsToBounds = true
@@ -231,7 +239,8 @@ class TestSheetViewController: UIViewController {
         nextButton = UIButton()
         let nextButtonImage = UIImage(systemName: "chevron.right")
         nextButton.setImage(nextButtonImage, for: .normal)
-        nextButton.backgroundColor = .white
+        nextButton.tintColor = MemorableColor.Blue2
+        nextButton.backgroundColor = MemorableColor.White
         nextButton.contentMode = .scaleAspectFit
         nextButton.layer.cornerRadius = 32 // 64의 절반
         nextButton.clipsToBounds = true

@@ -19,7 +19,7 @@ class TabBarComponent: UIView {
     }
     
     private func setupView() {
-        self.backgroundColor = .white
+        self.backgroundColor = MemorableColor.White
         self.layer.cornerRadius = 56
         self.layer.masksToBounds = true
         self.layer.shadowOpacity = 0.5
@@ -53,7 +53,7 @@ class TabBarComponent: UIView {
         
         let label = UILabel()
         label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 12)
+        label.font = MemorableFont.BodyCaption()
         button.addSubview(label)
         
         imageView.snp.makeConstraints { make in
@@ -113,8 +113,6 @@ class TabBarComponent: UIView {
                let _ = button.subviews.last as? UILabel {
                 let imageName = imageNames[index] + (isSelected ? "-white" : "-gray")
                 imageView.image = UIImage(named: imageName)
-                imageView.backgroundColor = isSelected ? .systemBlue : .systemGray5
-                
             }
         }
     }

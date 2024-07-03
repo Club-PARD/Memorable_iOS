@@ -13,7 +13,7 @@ class QuestionView: UIView {
     
     let questionNumberView: UIView = {
         let view = UIView()
-        view.backgroundColor = .blue
+        view.backgroundColor = MemorableColor.Blue2
         view.layer.cornerRadius = 0.5 * 39
         view.clipsToBounds = true
         return view
@@ -21,13 +21,16 @@ class QuestionView: UIView {
     
     let questionNumber: UILabel = {
         let label = UILabel()
-        label.textColor = .white
+        label.textColor = MemorableColor.White
+        label.font = MemorableFont.BodyCaption()
         return label
     }()
     
     let questionLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
+        label.textColor = MemorableColor.Black
+        label.font = MemorableFont.Body1()
         return label
     }()
     
@@ -36,14 +39,16 @@ class QuestionView: UIView {
         textField.layer.cornerRadius = 19
         textField.layer.masksToBounds = true
         textField.borderStyle = .none
-        textField.backgroundColor = .lightGray
+        textField.backgroundColor = MemorableColor.Gray5
         textField.textAlignment = .center
+        textField.textColor = MemorableColor.Black
+        textField.font = MemorableFont.BodyCaption()
         return textField
     }()
     
     let correctAnswerView: UIView = {
         let correctAnswerView = UIView()
-        correctAnswerView.backgroundColor = .lightGray
+        correctAnswerView.backgroundColor = MemorableColor.Gray5
         correctAnswerView.layer.cornerRadius = 19
         correctAnswerView.layer.masksToBounds = true
         return correctAnswerView
@@ -51,12 +56,15 @@ class QuestionView: UIView {
     
     let correctAnswerLabel: UILabel = {
         let correctAnswerLabel = UILabel()
+        correctAnswerLabel.font = MemorableFont.BodyCaption()
+        correctAnswerLabel.textColor = MemorableColor.Blue1
         return correctAnswerLabel
     }()
     
     let userAnswerLabel: UILabel = {
         let userAnswerLabel = UILabel()
-        userAnswerLabel.textColor = .gray
+        userAnswerLabel.textColor = MemorableColor.Gray1
+        userAnswerLabel.font = MemorableFont.BodyCaption()
         return userAnswerLabel
     }()
     
@@ -71,7 +79,7 @@ class QuestionView: UIView {
     }
     
     private func setupUI() {
-        backgroundColor = .white
+        backgroundColor = MemorableColor.White
         addSubview(questionNumberView)
         questionNumberView.addSubview(questionNumber)
         addSubview(questionLabel)
@@ -113,9 +121,9 @@ class QuestionView: UIView {
         let normalizedUserAnswer = userAnswerLabel.text?.replacingOccurrences(of: "내가 쓴 답: ", with: "").lowercased().replacingOccurrences(of: " ", with: "") ?? ""
         
         if normalizedCorrectAnswer == normalizedUserAnswer {
-            correctAnswerLabel.textColor = .blue
+            correctAnswerLabel.textColor = MemorableColor.Blue1
         } else {
-            correctAnswerLabel.textColor = .red
+            correctAnswerLabel.textColor = MemorableColor.Red
         }
         
         // Add target to handle text changes
