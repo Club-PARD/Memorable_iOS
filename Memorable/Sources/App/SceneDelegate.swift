@@ -8,16 +8,16 @@
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    
     var window: UIWindow?
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         window = UIWindow(windowScene: windowScene)
-        
-        let homeViewController = HomeViewController()
-        let navigationVC = UINavigationController(rootViewController: homeViewController)
+
+        let initialVC = SplashViewController()
+
+        let navigationVC = UINavigationController(rootViewController: initialVC)
         
         if #available(iOS 13.0, *) {
             self.window?.overrideUserInterfaceStyle = .light // 라이트모드만 지원하기

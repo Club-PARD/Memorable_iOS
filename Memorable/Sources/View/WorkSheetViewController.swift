@@ -33,8 +33,8 @@ class WorkSheetViewController: UIViewController {
 
     private let doneButton = UIButton().then {
         $0.setTitle("학습완료", for: .normal)
-        $0.setTitleColor(.black, for: .normal)
-        $0.backgroundColor = .white
+        $0.setTitleColor(MemorableColor.Gray1, for: .normal)
+        $0.backgroundColor = MemorableColor.Gray4
         $0.layer.cornerRadius = 22
         $0.contentMode = .scaleAspectFit
         $0.isEnabled = false
@@ -55,7 +55,7 @@ class WorkSheetViewController: UIViewController {
 
     private let reExtractButton = UIButton().then {
         var config = UIButton.Configuration.plain()
-        config.baseForegroundColor = .blue
+        config.baseForegroundColor = MemorableColor.Blue1
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 12)
         config.image = UIImage(systemName: "arrow.counterclockwise", withConfiguration: imageConfig)
         config.imagePadding = 5
@@ -66,20 +66,41 @@ class WorkSheetViewController: UIViewController {
 
     private let resetButton = UIButton().then {
         $0.setTitle("초기화하기", for: .normal)
-        $0.backgroundColor = MemorableColor.Black
-        $0.layer.cornerRadius = 22
+        $0.titleLabel?.font = MemorableFont.Body1()
+
         $0.contentMode = .scaleAspectFit
+
+        var config = UIButton.Configuration.filled()
+        config.baseBackgroundColor = .black
+        config.baseForegroundColor = .white
+
+        $0.configuration = config
+
+        // 버튼의 layer에 직접 cornerRadius를 설정합니다.
+        $0.layer.cornerRadius = 25
+        $0.clipsToBounds = true
     }
 
     private var isShowingAnswer = false
 
     private let showAnswerButton = UIButton().then {
         $0.setTitle("키워드 보기", for: .normal)
-        $0.setTitle("키워드 숨기기", for: .selected)
-        $0.titleLabel?.font = MemorableFont.Body1()
-        $0.backgroundColor = .blue2
-        $0.layer.cornerRadius = 22
+        $0.setTitle("키워드 가리기", for: .selected)
+
         $0.contentMode = .scaleAspectFit
+
+        var config = UIButton.Configuration.filled()
+        config.image = UIImage(systemName: "eye")
+        config.imagePadding = 10
+        config.imagePlacement = .leading
+        config.baseBackgroundColor = MemorableColor.Blue2
+        config.baseForegroundColor = MemorableColor.White
+
+        $0.configuration = config
+
+        // 버튼의 layer에 직접 cornerRadius를 설정합니다.
+        $0.layer.cornerRadius = 25
+        $0.clipsToBounds = true
     }
 
     private var userAnswer: [String] = []
@@ -137,9 +158,33 @@ class WorkSheetViewController: UIViewController {
 
         if isShowingAnswer {
             showAnswer()
+
+            resetButton.isHidden = true
+
+            var config = UIButton.Configuration.filled()
+            config.image = UIImage(systemName: "eye.slash")
+            config.imagePadding = 10
+            config.imagePlacement = .leading
+            config.baseBackgroundColor = MemorableColor.Gray4
+            config.baseForegroundColor = MemorableColor.Gray1
+            config.cornerStyle = .large
+
+            showAnswerButton.configuration = config
         }
         else {
             hideAnswer()
+
+            resetButton.isHidden = false
+
+            var config = UIButton.Configuration.filled()
+            config.image = UIImage(systemName: "eye")
+            config.imagePadding = 10
+            config.imagePlacement = .leading
+            config.baseBackgroundColor = MemorableColor.Blue2
+            config.baseForegroundColor = MemorableColor.White
+            config.cornerStyle = .large
+
+            showAnswerButton.configuration = config
         }
     }
 
@@ -163,12 +208,16 @@ class WorkSheetViewController: UIViewController {
                 let textField = worksheet.userAnswers[idx]
 
                 // 값을 안 쓴 부분
-                if self.userAnswer[idx].isEmpty {
+                if self.userAnswer[idx].replacingOccurrences(of: " ", with: "")
+                    .isEmpty
+                {
                     textField.textColor = .lightGray
                     textField.text = mockAnswers[idx]
                 }
                 // 값이 동일
-                else if mockAnswers[idx] == self.userAnswer[idx] {
+                else if mockAnswers[idx].replacingOccurrences(of: " ", with: "")
+                    == self.userAnswer[idx].replacingOccurrences(of: " ", with: "")
+                {
                     self.correctCount += 1
                     textField.textColor = .blue
                 }
@@ -213,8 +262,8 @@ class WorkSheetViewController: UIViewController {
     func correctAll() {
         print("CORRECT ALL")
         finishImage.isHidden = false
-        doneButton.setTitleColor(.white, for: .normal)
-        doneButton.backgroundColor = .blue
+        doneButton.setTitleColor(MemorableColor.White, for: .normal)
+        doneButton.backgroundColor = MemorableColor.Blue2
         doneButton.isEnabled = true
     }
 
@@ -339,15 +388,15 @@ class WorkSheetViewController: UIViewController {
         showAnswerButton.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
             make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-32)
-            make.height.equalTo(44)
-            make.width.equalTo(132)
+            make.height.equalTo(50)
+            make.width.equalTo(160)
         }
 
         resetButton.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
             make.trailing.equalTo(showAnswerButton.snp.leading).offset(-10)
-            make.height.equalTo(44)
-            make.width.equalTo(132)
+            make.height.equalTo(50)
+            make.width.equalTo(160)
         }
 
         workSheetView!.snp.makeConstraints { make in
