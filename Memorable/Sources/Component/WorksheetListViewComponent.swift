@@ -22,7 +22,7 @@ class WorksheetListViewComponent: UIView {
         self.filterScrollView = UIScrollView()
         self.filterStackView = UIStackView()
         super.init(frame: frame)
-        self.backgroundColor = .white
+        self.backgroundColor = MemorableColor.White
         self.layer.cornerRadius = 40
         self.clipsToBounds = true
         
@@ -98,18 +98,18 @@ class WorksheetListViewComponent: UIView {
         configuration.title = title
         configuration.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
             var outgoing = incoming
-            outgoing.font = UIFont.systemFont(ofSize: 14)
+            outgoing.font = MemorableFont.BodyCaption()
             return outgoing
         }
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10)
         configuration.cornerStyle = .capsule
         
         if title == "전체보기" {
-            configuration.baseBackgroundColor = .black
-            configuration.baseForegroundColor = .white
+            configuration.baseBackgroundColor = MemorableColor.Black
+            configuration.baseForegroundColor = MemorableColor.White
         } else {
-            configuration.baseBackgroundColor = .lightGray
-            configuration.baseForegroundColor = .gray
+            configuration.baseBackgroundColor = MemorableColor.Gray1
+            configuration.baseForegroundColor = MemorableColor.Gray5
         }
         
         button.configuration = configuration
@@ -122,15 +122,15 @@ class WorksheetListViewComponent: UIView {
         filterStackView.arrangedSubviews.forEach { view in
             if let button = view as? UIButton {
                 var config = button.configuration
-                config?.baseBackgroundColor = .lightGray
-                config?.baseForegroundColor = .gray
+                config?.baseBackgroundColor = MemorableColor.Gray1
+                config?.baseForegroundColor = MemorableColor.Gray5
                 button.configuration = config
             }
         }
         
         var config = sender.configuration
-        config?.baseBackgroundColor = .black
-        config?.baseForegroundColor = .white
+        config?.baseBackgroundColor = MemorableColor.Black
+        config?.baseForegroundColor = MemorableColor.White
         sender.configuration = config
         
         if sender.configuration?.title == "전체보기" {
@@ -153,7 +153,7 @@ class WorksheetListViewComponent: UIView {
     }
     
     private func setupGradientView() {
-        let gradientView = GradientView(startColor: .white, endColor: .white)
+        let gradientView = GradientView(startColor: MemorableColor.White ?? .white, endColor: MemorableColor.White ?? .white)
         self.addSubview(gradientView)
         
         gradientView.snp.makeConstraints{ make in
