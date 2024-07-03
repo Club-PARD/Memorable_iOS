@@ -197,8 +197,8 @@ extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate
 //            testSheetVC.document = document
             navigateToViewController(testSheetVC)
         case "오답노트":
-            // 오답노트에 대한 처리를 여기에 추가할 수 있습니다.
-            break
+            let wrongSheetVC = WrongSheetViewController()
+            navigateToViewController(wrongSheetVC)
         default:
             print("Unknown file type")
         }

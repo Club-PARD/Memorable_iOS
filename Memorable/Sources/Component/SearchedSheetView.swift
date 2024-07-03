@@ -131,7 +131,7 @@ class SearchedSheetView: UIView {
     
     func setDocuments(documents: [Document]) {
         // 모든 문서 결합 후, 날짜를 기준으로 내림차순 정렬
-        allDocuments = documents.sorted(by: { $0.date > $1.date })
+        allDocuments = documents.sorted(by: { $0.createdDate > $1.createdDate })
         filteredDocuments = allDocuments
         tableView.reloadData()
     }

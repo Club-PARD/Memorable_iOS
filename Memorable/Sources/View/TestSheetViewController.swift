@@ -10,6 +10,9 @@ import Then
 import UIKit
 
 class TestSheetViewController: UIViewController {
+    private let apiManager = APIManagere.shared
+    private var testsheetDetail: TestsheetDetail?
+    
     var sharedName: String?
     var sharedCategory: String?
     var sharedText: String?
@@ -19,8 +22,8 @@ class TestSheetViewController: UIViewController {
     private let questionsPerPage = 3
     
     private var questionViews: [QuestionView] = []
-    private var nextButton: UIButton!
-    private var previousButton: UIButton!
+    private var previousButton = UIButton()
+    private var nextButton = UIButton()
     private var testSheetView: UIView?
     private var progressBarView: ProgressBarView?
     
@@ -115,10 +118,10 @@ class TestSheetViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        loadTestsheet()
         navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor = MemorableColor.Gray5
         setupUI()
-        loadQuestions()
         updateUI()
         
         // 키보드 내리기 (작성 밖 터치)
@@ -131,6 +134,22 @@ class TestSheetViewController: UIViewController {
             showToast("File: \(fileName)\nCategory: \(category)\nExtracted Text: \(extractedText)")
         }
     }
+    
+    private func loadTestsheet() {
+            testsheetDetail = apiManager.getMockTestsheetDetail()
+            setupQuestions()
+            updateUI()
+        }
+
+        private func setupQuestions() {
+            guard let testsheetDetail = testsheetDetail else { return }
+            
+            let allQuestions = testsheetDetail.questions1 + testsheetDetail.questions2
+            questionManager.questions = allQuestions
+            
+            titleLabel.text = testsheetDetail.name
+            categoryLabel.text = testsheetDetail.category
+        }
     
     private func setupUI() {
         view.addSubview(logoImageView)
@@ -218,7 +237,6 @@ class TestSheetViewController: UIViewController {
         }
         
         // Previous Button
-        previousButton = UIButton()
         let previousButtonImage = UIImage(systemName: "chevron.left")
         previousButton.setImage(previousButtonImage, for: .normal)
         previousButton.tintColor = MemorableColor.Blue2
@@ -235,8 +253,6 @@ class TestSheetViewController: UIViewController {
             make.width.height.equalTo(64)
         }
         
-        // Next Button
-        nextButton = UIButton()
         let nextButtonImage = UIImage(systemName: "chevron.right")
         nextButton.setImage(nextButtonImage, for: .normal)
         nextButton.tintColor = MemorableColor.Blue2
@@ -290,34 +306,6 @@ class TestSheetViewController: UIViewController {
             make.height.equalTo(44)
         }
         remakeButton.addTarget(self, action: #selector(remakeTest), for: .touchUpInside)
-    }
-    
-    private func loadQuestions() {
-        let jsonData: [Int: [String: String]] = [
-            1: ["question": "자크 랑시에르의 철학적 배경은 어떤 철학자의 영향을 받았는가?", "answer": "알튀세르", "userAnswer": ""],
-            2: ["question": "랑시에르가 집중한 주요 철학적 개념 중 하나는 무엇인가?", "answer": "평등", "userAnswer": ""],
-            3: ["question": "조제프 자코토가 교육을 전담했던 시기는 어떤 역사적 사건 이후인가?", "answer": "프랑스 혁명", "userAnswer": ""],
-            4: ["question": "조제프 자코토가 프랑스어를 가르쳤던 나라는 어디인가?", "answer": "벨기에", "userAnswer": ""],
-            5: ["question": "전통적인 교육 시스템이 제한을 가하는 능력은 무엇인가?", "answer": "지적 능력", "userAnswer": ""],
-            6: ["question": "모국어가 어떤 상황 속에서 자연스럽게 배워진다고 언급되는가?", "answer": "일상", "userAnswer": ""],
-            7: ["question": "거의 동일한 지적 능력을 가진다는 철학적 배경의 기저에 깔려 있는 권리는 무엇인가?", "answer": "평등", "userAnswer": ""],
-            8: ["question": "특정한 교육 시스템이 학생들에게 제한을 가하는 방법은 무엇인가?", "answer": "전통적인 교육 시스템", "userAnswer": ""],
-            9: ["question": "자코토가 프랑스어를 가르치는 교육 실험의 중요한 개념 중 하나는 무엇인가?", "answer": "무지한 스승", "userAnswer": ""],
-            10: ["question": "랑시에르의 철학이 영향을 받은 철학적 사조 중 하나는 무엇인가?", "answer": "구조주의", "userAnswer": ""],
-            11: ["question": "자크 랑시에르가 주목한 철학적 접근법 중 하나는 무엇인가?", "answer": "마르크스주의", "userAnswer": ""],
-            12: ["question": "자크 랑시에르의 철학은 개인의 자유를 위한 과정에도 중점을 두고 있다. 이 과정을 무엇이라 부르는가?", "answer": "해방", "userAnswer": ""],
-            13: ["question": "교육 실험을 통해 혁신적인 교육방법을 제시한 프랑스의 교육자는 누구인가?", "answer": "조제프 자코토", "userAnswer": ""],
-            14: ["question": "자크 랑시에르의 철학에서 주요한 역할을 하는, 말이나 문자를 의미하는 것은 무엇인가?", "answer": "기호", "userAnswer": ""],
-            15: ["question": "자크 랑시에르가 비판적으로 바라본 것은 학생들에게 무지를 교육하며 제한하는 무엇인가?", "answer": "교육 시스템", "userAnswer": ""],
-            16: ["question": "조제프 자코토가 가르친 언어는 무엇인가?", "answer": "프랑스어", "userAnswer": ""],
-            17: ["question": "자크 랑시에르가 제시한 새로운 교육 시스템의 목적은 무엇인가?", "answer": "변혁", "userAnswer": ""],
-            18: ["question": "자크 랑시에르의 철학에서 언급된, 특정 언어를 학습하는 과정에서 중요한 역할을 하는 요소는 무엇인가?", "answer": "모국어", "userAnswer": ""],
-            19: ["question": "교육 시스템의 변혁을 중심으로 논지를 전개한 철학자는 누구인가?", "answer": "자크 랑시에르", "userAnswer": ""],
-            20: ["question": "자크 랑시에르는 구조주의 이후의 철학적 접근에도 영향을 받았다. 이 접근법은 무엇인가?", "answer": "포스트구조주의", "userAnswer": ""]
-        ]
-            
-        questionManager.parseQuestions(from: jsonData)
-        print("Loaded questions: \(questionManager.questions.count)")
     }
     
     private func updateUI() {
@@ -451,7 +439,7 @@ class TestSheetViewController: UIViewController {
     
     private func printAnswers() {
         for (index, question) in questionManager.questions.enumerated() {
-            print("질문 \(index + 1) - 정답: \(question.answer), 쓴 답: \(question.userAnswer)")
+            print("질문 \(index + 1) - 정답: \(question.answer), 쓴 답: \(String(describing: question.userAnswer))")
         }
     }
     
@@ -461,7 +449,7 @@ class TestSheetViewController: UIViewController {
         
         for question in questionManager.questions {
             let normalizedCorrectAnswer = question.answer.lowercased().replacingOccurrences(of: " ", with: "")
-            let normalizedUserAnswer = question.userAnswer.lowercased().replacingOccurrences(of: " ", with: "")
+            let normalizedUserAnswer = question.userAnswer?.lowercased().replacingOccurrences(of: " ", with: "")
             
             if normalizedCorrectAnswer == normalizedUserAnswer {
                 correctAnswers += 1
