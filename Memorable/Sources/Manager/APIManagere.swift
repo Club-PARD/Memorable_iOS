@@ -446,10 +446,16 @@ class APIManagere {
     func getMockTestsheetDetail() -> TestsheetDetail {
         return TestsheetDetail(testsheetId: 1, name: "Testsheet 1", category: "Math", isReExtracted: false, questions1: [
             Question(questionId: 1, question: "Question 1", answer: "Answer 1", userAnswer: nil),
-            Question(questionId: 2, question: "Question 2", answer: "Answer 2", userAnswer: nil)
+            Question(questionId: 2, question: "Question 2", answer: "Answer 2", userAnswer: nil),
+            Question(questionId: 3, question: "Question 3", answer: "Answer 1", userAnswer: nil),
+            Question(questionId: 4, question: "Question 4", answer: "Answer 2", userAnswer: nil),
+            Question(questionId: 5, question: "Question 5", answer: "Answer 1", userAnswer: nil),
+            Question(questionId: 6, question: "Question 6", answer: "Answer 2", userAnswer: nil)
         ], questions2: [
-            Question(questionId: 3, question: "Question 3", answer: "Answer 3", userAnswer: nil),
-            Question(questionId: 4, question: "Question 4", answer: "Answer 4", userAnswer: nil)
+            Question(questionId: 7, question: "Question 7", answer: "Answer 3", userAnswer: nil),
+            Question(questionId: 8, question: "Question 8", answer: "Answer 4", userAnswer: nil),
+            Question(questionId: 9, question: "Question 9", answer: "Answer 1", userAnswer: nil),
+            Question(questionId: 10, question: "Question 10", answer: "Answer 2", userAnswer: nil)
         ])
     }
     
