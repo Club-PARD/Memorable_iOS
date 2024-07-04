@@ -105,16 +105,17 @@ class WrongSheetView: UIView {
 
         self.scrollView.snp.makeConstraints {
             $0.leading.trailing.equalTo(self.contentView)
-            $0.top.equalTo(self.contentView).offset(50)
-            $0.bottom.equalTo(self.contentView).offset(-50)
+            $0.top.equalTo(self.contentView).offset(30)
+            $0.bottom.equalTo(self.contentView).offset(-30)
         }
 
         self.wrongSheetContent.snp.makeConstraints {
             $0.top.equalTo(self.scrollView).offset(24)
-            $0.leading.equalTo(self.scrollView).offset(32)
-            $0.trailing.equalTo(self.scrollView).offset(-32)
+//            $0.leading.equalTo(self.scrollView).offset(32)
+//            $0.trailing.equalTo(self.scrollView).offset(-32)
             $0.bottom.equalTo(self.scrollView)
             $0.width.equalTo(self.contentView).offset(-64)
+            $0.centerX.equalToSuperview()
         }
     }
 

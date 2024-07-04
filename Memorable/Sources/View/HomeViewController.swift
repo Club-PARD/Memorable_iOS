@@ -108,7 +108,7 @@ class HomeViewController: UIViewController {
         view.addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.leading.equalTo(titleLabel.snp.leading).offset(-16)
-            make.trailing.equalToSuperview().offset(-24)
+            make.trailing.equalToSuperview().offset(-40)
             make.top.equalTo(titleLabel.snp.bottom).offset(16)
             //            make.width.equalTo(952)
             make.height.equalTo(569)
@@ -125,7 +125,8 @@ class HomeViewController: UIViewController {
         view.addSubview(tabBar)
         tabBar.snp.makeConstraints { make in
             make.top.equalTo(containerView).offset(109)
-            make.trailing.equalTo(containerView.snp.leading).offset(-33)
+            make.leading.equalTo(view.safeAreaLayoutGuide).offset(40)
+//            make.trailing.equalTo(containerView.snp.leading).offset(-33)
             //            make.centerY.equalTo(self.view)
             make.height.equalTo(504)
         }
@@ -189,7 +190,7 @@ class HomeViewController: UIViewController {
             //            make.top.equalTo(headerComponent.snp.bottom)
             make.top.equalTo(headerComponent.snp.bottom).offset(-15)
             make.leading.equalTo(titleLabel.snp.leading).offset(-16)
-            make.trailing.equalToSuperview().offset(-24)
+            make.trailing.equalToSuperview().offset(-40)
             make.bottom.equalToSuperview()
         }
         
@@ -213,7 +214,8 @@ class HomeViewController: UIViewController {
         
         tabBar.snp.remakeConstraints { make in
             make.top.equalTo(containerView.snp.top).offset(115.5)
-            make.trailing.equalTo(containerView.snp.leading).offset(-33)
+            make.leading.equalTo(view.safeAreaLayoutGuide).offset(40)
+//            make.trailing.equalTo(containerView.snp.leading).offset(-33)
             //            make.centerY.equalTo(self.view)
             make.height.equalTo(504)
         }
@@ -223,7 +225,7 @@ class HomeViewController: UIViewController {
         // 기본 레이아웃으로 되돌리기
         containerView.snp.remakeConstraints { make in
             make.leading.equalTo(titleLabel.snp.leading).offset(-16)
-            make.trailing.equalToSuperview().offset(-24)
+            make.trailing.equalToSuperview().offset(-40)
             make.top.equalTo(titleLabel.snp.bottom).offset(16)
             //            make.width.equalTo(952)
             make.height.equalTo(569)
@@ -233,7 +235,8 @@ class HomeViewController: UIViewController {
         titleLabel.isHidden = false
         tabBar.snp.remakeConstraints { make in
             make.top.equalTo(containerView)
-            make.trailing.equalTo(containerView.snp.leading).offset(-33)
+            make.leading.equalTo(view.safeAreaLayoutGuide).offset(40)
+//            make.trailing.equalTo(containerView.snp.leading).offset(-33)
             //            make.centerY.equalTo(self.view)
             make.height.equalTo(504)
         }

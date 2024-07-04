@@ -92,6 +92,8 @@ class WrongSheetViewController: UIViewController {
             questions: mockWrongQuestions,
             answers: mockWrongQuestionAnswers
         )
+        loadUserAnswers()
+
         setupButtons()
 
         addSubViews()
@@ -116,6 +118,7 @@ class WrongSheetViewController: UIViewController {
         }
 
         let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
+            self.saveUserAnswers()
             self.navigationController?.popViewController(animated: true)
         }
 
@@ -123,6 +126,40 @@ class WrongSheetViewController: UIViewController {
         alert.addAction(confirmAction)
 
         present(alert, animated: true)
+    }
+
+    private func saveUserAnswers() {
+        guard let wrongsheet = wrongSheetView as? WrongSheetView else {
+            print("WrongSheetView를 찾을 수 없습니다.")
+            return
+        }
+        answerLength = wrongsheet.wrongQuestionViews.count
+        if isShowingAnswer {
+            for idx in 0 ..< answerLength {
+                wrongsheet.wrongQuestionViews[idx].answerTextField.text = userAnswer[idx]
+            }
+        }
+        userAnswer = wrongsheet.wrongQuestionViews.map { $0.answerTextField.text ?? "" }
+
+        // TODO: 클백 연결시 key 변경해주어야 함.
+        UserDefaults.standard.set(userAnswer, forKey: "wrongSheet")
+    }
+
+    private func loadUserAnswers() {
+        guard let wrongsheet = wrongSheetView as? WrongSheetView else {
+            print("WrongSheetView를 찾을 수 없습니다.")
+            return
+        }
+
+        let prevUserAnswers: [String] = UserDefaults.standard.array(forKey: "wrongSheet") as? [String] ?? []
+        if !prevUserAnswers.isEmpty {
+            print(prevUserAnswers)
+            for (index, view) in wrongsheet.wrongQuestionViews.enumerated() {
+                view.answerTextField.text = prevUserAnswers[index]
+            }
+        }
+
+        wrongsheet.layoutIfNeeded()
     }
 
     @objc func didTapResetButton() {
