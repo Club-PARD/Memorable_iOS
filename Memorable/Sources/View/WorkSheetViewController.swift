@@ -142,6 +142,8 @@ class WorkSheetViewController: UIViewController {
             answers: mockAnswers
         )
 
+        reloadUserAnswers()
+
         setupButtons()
 
         addSubViews()
@@ -182,7 +184,6 @@ class WorkSheetViewController: UIViewController {
     @objc func didTapShowAnswerButton() {
         isShowingAnswer.toggle()
         showAnswerButton.isSelected = isShowingAnswer
-
         if isShowingAnswer {
             showAnswer()
 
@@ -359,7 +360,58 @@ class WorkSheetViewController: UIViewController {
 
     @objc func didTapBackButton() {
         print("GO BACK")
+
+        saveUserAnswers()
+
         navigationController?.popViewController(animated: true)
+    }
+
+    private func saveUserAnswers() {
+        guard let worksheet = workSheetView as? WorkSheetView else {
+            print("WorkSheetView를 찾을 수 없습니다.")
+            return
+        }
+        answerLength = worksheet.userAnswers.count
+
+        if isShowingAnswer {
+            for idx in 0 ..< answerLength {
+                worksheet.userAnswers[idx].text = userAnswer[idx]
+            }
+        }
+        userAnswer = worksheet.userAnswers.map { $0.text ?? "" }
+
+        // TODO: 클백 들어오면 key값 변경되어야 함 WorkSheetID로
+        if isFirstSheetSelected {
+            UserDefaults.standard.set(userAnswer, forKey: "mockUserAnswer1")
+        }
+        else {
+            UserDefaults.standard.set(userAnswer, forKey: "mockUserAnswer2")
+        }
+    }
+
+    private func reloadUserAnswers() {
+        guard let worksheet = workSheetView as? WorkSheetView else {
+            print("WorkSheetView를 찾을 수 없습니다.")
+            return
+        }
+        if isFirstSheetSelected {
+            let prevUserAnswers: [String] = UserDefaults.standard.array(forKey: "mockUserAnswer1") as? [String] ?? []
+            if !prevUserAnswers.isEmpty {
+                print(prevUserAnswers)
+                for (index, field) in worksheet.userAnswers.enumerated() {
+                    field.text = prevUserAnswers[index]
+                }
+            }
+        }
+        else {
+            let prevUserAnswers: [String] = UserDefaults.standard.array(forKey: "mockUserAnswer2") as? [String] ?? []
+            if !prevUserAnswers.isEmpty {
+                for (index, field) in worksheet.userAnswers.enumerated() {
+                    field.text = prevUserAnswers[index]
+                }
+            }
+        }
+        worksheet.layoutIfNeeded()
     }
 
     func finishReExtract() {
@@ -382,6 +434,23 @@ class WorkSheetViewController: UIViewController {
 
         let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
             print("PRESS CONFIRM")
+
+            self.saveUserAnswers()
+
+            self.isShowingAnswer = false
+            self.showAnswerButton.isSelected = self.isShowingAnswer
+            self.resetButton.isHidden = false
+            self.showAnswerButton.setTitle("키워드 보기", for: .normal)
+            self.showAnswerButton.setTitle("키워드 가리기", for: .selected)
+            var config = UIButton.Configuration.filled()
+            config.image = UIImage(systemName: "eye")
+            config.imagePadding = 10
+            config.imagePlacement = .leading
+            config.baseBackgroundColor = MemorableColor.Blue2
+            config.baseForegroundColor = MemorableColor.White
+            config.cornerStyle = .large
+            self.showAnswerButton.configuration = config
+
             self.firstSheetButton.isHidden = false
             self.firstSheetButton.isEnabled = true
             self.secondSheetButton.isHidden = false
@@ -450,7 +519,24 @@ class WorkSheetViewController: UIViewController {
 
     @objc func didTapFirstSheetButton() {
         print("FirstSheetButton")
+        saveUserAnswers()
         isFirstSheetSelected = true
+
+        isShowingAnswer = false
+        showAnswerButton.isSelected = isShowingAnswer
+        showAnswerButton.setTitle("키워드 보기", for: .normal)
+        showAnswerButton.setTitle("키워드 가리기", for: .selected)
+        resetButton.isHidden = false
+
+        var config = UIButton.Configuration.filled()
+        config.image = UIImage(systemName: "eye")
+        config.imagePadding = 10
+        config.imagePlacement = .leading
+        config.baseBackgroundColor = MemorableColor.Blue2
+        config.baseForegroundColor = MemorableColor.White
+        config.cornerStyle = .large
+
+        showAnswerButton.configuration = config
 
         firstSheetButton.backgroundColor = MemorableColor.Yellow1
         secondSheetButton.backgroundColor = MemorableColor.Gray2
@@ -466,6 +552,7 @@ class WorkSheetViewController: UIViewController {
             text: mockText,
             answers: mockAnswers
         )
+        reloadUserAnswers()
 
         if let newWorkSheetView = workSheetView {
             view.addSubview(newWorkSheetView)
@@ -504,7 +591,24 @@ class WorkSheetViewController: UIViewController {
 
     @objc func didTapSecondSheetButton() {
         print("SecondSheetButton")
+        saveUserAnswers()
         isFirstSheetSelected = false
+
+        isShowingAnswer = false
+        showAnswerButton.isSelected = isShowingAnswer
+        showAnswerButton.setTitle("키워드 보기", for: .normal)
+        showAnswerButton.setTitle("키워드 가리기", for: .selected)
+        resetButton.isHidden = false
+
+        var config = UIButton.Configuration.filled()
+        config.image = UIImage(systemName: "eye")
+        config.imagePadding = 10
+        config.imagePlacement = .leading
+        config.baseBackgroundColor = MemorableColor.Blue2
+        config.baseForegroundColor = MemorableColor.White
+        config.cornerStyle = .large
+
+        showAnswerButton.configuration = config
 
         firstSheetButton.backgroundColor = MemorableColor.Gray2
         secondSheetButton.backgroundColor = MemorableColor.Yellow1
@@ -521,6 +625,7 @@ class WorkSheetViewController: UIViewController {
             text: mockText,
             answers: mockAnswers2
         )
+        reloadUserAnswers()
 
         if let newWorkSheetView = workSheetView {
             view.addSubview(newWorkSheetView)

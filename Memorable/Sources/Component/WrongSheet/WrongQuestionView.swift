@@ -88,7 +88,9 @@ class WrongQuestionView: UIView {
         
         answerTextField.snp.makeConstraints { make in
             make.top.equalTo(questionNumberView.snp.bottom).offset(24)
-            make.width.equalToSuperview()
+//            make.width.equalToSuperview()
+            make.leading.equalToSuperview()
+            make.trailing.equalToSuperview()
             make.height.equalTo(48)
         }
         

@@ -186,8 +186,10 @@
 		DDDA801A2C33ADB80077E5F2 /* Pretendard-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Light.otf"; sourceTree = "<group>"; };
 		DDDA801B2C33ADB80077E5F2 /* Pretendard-ExtraLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-ExtraLight.otf"; sourceTree = "<group>"; };
 		DDDA80272C33F0600077E5F2 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		DDEA00112C35D65F0007B03A /* Memorable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Memorable.app; path = "/Users/minhyeokkim/Desktop/Pard/Memorable_iOS/build/Debug-iphoneos/Memorable.app"; sourceTree = "<absolute>"; };
-		DDEA00122C35D65F0007B03A /* PDFShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; name = PDFShareExtension.appex; path = "/Users/minhyeokkim/Desktop/Pard/Memorable_iOS/build/Debug-iphoneos/PDFShareExtension.appex"; sourceTree = "<absolute>"; };
+		DDEA00112C35D65F0007B03A /* Memorable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Memorable.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DDEA00122C35D65F0007B03A /* PDFShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PDFShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		DDEA00132C35D65F0007B03A /* MemorableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableTests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/Memorable.app/PlugIns/MemorableTests.xctest"; sourceTree = "<absolute>"; };
+		DDEA00142C35D65F0007B03A /* MemorableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableUITests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/MemorableUITests-Runner.app/PlugIns/MemorableUITests.xctest"; sourceTree = "<absolute>"; };
 		DDF67E852C32F9D900F37BFC /* WrongSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongSheetViewController.swift; sourceTree = "<group>"; };
 		DDF67E872C32FB3800F37BFC /* WrongSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongSheetView.swift; sourceTree = "<group>"; };
 		DDF67E892C330F3400F37BFC /* WrongQuestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongQuestionView.swift; sourceTree = "<group>"; };
@@ -270,9 +272,8 @@
 			isa = PBXGroup;
 			children = (
 				DD421DC72C3586C200E4D320 /* Onboarding */,
+				DDEA00152C3658A40007B03A /* WrongSheet */,
 				DD4B40B02C2BE30600524757 /* WorkSheetView.swift */,
-				DDF67E872C32FB3800F37BFC /* WrongSheetView.swift */,
-				DDF67E892C330F3400F37BFC /* WrongQuestionView.swift */,
 				DBD820482C2A804700A9B1C3 /* TabViewComponent.swift */,
 				DBD8204C2C2ADF5C00A9B1C3 /* HeaderComponent.swift */,
 				DBD8204E2C2BE31800A9B1C3 /* LibraryViewComponent.swift */,
@@ -447,6 +448,15 @@
 				DDDA800C2C339FFC0077E5F2 /* Color.xcassets */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		DDEA00152C3658A40007B03A /* WrongSheet */ = {
+			isa = PBXGroup;
+			children = (
+				DDF67E872C32FB3800F37BFC /* WrongSheetView.swift */,
+				DDF67E892C330F3400F37BFC /* WrongQuestionView.swift */,
+			);
+			path = WrongSheet;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

@@ -5,11 +5,11 @@
 //  Created by Minhyeok Kim on 6/25/24.
 //
 
-import UIKit
-import SnapKit
 import PDFKit
-import Vision
+import SnapKit
+import UIKit
 import UniformTypeIdentifiers
+import Vision
 
 protocol HeaderComponentDelegate: AnyObject {
     func didTapBackButton()
@@ -20,7 +20,6 @@ protocol HeaderComponentDelegate: AnyObject {
 }
 
 class HeaderComponent: UIView {
-    
     weak var delegate: HeaderComponentDelegate?
     
     private let appLogoImageView = UIImageView()
@@ -49,21 +48,21 @@ class HeaderComponent: UIView {
     }
     
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        if !self.isUserInteractionEnabled || self.isHidden || self.alpha <= 0.01 {
+        if !isUserInteractionEnabled || isHidden || alpha <= 0.01 {
             return nil
         }
         
-        if self.subButtonsContainer.point(inside: self.convert(point, to: self.subButtonsContainer), with: event) {
-            return self.subButtonsContainer.hitTest(self.convert(point, to: self.subButtonsContainer), with: event)
+        if subButtonsContainer.point(inside: convert(point, to: subButtonsContainer), with: event) {
+            return subButtonsContainer.hitTest(convert(point, to: subButtonsContainer), with: event)
         }
         
         return super.hitTest(point, with: event)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
     
     private func setupViews() {
         setupAppLogoImageView()
@@ -78,7 +77,7 @@ class HeaderComponent: UIView {
     private func setupAppLogoImageView() {
         addSubview(appLogoImageView)
         appLogoImageView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(24)
+            make.leading.equalToSuperview().offset(40)
             make.centerY.equalToSuperview()
             make.width.equalTo(126)
             make.height.equalTo(15.07)
@@ -114,7 +113,7 @@ class HeaderComponent: UIView {
         plusButton.addSubview(plusButtonImageView)
         
         plusButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-24)
+            make.trailing.equalToSuperview().offset(-40)
             make.centerY.equalToSuperview()
             make.width.equalTo(88)
             make.height.equalTo(44)
@@ -216,13 +215,13 @@ class HeaderComponent: UIView {
             make.height.equalTo(45)
         }
         
-        [subButton1, subButton2].forEach {
-            $0.backgroundColor = MemorableColor.White
-            $0.setTitleColor(.black, for: .normal)
-            $0.titleLabel?.font = MemorableFont.Body1()
-            $0.layer.cornerRadius = 22
-            $0.alpha = 0
-            $0.isUserInteractionEnabled = true
+        for item in [subButton1, subButton2] {
+            item.backgroundColor = MemorableColor.White
+            item.setTitleColor(.black, for: .normal)
+            item.titleLabel?.font = MemorableFont.Body1()
+            item.layer.cornerRadius = 22
+            item.alpha = 0
+            item.isUserInteractionEnabled = true
         }
         
         subButton1.setTitle("빈칸학습지 생성하기", for: .normal)
@@ -242,34 +241,33 @@ class HeaderComponent: UIView {
                        initialSpringVelocity: 0,
                        options: .curveEaseInOut,
                        animations: {
+                           // Move search button
+                           self.searchButton.snp.updateConstraints { make in
+                               make.trailing.equalTo(self.plusButton.snp.leading).offset(-818)
+                           }
             
-            // Move search button
-            self.searchButton.snp.updateConstraints { make in
-                make.trailing.equalTo(self.plusButton.snp.leading).offset(-818)
-            }
+                           // Expand search bar
+                           self.searchBar.snp.updateConstraints { make in
+                               make.width.equalTo(850)
+                           }
             
-            // Expand search bar
-            self.searchBar.snp.updateConstraints { make in
-                make.width.equalTo(850)
-            }
+                           // Change colors
+                           self.searchBar.backgroundColor = MemorableColor.White
+                           self.searchBar.searchTextField.backgroundColor = MemorableColor.White
+                           self.searchButton.backgroundColor = MemorableColor.White
             
-            // Change colors
-            self.searchBar.backgroundColor = MemorableColor.White
-            self.searchBar.searchTextField.backgroundColor = MemorableColor.White
-            self.searchButton.backgroundColor = MemorableColor.White
+                           // Show search bar
+                           self.searchBar.alpha = 1
             
-            // Show search bar
-            self.searchBar.alpha = 1
+                           // Change plus button to cancel button
+                           self.plusButtonImageView.isHidden = true
+                           self.plusButton.setTitle("취소", for: .normal)
+                           self.plusButton.titleLabel?.font = MemorableFont.Body1()
+                           self.plusButton.titleLabel?.textColor = MemorableColor.Gray1
+                           self.plusButton.backgroundColor = MemorableColor.Gray4
             
-            // Change plus button to cancel button
-            self.plusButtonImageView.isHidden = true
-            self.plusButton.setTitle("취소", for: .normal)
-            self.plusButton.titleLabel?.font = MemorableFont.Body1()
-            self.plusButton.titleLabel?.textColor = MemorableColor.Gray1
-            self.plusButton.backgroundColor = MemorableColor.Gray4
-            
-            self.layoutIfNeeded()
-        })
+                           self.layoutIfNeeded()
+                       })
     }
     
     private func hideSearchBar() {
@@ -279,31 +277,31 @@ class HeaderComponent: UIView {
                        initialSpringVelocity: 0,
                        options: .curveEaseInOut,
                        animations: {
-            // Move search button back
-            self.searchButton.snp.updateConstraints { make in
-                make.trailing.equalTo(self.plusButton.snp.leading).offset(-20)
-            }
+                           // Move search button back
+                           self.searchButton.snp.updateConstraints { make in
+                               make.trailing.equalTo(self.plusButton.snp.leading).offset(-20)
+                           }
             
-            // Collapse search bar
-            self.searchBar.snp.updateConstraints { make in
-                make.width.equalTo(0)
-            }
+                           // Collapse search bar
+                           self.searchBar.snp.updateConstraints { make in
+                               make.width.equalTo(0)
+                           }
             
-            // Change colors back
-            self.searchBar.backgroundColor = MemorableColor.Black
-            self.searchBar.searchTextField.backgroundColor = MemorableColor.Black
-            self.searchButton.backgroundColor = MemorableColor.Black
+                           // Change colors back
+                           self.searchBar.backgroundColor = MemorableColor.Black
+                           self.searchBar.searchTextField.backgroundColor = MemorableColor.Black
+                           self.searchButton.backgroundColor = MemorableColor.Black
             
-            // Hide search bar
-            self.searchBar.alpha = 0
+                           // Hide search bar
+                           self.searchBar.alpha = 0
             
-            // Change cancel button back to plus button
-            self.plusButtonImageView.isHidden = false
-            self.plusButton.setTitle(nil, for: .normal)
-            self.plusButton.backgroundColor = MemorableColor.Blue2
+                           // Change cancel button back to plus button
+                           self.plusButtonImageView.isHidden = false
+                           self.plusButton.setTitle(nil, for: .normal)
+                           self.plusButton.backgroundColor = MemorableColor.Blue2
             
-            self.layoutIfNeeded()
-        })
+                           self.layoutIfNeeded()
+                       })
     }
     
     private func rotatePlusButton() {
@@ -312,7 +310,7 @@ class HeaderComponent: UIView {
             self.plusButtonImageView.transform = CGAffineTransform(rotationAngle: .pi / 4)
             self.searchButtonOverlayView.alpha = 0.5
         }
-        self.searchButton.isEnabled.toggle()
+        searchButton.isEnabled.toggle()
     }
     
     private func deRotatePlusButton() {
@@ -321,7 +319,7 @@ class HeaderComponent: UIView {
             self.plusButtonImageView.transform = CGAffineTransform.identity
             self.searchButtonOverlayView.alpha = 0
         }
-        self.searchButton.isEnabled.toggle()
+        searchButton.isEnabled.toggle()
     }
     
     private func toggleSubButtons() {
@@ -351,7 +349,8 @@ class HeaderComponent: UIView {
         if let rootViewController = UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })
             .first?.windows
-            .first?.rootViewController {
+            .first?.rootViewController
+        {
             rootViewController.present(documentPicker, animated: true, completion: nil)
         }
     }
@@ -381,7 +380,7 @@ class HeaderComponent: UIView {
         extractedText = ""
         let dispatchGroup = DispatchGroup()
         
-        for pageIndex in 0..<pdfDocument.pageCount {
+        for pageIndex in 0 ..< pdfDocument.pageCount {
             if let page = pdfDocument.page(at: pageIndex) {
                 if let pageText = page.string {
                     extractedText += pageText
@@ -415,14 +414,14 @@ class HeaderComponent: UIView {
         }
         
         let requestHandler = VNImageRequestHandler(cgImage: cgImage, options: [:])
-        let request = VNRecognizeTextRequest { (request, error) in
+        let request = VNRecognizeTextRequest { request, _ in
             guard let observations = request.results as? [VNRecognizedTextObservation] else {
                 completion("")
                 return
             }
             
             let recognizedStrings = observations.compactMap { observation in
-                return observation.topCandidates(1).first?.string
+                observation.topCandidates(1).first?.string
             }
             
             completion(recognizedStrings.joined(separator: "\n"))
@@ -437,7 +436,6 @@ class HeaderComponent: UIView {
             completion("")
         }
     }
-    
     
     private func showNameAlert(fileName: String, previousName: String) {
         let nameAlertController = UIAlertController(title: "이름 설정하기", message: "해당 학습지의 이름을 설정해 주세요", preferredStyle: .alert)
@@ -489,7 +487,8 @@ class HeaderComponent: UIView {
         if let rootViewController = UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })
             .first?.windows
-            .first?.rootViewController {
+            .first?.rootViewController
+        {
             rootViewController.present(alertController, animated: true, completion: nil)
         }
     }
@@ -497,7 +496,7 @@ class HeaderComponent: UIView {
     private func saveDocument(sheetName: String, category: String) {
         print("sheetName: \(sheetName), category: \(category), extractedText: \(extractedText)")
         
-        //TODO: 클백작업해야함
+        // TODO: 클백작업해야함
         
         // 원래 홈뷰로 이동
         isMasked.toggle()
@@ -585,6 +584,3 @@ extension HeaderComponent: UISearchBarDelegate {
         searchBar.resignFirstResponder() // 키보드 숨기기
     }
 }
-
-
-
