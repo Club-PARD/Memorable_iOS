@@ -270,9 +270,8 @@
 			isa = PBXGroup;
 			children = (
 				DD421DC72C3586C200E4D320 /* Onboarding */,
+				DDEA00152C3658A40007B03A /* WrongSheet */,
 				DD4B40B02C2BE30600524757 /* WorkSheetView.swift */,
-				DDF67E872C32FB3800F37BFC /* WrongSheetView.swift */,
-				DDF67E892C330F3400F37BFC /* WrongQuestionView.swift */,
 				DBD820482C2A804700A9B1C3 /* TabViewComponent.swift */,
 				DBD8204C2C2ADF5C00A9B1C3 /* HeaderComponent.swift */,
 				DBD8204E2C2BE31800A9B1C3 /* LibraryViewComponent.swift */,
@@ -447,6 +446,15 @@
 				DDDA800C2C339FFC0077E5F2 /* Color.xcassets */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		DDEA00152C3658A40007B03A /* WrongSheet */ = {
+			isa = PBXGroup;
+			children = (
+				DDF67E872C32FB3800F37BFC /* WrongSheetView.swift */,
+				DDF67E892C330F3400F37BFC /* WrongQuestionView.swift */,
+			);
+			path = WrongSheet;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
