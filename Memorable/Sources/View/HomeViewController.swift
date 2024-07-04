@@ -256,13 +256,6 @@ class HomeViewController: UIViewController {
         [libraryViewComponent, worksheetListViewComponent, starView, mypageView, searchedSheetView].forEach { $0.isHidden = true }
         
         switch viewId {
-        case "home", "star", "mypage":
-            tabBar.enableFirstTab(true)
-        default:
-            tabBar.enableFirstTab(false)
-        }
-        
-        switch viewId {
         case "home":
             // mockData를 필터링하여 각 타입별로 분류
             // LibraryViewComponent에 데이터 설정

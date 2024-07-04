@@ -36,13 +36,20 @@ class QuestionView: UIView {
     
     let answerTextField: UITextField = {
         let textField = UITextField()
-        textField.layer.cornerRadius = 19
+        textField.layer.cornerRadius = 25
         textField.layer.masksToBounds = true
         textField.borderStyle = .none
         textField.backgroundColor = MemorableColor.Gray5
-        textField.textAlignment = .center
+        textField.textAlignment = .left // 왼쪽 정렬로 변경
         textField.textColor = MemorableColor.Black
-        textField.font = MemorableFont.BodyCaption()
+        textField.font = MemorableFont.Body1()
+        textField.attributedPlaceholder = NSAttributedString(
+            string: "답안을 입력하세요...",
+            attributes: [
+                .foregroundColor: MemorableColor.Gray3 ?? .lightGray,
+                .font: MemorableFont.Body1()
+            ]
+        )
         return textField
     }()
     
@@ -79,6 +86,7 @@ class QuestionView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
+        setupTextFieldCallbacks()
     }
     
     required init?(coder: NSCoder) {
@@ -91,6 +99,7 @@ class QuestionView: UIView {
         questionNumberView.addSubview(questionNumber)
         addSubview(questionLabel)
         addSubview(answerTextField)
+        addSubview(answerLengthLabel)
         
         questionNumberView.snp.makeConstraints{ make in
             make.leading.equalTo(0)
@@ -107,63 +116,108 @@ class QuestionView: UIView {
             make.centerY.equalTo(questionNumberView)
         }
         
+        answerLengthLabel.snp.makeConstraints { make in
+            make.bottom.equalToSuperview()
+            make.leading.equalToSuperview()
+        }
+        
         answerTextField.snp.makeConstraints { make in
             make.top.equalTo(questionNumber.snp.bottom).offset(16)
-            make.bottom.equalToSuperview().offset(-8)
+//            make.bottom.equalTo(answerLengthLabel.snp.top).offset(-8)
             make.width.equalToSuperview()
+            make.height.equalTo(50)
         }
     }
     
-    func configure(with question: Question, questionNumberValue: Int) {
+    func configure(with question: Question, questionNumberValue: Int, userAnswer: String?) {
         questionNumber.text = "\(questionNumberValue)"
         questionLabel.text = question.question
-        answerTextField.text = question.userAnswer
+        answerTextField.text = userAnswer ?? question.userAnswer ?? ""
         
         correctAnswerLabel.text = question.answer
-        userAnswerLabel.text = "내가 쓴 답: \(question.userAnswer ?? "")"  // Optional이 아닌 문자열로 설정
+        userAnswerLabel.text = "사용자가 입력한 답: \(userAnswer ?? question.userAnswer ?? "")"
+        
+        answerLengthLabel.text = "\(question.answer.count)글자로 입력해주세요"
+        
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 26, height: answerTextField.frame.height))
+        answerTextField.leftView = paddingView
+        answerTextField.leftViewMode = .always
         
         // 답변 비교 및 색상 설정
-        let normalizedCorrectAnswer = correctAnswerLabel.text?.lowercased().replacingOccurrences(of: " ", with: "") ?? ""
+        let normalizedCorrectAnswer = question.answer.lowercased().replacingOccurrences(of: " ", with: "")
+        let normalizedUserAnswer = (userAnswer ?? question.userAnswer ?? "").lowercased().replacingOccurrences(of: " ", with: "")
         
-        if let userAnswerText = userAnswerLabel.text?.replacingOccurrences(of: "내가 쓴 답: ", with: "").lowercased().replacingOccurrences(of: " ", with: "") {
-            if normalizedCorrectAnswer == userAnswerText {
-                correctAnswerLabel.textColor = MemorableColor.Blue1
-            } else {
-                correctAnswerLabel.textColor = MemorableColor.Red
-            }
+        if normalizedCorrectAnswer == normalizedUserAnswer {
+            correctAnswerLabel.textColor = MemorableColor.Blue1
         } else {
-            correctAnswerLabel.textColor = MemorableColor.Red  // 기본적으로 불일치로 설정
+            correctAnswerLabel.textColor = MemorableColor.Red
         }
-        
-        // Add target to handle text changes
-        answerTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
     }
 
-
-    
     func replaceTextFieldWithLabels() {
         if answerTextField.isHidden {
-                return
-            }
+            return
+        }
         answerTextField.isHidden = true
+        answerLengthLabel.isHidden = true
+        
         addSubview(correctAnswerView)
         correctAnswerView.snp.makeConstraints { make in
-            make.trailing.equalToSuperview()
-            make.bottom.equalToSuperview()
-            make.width.equalTo(200)
-            make.height.equalTo(38)
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(questionNumberView.snp.bottom).offset(16)
+            make.height.equalTo(50)
         }
         
         addSubview(correctAnswerLabel)
         correctAnswerLabel.snp.makeConstraints { make in
-            make.centerX.centerY.equalTo(correctAnswerView)
+            make.leading.equalTo(correctAnswerView).offset(26)
+            make.centerY.equalTo(correctAnswerView)
         }
         
         addSubview(userAnswerLabel)
         userAnswerLabel.snp.makeConstraints { make in
-            make.leading.equalTo(correctAnswerView.snp.leading).offset(-128)
-            make.centerY.equalTo(correctAnswerView.snp.centerY)
+            make.leading.equalTo(correctAnswerView.snp.leading)
+            make.bottom.equalToSuperview()
         }
+        
+        // 사용자 답변 업데이트
+        userAnswerLabel.text = "사용자가 입력한 답: \(answerTextField.text ?? "")"
+    }
+    
+    func resetView() {
+        print("resetView")
+        answerTextField.isHidden = false
+        answerLengthLabel.isHidden = false
+        correctAnswerView.removeFromSuperview()
+        correctAnswerLabel.removeFromSuperview()
+        userAnswerLabel.removeFromSuperview()
+    }
+    
+    func setupTextFieldCallbacks() {
+        answerTextField.addTarget(self, action: #selector(textFieldDidBeginEditing), for: .editingDidBegin)
+        answerTextField.addTarget(self, action: #selector(textFieldDidEndEditing), for: .editingDidEnd)
+    }
+
+    @objc private func textFieldDidBeginEditing(_ textField: UITextField) {
+        textField.backgroundColor = MemorableColor.Yellow3
+        textField.attributedPlaceholder = NSAttributedString(
+            string: "",
+            attributes: [
+                .foregroundColor: MemorableColor.Gray3 ?? .lightGray,
+                .font: MemorableFont.Body1()
+            ]
+        )
+    }
+
+    @objc private func textFieldDidEndEditing(_ textField: UITextField) {
+        textField.backgroundColor = MemorableColor.Gray5
+        textField.attributedPlaceholder = NSAttributedString(
+            string: "답안을 입력하세요...",
+            attributes: [
+                .foregroundColor: MemorableColor.Gray3 ?? .lightGray,
+                .font: MemorableFont.Body1()
+            ]
+        )
     }
     
     @objc private func textFieldDidChange(_ textField: UITextField) {
