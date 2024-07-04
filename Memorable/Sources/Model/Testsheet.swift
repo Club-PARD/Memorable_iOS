@@ -28,7 +28,7 @@ struct TestsheetDetail: Codable {
     let testsheetId: Int
     let name: String
     let category: String
-    let isReExtracted: Bool
+    var isReExtracted: Bool
     let questions1: [Question]
     let questions2: [Question]
 }

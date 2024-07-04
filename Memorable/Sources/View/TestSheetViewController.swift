@@ -9,7 +9,13 @@ import SnapKit
 import Then
 import UIKit
 
-class TestSheetViewController: UIViewController {
+struct TestSheetState {
+    var userAnswers: [String?]
+    var isSubmitted: Bool
+    var score: Int?
+}
+
+class TestSheetViewController: UIViewController, UITextFieldDelegate {
     private let apiManager = APIManagere.shared
     private var testsheetDetail: TestsheetDetail?
     
@@ -26,6 +32,16 @@ class TestSheetViewController: UIViewController {
     private var nextButton = UIButton()
     private var testSheetView: UIView?
     private var progressBarView: ProgressBarView?
+    
+    private var isFirstSheetSelected: Bool = true
+    private let firstSheetButton = UIButton()
+    private let secondSheetButton = UIButton()
+    private let addTestSheetButton = UIButton()
+    
+    private var firstSheetState: TestSheetState?
+    private var secondSheetState: TestSheetState?
+    
+    private let sheetToggleStackView = UIStackView()
     
     private var containerView = UIView().then {
         $0.backgroundColor = MemorableColor.White
@@ -93,27 +109,25 @@ class TestSheetViewController: UIViewController {
         $0.isHidden = true
     }
     
-    private let remakeButton = UIButton().then {
-        $0.setTitle("재추출하기", for: .normal)
-        $0.titleLabel?.font = MemorableFont.Body1()
-        $0.setTitleColor(MemorableColor.White, for: .normal)
-        $0.backgroundColor = MemorableColor.Blue2
-        $0.layer.cornerRadius = 22
-        $0.contentMode = .scaleAspectFit
+    private let resultLabel = UILabel().then {
+        $0.font = MemorableFont.LargeTitle()
+        $0.textAlignment = .right
+        $0.textColor = MemorableColor.Black
         $0.isHidden = true
     }
     
-    private let resultLabel = UILabel().then {
+    private let scoreLabel = UILabel().then {
         $0.font = MemorableFont.Body1()
         $0.textColor = MemorableColor.Gray1
-        $0.isHidden = true // 초기에는 숨김 처리
+        $0.textAlignment = .right
+        $0.isHidden = true
+        $0.text = "점"
     }
     
-    private let scoreLabel = UILabel().then {
-        $0.font = MemorableFont.LargeTitle()
-        $0.textColor = MemorableColor.Black
-        $0.isHidden = true // 초기에는 숨김 처리
-        $0.text = "점수"
+    private let finishImage = FloatingImage(frame: CGRect(x: 0, y: 0, width: 260, height: 36)).then {
+        $0.image = UIImage(named: "finish_add")
+        $0.contentMode = .scaleAspectFit
+        $0.isHidden = true
     }
     
     override func viewDidLoad() {
@@ -122,13 +136,12 @@ class TestSheetViewController: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor = MemorableColor.Gray5
         setupUI()
+        loadQuestions()
         updateUI()
         
-        // 키보드 내리기 (작성 밖 터치)
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
         
-        // Example: Display data in a toast message or UI
         if let fileName = sharedName, let category = sharedCategory, let extractedText = sharedText {
             print("File: \(fileName)\nCategory: \(category)\nExtracted Text: \(extractedText)")
             showToast("File: \(fileName)\nCategory: \(category)\nExtracted Text: \(extractedText)")
@@ -136,20 +149,17 @@ class TestSheetViewController: UIViewController {
     }
     
     private func loadTestsheet() {
-            testsheetDetail = apiManager.getMockTestsheetDetail()
-            setupQuestions()
-            updateUI()
-        }
-
-        private func setupQuestions() {
-            guard let testsheetDetail = testsheetDetail else { return }
-            
-            let allQuestions = testsheetDetail.questions1 + testsheetDetail.questions2
-            questionManager.questions = allQuestions
-            
-            titleLabel.text = testsheetDetail.name
-            categoryLabel.text = testsheetDetail.category
-        }
+        testsheetDetail = apiManager.getMockTestsheetDetail()
+        setupTestsheetInfo()
+        firstSheetState = TestSheetState(userAnswers: Array(repeating: nil, count: testsheetDetail?.questions1.count ?? 0), isSubmitted: false, score: nil)
+    }
+    
+    private func setupTestsheetInfo() {
+        guard let testsheetDetail = testsheetDetail else { return }
+        
+        titleLabel.text = testsheetDetail.name
+        categoryLabel.text = testsheetDetail.category
+    }
     
     private func setupUI() {
         view.addSubview(logoImageView)
@@ -180,7 +190,6 @@ class TestSheetViewController: UIViewController {
             make.centerY.equalTo(titleLabel.snp.centerY)
         }
         
-        // Container view
         view.addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(173)
@@ -189,39 +198,37 @@ class TestSheetViewController: UIViewController {
             make.height.equalTo(540)
         }
         
-        view.addSubview(resultLabel)
-        resultLabel.snp.makeConstraints { make in
-            make.bottom.equalTo(containerView.snp.top).offset(-28)
-            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-24)
-        }
-        
         view.addSubview(scoreLabel)
         scoreLabel.snp.makeConstraints { make in
-            make.trailing.equalTo(resultLabel.snp.leading).offset(-12)
-            make.centerY.equalTo(resultLabel)
+            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-58)
+            make.bottom.equalTo(containerView.snp.top).offset(-88)
         }
         
-        // Question views
-        for _ in 0 ..< 3 {
+        view.addSubview(resultLabel)
+        resultLabel.snp.makeConstraints { make in
+            make.bottom.equalTo(scoreLabel)
+            make.trailing.equalTo(scoreLabel.snp.leading).offset(-8)
+        }
+        
+        for _ in 0..<3 {
             let questionView = QuestionView()
             containerView.addSubview(questionView)
             questionViews.append(questionView)
         }
         
-        // Layout question views
         for (index, questionView) in questionViews.enumerated() {
             questionView.snp.makeConstraints { make in
                 make.leading.equalTo(containerView).offset(52)
                 make.trailing.equalTo(containerView).offset(-52)
-                make.height.equalTo(95)
+                make.height.equalTo(120)
                 
                 switch index {
-                case 0: // 첫 번째 문제
-                    make.top.equalTo(containerView).offset(74)
-                case 1: // 두 번째 문제
+                case 0:
+                    make.top.equalTo(containerView).offset(50)
+                case 1:
                     make.centerY.equalTo(containerView)
-                case 2: // 세 번째 문제
-                    make.bottom.equalTo(containerView).offset(-74)
+                case 2:
+                    make.bottom.equalTo(containerView).offset(-50)
                 default:
                     break
                 }
@@ -236,13 +243,12 @@ class TestSheetViewController: UIViewController {
             make.bottom.equalToSuperview().offset(-24)
         }
         
-        // Previous Button
         let previousButtonImage = UIImage(systemName: "chevron.left")
         previousButton.setImage(previousButtonImage, for: .normal)
         previousButton.tintColor = MemorableColor.Blue2
         previousButton.backgroundColor = MemorableColor.White
         previousButton.contentMode = .scaleAspectFit
-        previousButton.layer.cornerRadius = 32 // 64의 절반
+        previousButton.layer.cornerRadius = 32
         previousButton.clipsToBounds = true
         previousButton.addTarget(self, action: #selector(previousPage), for: .touchUpInside)
         
@@ -258,7 +264,7 @@ class TestSheetViewController: UIViewController {
         nextButton.tintColor = MemorableColor.Blue2
         nextButton.backgroundColor = MemorableColor.White
         nextButton.contentMode = .scaleAspectFit
-        nextButton.layer.cornerRadius = 32 // 64의 절반
+        nextButton.layer.cornerRadius = 32
         nextButton.clipsToBounds = true
         nextButton.addTarget(self, action: #selector(nextPage), for: .touchUpInside)
         
@@ -269,7 +275,6 @@ class TestSheetViewController: UIViewController {
             make.width.height.equalTo(64)
         }
         
-        // Submit Button
         view.addSubview(submitButton)
         submitButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-24)
@@ -278,7 +283,6 @@ class TestSheetViewController: UIViewController {
             make.height.equalTo(44)
         }
         submitButton.addTarget(self, action: #selector(submitAnswers), for: .touchUpInside)
-        submitButton.isHidden = true // 초기에는 숨김 처리
         
         view.addSubview(sendWrongAnswersButton)
         sendWrongAnswersButton.snp.makeConstraints { make in
@@ -298,52 +302,115 @@ class TestSheetViewController: UIViewController {
         }
         retryButton.addTarget(self, action: #selector(retryTest), for: .touchUpInside)
         
-        view.addSubview(remakeButton)
-        remakeButton.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(55)
-            make.trailing.equalToSuperview().offset(-24)
-            make.width.equalTo(132)
-            make.height.equalTo(44)
+        setupSheetButtons()
+        setupAddTestSheetButton()
+        setupSheetToggle()
+        
+        view.addSubview(finishImage)
+        finishImage.snp.makeConstraints { make in
+            make.trailing.equalTo(addTestSheetButton.snp.leading).offset(-8)
+            make.centerY.equalTo(addTestSheetButton)
         }
-        remakeButton.addTarget(self, action: #selector(remakeTest), for: .touchUpInside)
+    }
+    
+    private func setupSheetButtons() {
+        firstSheetButton.setTitle("1", for: .normal)
+        secondSheetButton.setTitle("2", for: .normal)
+        
+        [firstSheetButton, secondSheetButton].forEach {
+            $0.layer.cornerRadius = 12.5
+            $0.clipsToBounds = true
+            $0.addTarget(self, action: #selector(sheetButtonTapped(_:)), for: .touchUpInside)
+        }
+        
+        firstSheetButton.backgroundColor = MemorableColor.Yellow1
+        secondSheetButton.backgroundColor = MemorableColor.Gray2
+    }
+    
+    private func setupAddTestSheetButton() {
+        addTestSheetButton.setTitle("추가 시험지 만들기", for: .normal)
+        addTestSheetButton.setTitleColor(MemorableColor.Blue1, for: .normal)
+        addTestSheetButton.titleLabel?.font = MemorableFont.Body1()
+        addTestSheetButton.addTarget(self, action: #selector(addTestSheetButtonTapped), for: .touchUpInside)
+        
+        view.addSubview(addTestSheetButton)
+        
+        addTestSheetButton.snp.makeConstraints { make in
+            make.bottom.equalTo(containerView.snp.top).offset(-10)
+            make.trailing.equalTo(containerView.snp.trailing).offset(-28)
+        }
+        
+        addTestSheetButton.isEnabled = !(testsheetDetail?.isReExtracted ?? false)
+        addTestSheetButton.setTitleColor(testsheetDetail?.isReExtracted ?? false ? MemorableColor.Gray2 : MemorableColor.Blue1, for: .normal)
+    }
+    
+    private func setupSheetToggle() {
+        sheetToggleStackView.axis = .horizontal
+        sheetToggleStackView.distribution = .fillEqually
+        sheetToggleStackView.spacing = 10
+        view.addSubview(sheetToggleStackView)
+        
+        sheetToggleStackView.addArrangedSubview(firstSheetButton)
+        sheetToggleStackView.addArrangedSubview(secondSheetButton)
+        
+        sheetToggleStackView.snp.makeConstraints { make in
+            make.top.equalTo(containerView.snp.top).offset(18)
+            make.trailing.equalTo(containerView.snp.trailing).offset(-45)
+            make.height.equalTo(25)
+        }
+        
+        sheetToggleStackView.isHidden = true // 초기에는 숨김 처리
     }
     
     private func updateUI() {
-        print("Updating UI, current page: \(currentPage)")
         let startIndex = currentPage * questionsPerPage
-        for (index, questionView) in questionViews.enumerated() {
-            let questionIndex = startIndex + index
-            if questionIndex < questionManager.questions.count {
-                let question = questionManager.questions[questionIndex]
-                questionView.configure(with: question, questionNumberValue: questionIndex + 1)
-                questionView.isHidden = false
-            } else {
-                questionView.isHidden = true
+            for (index, questionView) in questionViews.enumerated() {
+                let questionIndex = startIndex + index
+                if questionIndex < questionManager.questions.count {
+                    let question = questionManager.questions[questionIndex]
+                    let currentState = isFirstSheetSelected ? firstSheetState : secondSheetState
+                    let userAnswer = currentState?.userAnswers[questionIndex]
+                    questionView.configure(with: question, questionNumberValue: questionIndex + 1, userAnswer: userAnswer)
+                    questionView.isHidden = false
+                    
+                    if currentState?.isSubmitted ?? false {
+                        questionView.replaceTextFieldWithLabels()
+                    } else {
+                        questionView.resetView()
+                    }
+                } else {
+                    questionView.isHidden = true
+                }
             }
-        }
         
-        // 전체 페이지 수 계산
         let totalPages = (questionManager.questions.count + questionsPerPage - 1) / questionsPerPage
         
-        // pagingLabel 업데이트
         pagingLabel.text = "\(currentPage + 1)/\(totalPages)"
         
-        // 이전 버튼 숨기기/보이기
         previousButton.isHidden = currentPage == 0
         
-        // 다음 버튼과 제출하기 버튼 처리
         let isLastPage = currentPage == totalPages - 1
         nextButton.isHidden = isLastPage
-        submitButton.isHidden = !isLastPage
         
-        retryButton.isHidden = !isLastPage || resultLabel.isHidden
-        sendWrongAnswersButton.isHidden = !isLastPage || resultLabel.isHidden
-        remakeButton.isHidden = !isLastPage || resultLabel.isHidden
+        let currentState = isFirstSheetSelected ? firstSheetState : secondSheetState
+        if let score = currentState?.score {
+            resultLabel.text = "\(score)/\(questionManager.questions.count)"
+            resultLabel.isHidden = false
+            scoreLabel.isHidden = false
+        } else {
+            resultLabel.isHidden = true
+            scoreLabel.isHidden = true
+        }
         
-        // 기존 progressBarView가 있다면 제거
+        updateUIForSubmittedState()
+        
+        sendWrongAnswersButton.isHidden = !isLastPage || !(currentState?.isSubmitted ?? false)
+        retryButton.isHidden = !isLastPage || !(currentState?.isSubmitted ?? false)
+        
+        submitButton.isHidden = !isLastPage || (currentState?.isSubmitted ?? false)
+        
         progressBarView?.removeFromSuperview()
         
-        // 새로운 progressBarView 생성 및 추가
         let newProgressBarView = ProgressBarView(frame: .zero, totalPages: totalPages, currentPage: currentPage + 1)
         view.addSubview(newProgressBarView)
         newProgressBarView.snp.makeConstraints { make in
@@ -351,9 +418,16 @@ class TestSheetViewController: UIViewController {
             make.centerX.equalToSuperview()
         }
         
-        // progressBarView 업데이트
         progressBarView = newProgressBarView
         progressBarView?.updateCurrentPage(currentPage + 1)
+    }
+    
+    private func updateUIForSubmittedState() {
+        let currentState = isFirstSheetSelected ? firstSheetState : secondSheetState
+        submitButton.isHidden = currentState?.isSubmitted ?? false
+        retryButton.isHidden = !(currentState?.isSubmitted ?? false)
+        sendWrongAnswersButton.isHidden = !(currentState?.isSubmitted ?? false)
+        addTestSheetButton.isHidden = !(currentState?.isSubmitted ?? false)
     }
     
     private func saveCurrentAnswers() {
@@ -361,24 +435,13 @@ class TestSheetViewController: UIViewController {
         for (index, questionView) in questionViews.enumerated() {
             let questionIndex = startIndex + index
             if questionIndex < questionManager.questions.count {
-                questionManager.questions[questionIndex].userAnswer = questionView.answerTextField.text ?? ""
+                if isFirstSheetSelected {
+                    firstSheetState?.userAnswers[questionIndex] = questionView.answerTextField.text
+                } else {
+                    secondSheetState?.userAnswers[questionIndex] = questionView.answerTextField.text
+                }
             }
         }
-    }
-    
-    private func setupProgressBar() {
-        let totalPages = (questionManager.questions.count + questionsPerPage - 1) / questionsPerPage
-        let newProgressBarView = ProgressBarView(frame: .zero, totalPages: totalPages, currentPage: 1)
-        view.addSubview(newProgressBarView)
-        
-        newProgressBarView.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(20)
-            make.centerX.equalToSuperview()
-            make.width.equalTo(300) // 적절한 너비로 조정
-            make.height.equalTo(4)
-        }
-        
-        progressBarView = newProgressBarView
     }
     
     private func showSubmitAlert() {
@@ -388,10 +451,9 @@ class TestSheetViewController: UIViewController {
             self.replaceTextFieldsWithLabels()
             self.printAnswers()
             self.checkAnswersAndShowResult()
+            self.moveToFirstPage()
         }
-        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
-            // Handle cancel action
-        }
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
         
         alertController.addAction(confirmAction)
         alertController.addAction(cancelAction)
@@ -399,13 +461,17 @@ class TestSheetViewController: UIViewController {
         present(alertController, animated: true, completion: nil)
     }
     
+    private func moveToFirstPage() {
+        currentPage = 0
+        updateUI()
+    }
+    
     private func showRemakeAlert() {
         let alertController = UIAlertController(title: "새로운 문제풀기", message: "문제를 새롭게 생성하시겠습니까?\n이 작업은 파일 당 1회만 가능합니다.", preferredStyle: .alert)
         let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
+            self.reExtractQuestions()
         }
-        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
-            // Handle cancel action
-        }
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
         
         alertController.addAction(confirmAction)
         alertController.addAction(cancelAction)
@@ -414,32 +480,22 @@ class TestSheetViewController: UIViewController {
     }
     
     private func replaceTextFieldsWithLabels() {
-        // 현재 페이지의 모든 질문 뷰에 대해 적용
         for (index, questionView) in questionViews.enumerated() {
             let questionIndex = currentPage * questionsPerPage + index
             if questionIndex < questionManager.questions.count {
                 let question = questionManager.questions[questionIndex]
-                questionView.configure(with: question, questionNumberValue: questionIndex + 1)
-                questionView.replaceTextFieldWithLabels()
-            }
-        }
-        
-        // 다른 페이지의 질문들에 대해서도 변경 적용
-        for (index, question) in questionManager.questions.enumerated() {
-            let pageIndex = index / questionsPerPage
-            let questionViewIndex = index % questionsPerPage
-            
-            if pageIndex != currentPage {
-                let questionView = questionViews[questionViewIndex]
-                questionView.configure(with: question, questionNumberValue: index + 1)
+                let currentState = isFirstSheetSelected ? firstSheetState : secondSheetState
+                let userAnswer = currentState?.userAnswers[questionIndex]
+                questionView.configure(with: question, questionNumberValue: questionIndex + 1, userAnswer: userAnswer)
                 questionView.replaceTextFieldWithLabels()
             }
         }
     }
     
     private func printAnswers() {
+        let currentState = isFirstSheetSelected ? firstSheetState : secondSheetState
         for (index, question) in questionManager.questions.enumerated() {
-            print("질문 \(index + 1) - 정답: \(question.answer), 쓴 답: \(String(describing: question.userAnswer))")
+            print("질문 \(index + 1) - 정답: \(question.answer), 쓴 답: \(String(describing: currentState?.userAnswers[index] ?? ""))")
         }
     }
     
@@ -447,35 +503,58 @@ class TestSheetViewController: UIViewController {
         var correctAnswers = 0
         let totalQuestions = questionManager.questions.count
         
-        for question in questionManager.questions {
+        let currentState = isFirstSheetSelected ? firstSheetState : secondSheetState
+        
+        for (index, question) in questionManager.questions.enumerated() {
             let normalizedCorrectAnswer = question.answer.lowercased().replacingOccurrences(of: " ", with: "")
-            let normalizedUserAnswer = question.userAnswer?.lowercased().replacingOccurrences(of: " ", with: "")
+            let normalizedUserAnswer = currentState?.userAnswers[index]?.lowercased().replacingOccurrences(of: " ", with: "")
             
             if normalizedCorrectAnswer == normalizedUserAnswer {
                 correctAnswers += 1
             }
+            
+            if !isFirstSheetSelected && (testsheetDetail?.isReExtracted ?? false) {
+                showFinishImage()
+            }
+        }
+        
+        if isFirstSheetSelected {
+            firstSheetState?.score = correctAnswers
+            firstSheetState?.isSubmitted = true
+        } else {
+            secondSheetState?.score = correctAnswers
+            secondSheetState?.isSubmitted = true
         }
         
         resultLabel.text = "\(correctAnswers)/\(totalQuestions)"
         resultLabel.isHidden = false
+        scoreLabel.isHidden = false
         
-        // 결과 애니메이션
         resultLabel.alpha = 0
         UIView.animate(withDuration: 0.5) {
             self.resultLabel.alpha = 1
         }
         
-        // 버튼 상태 변경
-        submitButton.isHidden = true
-        retryButton.isHidden = false
-        sendWrongAnswersButton.isHidden = false
-        remakeButton.isHidden = false
+        updateUIForSubmittedState()
         
         printAnswers()
+        
+        if !isFirstSheetSelected && (testsheetDetail?.isReExtracted ?? false) {
+            showFinishImage()
+        }
     }
     
     @objc private func backButtonTapped() {
-        navigationController?.popViewController(animated: true)
+        let alertController = UIAlertController(title: "시험지 나가기", message: "응시 데이터는 모두 사라지며\n재진입 시 작성하신 답안은 모두 지워집니다.", preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
+            self.navigationController?.popViewController(animated: true)
+        }
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        
+        alertController.addAction(confirmAction)
+        alertController.addAction(cancelAction)
+        
+        present(alertController, animated: true, completion: nil)
     }
     
     @objc private func nextPage() {
@@ -492,30 +571,23 @@ class TestSheetViewController: UIViewController {
     
     @objc private func submitAnswers() {
         showSubmitAlert()
+        printAnswers()
+        if !isFirstSheetSelected && (testsheetDetail?.isReExtracted ?? false) {
+            showFinishImage()
+        }
     }
     
     @objc private func retryTest() {
-        // 모든 답변 초기화
-        for index in 0 ..< questionManager.questions.count {
-            questionManager.questions[index].userAnswer = ""
+        if isFirstSheetSelected {
+            firstSheetState = TestSheetState(userAnswers: Array(repeating: nil, count: testsheetDetail?.questions1.count ?? 0), isSubmitted: false, score: nil)
+        } else {
+            secondSheetState = TestSheetState(userAnswers: Array(repeating: nil, count: testsheetDetail?.questions2.count ?? 0), isSubmitted: false, score: nil)
         }
         
-        // 현재 페이지를 첫 페이지로 리셋
         currentPage = 0
-        
-        // 결과 레이블 숨기기
         resultLabel.isHidden = true
+        updateUI()
         
-        // 제출하기 버튼 표시, 재응시하기와 오답노트 보내기 버튼 숨기기
-        submitButton.isHidden = false
-        retryButton.isHidden = true
-        sendWrongAnswersButton.isHidden = true
-        
-        // 이전/다음 버튼 상태 리셋
-        previousButton.isHidden = false
-        nextButton.isHidden = false
-        
-        // QuestionView들의 상태 리셋
         for questionView in questionViews {
             questionView.answerTextField.isHidden = false
             questionView.answerTextField.text = ""
@@ -524,14 +596,10 @@ class TestSheetViewController: UIViewController {
             questionView.userAnswerLabel.removeFromSuperview()
         }
         
-        // UI 업데이트
-        updateUI()
-        
         print("재시험 시작")
     }
     
     @objc private func sendWrongAnswers() {
-        // 오답노트 보내기 로직 구현
         print("오답노트 보내기")
     }
     
@@ -541,19 +609,19 @@ class TestSheetViewController: UIViewController {
     }
     
     @objc override func dismissKeyboard() {
-        view.endEditing(true) // 현재 화면에서 활성화된 키보드를 내림
+        view.endEditing(true)
     }
     
     private func showToast(_ message: String) {
         let toastLabel = UILabel(frame: CGRect(x: self.view.frame.size.width/2 - 150, y: self.view.frame.size.height-100, width: 300, height: 70))
         toastLabel.backgroundColor = UIColor.black.withAlphaComponent(0.6)
         toastLabel.textColor = UIColor.white
-        toastLabel.textAlignment = .center;
+        toastLabel.textAlignment = .center
         toastLabel.font = UIFont.systemFont(ofSize: 15.0)
         toastLabel.text = message
-        toastLabel.numberOfLines = 0 // Allow multiple lines
+        toastLabel.numberOfLines = 0
         toastLabel.alpha = 1.0
-        toastLabel.layer.cornerRadius = 10;
+        toastLabel.layer.cornerRadius = 10
         toastLabel.clipsToBounds = true
         self.view.addSubview(toastLabel)
         
@@ -562,5 +630,107 @@ class TestSheetViewController: UIViewController {
         }, completion: {(isCompleted) in
             toastLabel.removeFromSuperview()
         })
+    }
+    
+    @objc private func sheetButtonTapped(_ sender: UIButton) {
+        isFirstSheetSelected = (sender == firstSheetButton)
+        updateSheetSelection()
+        loadQuestions()
+        
+        if !isFirstSheetSelected && (testsheetDetail?.isReExtracted ?? false) {
+            if secondSheetState?.isSubmitted ?? false {
+                showFinishImage()
+            } else {
+                hideFinishImage()
+            }
+        } else {
+            hideFinishImage()
+        }
+    }
+    
+    @objc private func addTestSheetButtonTapped() {
+        showReExtractAlert()
+    }
+    
+    private func updateSheetSelection() {
+        firstSheetButton.backgroundColor = isFirstSheetSelected ? MemorableColor.Yellow1 : MemorableColor.Gray2
+        secondSheetButton.backgroundColor = isFirstSheetSelected ? MemorableColor.Gray2 : MemorableColor.Yellow1
+    }
+    
+    private func showReExtractAlert() {
+        let alert = UIAlertController(title: "추가 시험지 만들기", message: "새로운 문제를 생성하시겠습니까?\n이전 시험지도 저장됩니다.", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "확인", style: .default) { [weak self] _ in
+            self?.reExtractQuestions()
+        })
+        
+        present(alert, animated: true)
+    }
+    
+    private func reExtractQuestions() {
+        testsheetDetail?.isReExtracted = true
+        secondSheetState = TestSheetState(userAnswers: Array(repeating: nil, count: testsheetDetail?.questions2.count ?? 0), isSubmitted: false, score: nil)
+        
+        sheetToggleStackView.isHidden = false
+        addTestSheetButton.isEnabled = false
+        addTestSheetButton.setTitleColor(MemorableColor.Gray2, for: .normal)
+        
+        isFirstSheetSelected = false
+        updateSheetSelection()
+        loadQuestions()
+        
+        resetSecondSheetUI()
+        showFinishImage()
+    }
+    
+    private func showFinishImage() {
+        guard !isFirstSheetSelected && (secondSheetState?.isSubmitted ?? false) else {
+            return
+        }
+        
+        finishImage.isHidden = false
+        finishImage.alpha = 0.0
+        UIView.animate(withDuration: 0.5, animations: {
+            self.finishImage.alpha = 1.0
+        }) { _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+                self.hideFinishImage()
+            }
+        }
+    }
+    
+    private func hideFinishImage() {
+        UIView.animate(withDuration: 0.5, animations: {
+            self.finishImage.alpha = 0.0
+        }) { _ in
+            self.finishImage.isHidden = true
+        }
+    }
+    
+    private func resetSecondSheetUI() {
+        // 현재 페이지의 questionView만 리셋
+        let startIndex = currentPage * questionsPerPage
+        for (index, questionView) in questionViews.enumerated() {
+            let questionIndex = startIndex + index
+            if questionIndex < questionManager.questions.count {
+                questionView.resetView()
+            }
+        }
+        updateUI()
+    }
+    
+    private func loadQuestions() {
+        guard let testSheetDetail = testsheetDetail else { return }
+        questionManager.questions = isFirstSheetSelected ? testSheetDetail.questions1 : testSheetDetail.questions2
+        currentPage = 0
+        
+        if isFirstSheetSelected {
+            // 첫 번째 시험지의 경우 기존 상태 유지
+            updateUI()
+        } else {
+            // 두 번째 시험지의 경우 UI 리셋
+            resetSecondSheetUI()
+        }
     }
 }
