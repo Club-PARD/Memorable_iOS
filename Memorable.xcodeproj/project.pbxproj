@@ -74,6 +74,7 @@
 		DDDA80212C33ADB80077E5F2 /* Pretendard-ExtraBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = DDDA80192C33ADB80077E5F2 /* Pretendard-ExtraBold.otf */; };
 		DDDA80222C33ADB80077E5F2 /* Pretendard-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = DDDA801A2C33ADB80077E5F2 /* Pretendard-Light.otf */; };
 		DDDA80232C33ADB80077E5F2 /* Pretendard-ExtraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = DDDA801B2C33ADB80077E5F2 /* Pretendard-ExtraLight.otf */; };
+		DDEA00192C3671930007B03A /* ExpandableMembershipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDEA00182C3671930007B03A /* ExpandableMembershipView.swift */; };
 		DDF67E862C32F9D900F37BFC /* WrongSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF67E852C32F9D900F37BFC /* WrongSheetViewController.swift */; };
 		DDF67E882C32FB3800F37BFC /* WrongSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF67E872C32FB3800F37BFC /* WrongSheetView.swift */; };
 		DDF67E8A2C330F3400F37BFC /* WrongQuestionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF67E892C330F3400F37BFC /* WrongQuestionView.swift */; };
@@ -188,6 +189,7 @@
 		DDEA00122C35D65F0007B03A /* PDFShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; name = PDFShareExtension.appex; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/PDFShareExtension.appex"; sourceTree = "<absolute>"; };
 		DDEA00132C35D65F0007B03A /* MemorableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableTests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/Memorable.app/PlugIns/MemorableTests.xctest"; sourceTree = "<absolute>"; };
 		DDEA00142C35D65F0007B03A /* MemorableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableUITests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/MemorableUITests-Runner.app/PlugIns/MemorableUITests.xctest"; sourceTree = "<absolute>"; };
+		DDEA00182C3671930007B03A /* ExpandableMembershipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableMembershipView.swift; sourceTree = "<group>"; };
 		DDF67E852C32F9D900F37BFC /* WrongSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongSheetViewController.swift; sourceTree = "<group>"; };
 		DDF67E872C32FB3800F37BFC /* WrongSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongSheetView.swift; sourceTree = "<group>"; };
 		DDF67E892C330F3400F37BFC /* WrongQuestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongQuestionView.swift; sourceTree = "<group>"; };
@@ -285,6 +287,7 @@
 				DB3CEC962C31E16100F8211C /* GradientView.swift */,
 				DBEB96A02C32BACF00106866 /* StreakView.swift */,
 				DBEB96A22C32BF8000106866 /* DayCell.swift */,
+				DDEA00182C3671930007B03A /* ExpandableMembershipView.swift */,
 			);
 			path = Component;
 			sourceTree = "<group>";
@@ -670,6 +673,7 @@
 				DD421DC42C3585DF00E4D320 /* OnboardingViewController.swift in Sources */,
 				DDAB24E02C3148A700AAEDB6 /* APIManager.swift in Sources */,
 				DDC1EE922C2AAD2400C88CD7 /* SignInManager.swift in Sources */,
+				DDEA00192C3671930007B03A /* ExpandableMembershipView.swift in Sources */,
 				DDDA80112C33A8820077E5F2 /* MemorableFont.swift in Sources */,
 				DB3CEC812C2E90BE00F8211C /* Question.swift in Sources */,
 				DB3CEC872C2FF66D00F8211C /* ProgressBarView.swift in Sources */,
