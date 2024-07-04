@@ -6,6 +6,7 @@
 //
 
 import SnapKit
+import Then
 import UIKit
 
 class MypageView: UIView {
@@ -21,6 +22,8 @@ class MypageView: UIView {
     
     private let notificationBanner: UIView
     
+    private let membershipExpandableView = ExpandableMembershipView()
+    
     private let membershipTitle: UILabel
     private let membershipStandardButton: UIView
     private let membershipProButton: UIView
@@ -35,10 +38,10 @@ class MypageView: UIView {
     private let purchaseButton = UIButton(type: .system)
     private let toastLabel = UILabel()
     
-    private let inquiryDropdownView: UIView = UIView()
-        private let phoneLabel: UILabel = UILabel()
-        private let emailLabel: UILabel = UILabel()
-        private var isDropdownVisible = false
+    private let inquiryDropdownView: UIView = .init()
+    private let phoneLabel: UILabel = .init()
+    private let emailLabel: UILabel = .init()
+    private var isDropdownVisible = false
     
     override init(frame: CGRect) {
         scrollView = UIScrollView()
@@ -178,6 +181,8 @@ class MypageView: UIView {
     }
     
     private func setupMemberships() {
+        contentView.addSubview(membershipExpandableView)
+        
         contentView.addSubview(membershipTitle)
         membershipTitle.text = "멤버십 플랜"
         membershipTitle.font = MemorableFont.Title()
@@ -186,9 +191,17 @@ class MypageView: UIView {
         setupMembershipButton(membershipProButton, title: "Pro", details: "· PDF 파일 50개 업로드\n· 빈칸학습지, 시험지 재추출 3회\n· 오답노트 사용 가능", sale: "36,000", price: "25,000원", isSelected: true)
         setupMembershipButton(membershipPremiumButton, title: "Premium", details: "· PDF 파일 업로드 무제한\n· 빈칸학습지, 시험지 재추출 무제한\n· 오답노트 사용 가능\n· 광고배너 삭제 및 추가 업데이트 우선 사용 가능", sale: "48,000", price: "35,000원")
         
-        contentView.addSubview(membershipStandardButton)
-        contentView.addSubview(membershipProButton)
-        contentView.addSubview(membershipPremiumButton)
+        let memberships = [
+            membershipStandardButton,
+            membershipProButton,
+            membershipPremiumButton
+        ]
+        
+        membershipExpandableView.configure(with: memberships)
+        
+//        contentView.addSubview(membershipStandardButton)
+//        contentView.addSubview(membershipProButton)
+//        contentView.addSubview(membershipPremiumButton)
         
         setupPurchaseButton()
     }
@@ -417,10 +430,15 @@ class MypageView: UIView {
         }
         
         notificationBanner.snp.makeConstraints { make in
-            make.top.equalTo(profileView.snp.bottom).offset(12)
-            make.trailing.equalToSuperview()
+            make.bottom.equalTo(profileView.snp.top).offset(-12)
+            make.trailing.equalTo(profileView.snp.trailing).offset(-30)
             make.width.equalTo(283)
             make.height.equalTo(36)
+        }
+        
+        membershipExpandableView.snp.makeConstraints { make in
+            make.top.equalTo(profileView.snp.bottom).offset(16)
+            make.leading.trailing.equalTo(profileView)
         }
         
         membershipTitle.snp.makeConstraints { make in
