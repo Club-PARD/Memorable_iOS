@@ -184,7 +184,6 @@ class WorkSheetViewController: UIViewController {
     @objc func didTapShowAnswerButton() {
         isShowingAnswer.toggle()
         showAnswerButton.isSelected = isShowingAnswer
-
         if isShowingAnswer {
             showAnswer()
 
@@ -438,6 +437,20 @@ class WorkSheetViewController: UIViewController {
 
             self.saveUserAnswers()
 
+            self.isShowingAnswer = false
+            self.showAnswerButton.isSelected = self.isShowingAnswer
+            self.resetButton.isHidden = false
+            self.showAnswerButton.setTitle("키워드 보기", for: .normal)
+            self.showAnswerButton.setTitle("키워드 가리기", for: .selected)
+            var config = UIButton.Configuration.filled()
+            config.image = UIImage(systemName: "eye")
+            config.imagePadding = 10
+            config.imagePlacement = .leading
+            config.baseBackgroundColor = MemorableColor.Blue2
+            config.baseForegroundColor = MemorableColor.White
+            config.cornerStyle = .large
+            self.showAnswerButton.configuration = config
+
             self.firstSheetButton.isHidden = false
             self.firstSheetButton.isEnabled = true
             self.secondSheetButton.isHidden = false
@@ -509,6 +522,22 @@ class WorkSheetViewController: UIViewController {
         saveUserAnswers()
         isFirstSheetSelected = true
 
+        isShowingAnswer = false
+        showAnswerButton.isSelected = isShowingAnswer
+        showAnswerButton.setTitle("키워드 보기", for: .normal)
+        showAnswerButton.setTitle("키워드 가리기", for: .selected)
+        resetButton.isHidden = false
+
+        var config = UIButton.Configuration.filled()
+        config.image = UIImage(systemName: "eye")
+        config.imagePadding = 10
+        config.imagePlacement = .leading
+        config.baseBackgroundColor = MemorableColor.Blue2
+        config.baseForegroundColor = MemorableColor.White
+        config.cornerStyle = .large
+
+        showAnswerButton.configuration = config
+
         firstSheetButton.backgroundColor = MemorableColor.Yellow1
         secondSheetButton.backgroundColor = MemorableColor.Gray2
 
@@ -564,6 +593,22 @@ class WorkSheetViewController: UIViewController {
         print("SecondSheetButton")
         saveUserAnswers()
         isFirstSheetSelected = false
+
+        isShowingAnswer = false
+        showAnswerButton.isSelected = isShowingAnswer
+        showAnswerButton.setTitle("키워드 보기", for: .normal)
+        showAnswerButton.setTitle("키워드 가리기", for: .selected)
+        resetButton.isHidden = false
+
+        var config = UIButton.Configuration.filled()
+        config.image = UIImage(systemName: "eye")
+        config.imagePadding = 10
+        config.imagePlacement = .leading
+        config.baseBackgroundColor = MemorableColor.Blue2
+        config.baseForegroundColor = MemorableColor.White
+        config.cornerStyle = .large
+
+        showAnswerButton.configuration = config
 
         firstSheetButton.backgroundColor = MemorableColor.Gray2
         secondSheetButton.backgroundColor = MemorableColor.Yellow1
