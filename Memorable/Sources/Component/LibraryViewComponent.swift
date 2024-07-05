@@ -12,6 +12,8 @@ protocol LibraryViewComponentDelegate: AnyObject {
     func didTapWorksheetButton(with documents: [Document])
     func didTapTestsheetButton(with documents: [Document])
     func didTapWrongsheetButton(with documents: [Document])
+    func didTapRecentButton()
+    func getUserId() -> Int?
 }
 
 class LibraryViewComponent: UIView {
@@ -160,7 +162,15 @@ class LibraryViewComponent: UIView {
         
         recentView.addSubview(recentLabel)
         recentView.addSubview(recentButton)
+    
+    // TODO: API 연결중
+        recentButton.addTarget(self, action: #selector(recentButtonTapped), for: .touchUpInside)
     }
+    
+    @objc private func recentButtonTapped() {
+        delegate?.didTapRecentButton()
+    }
+    // TODO: API 연결중 이까지
     
     private func setupLabels() {
         // titleLabel
@@ -550,6 +560,7 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
     }
     
     // 라우팅
+    // TODO: API 연결중
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
@@ -557,12 +568,24 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
         
         switch document.fileType {
         case "빈칸학습지":
-            let workSheetVC = WorkSheetViewController()
-//            workSheetVC.document = document
-            navigateToViewController(workSheetVC)
+            if let worksheet = document as? Worksheet {
+                // Fetch WorksheetDetail before navigating
+                APIManagere.shared.getWorksheet(worksheetId: worksheet.id) { result in
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .success(let worksheetDetail):
+                            let workSheetVC = WorkSheetViewController()
+                            workSheetVC.worksheetDetail = worksheetDetail
+                            self.navigateToViewController(workSheetVC)
+                        case .failure(let error):
+                            print("Error fetching worksheet detail: \(error)")
+                            // Handle error (e.g., show an alert to the user)
+                        }
+                    }
+                }
+            }
         case "나만의 시험지":
             let testSheetVC = TestSheetViewController()
-//            testSheetVC.document = document
             navigateToViewController(testSheetVC)
         case "오답노트":
             print("오답")
@@ -572,6 +595,7 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
             print("Unknown file type")
         }
     }
+    // TODO: API 연결중 이까지
     
     private func navigateToViewController(_ viewController: UIViewController) {
         if let navigationController = window?.rootViewController as? UINavigationController {

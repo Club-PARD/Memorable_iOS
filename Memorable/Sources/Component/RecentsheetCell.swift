@@ -13,6 +13,7 @@ protocol RecentsheetCellDelegate: AnyObject {
 }
 
 class RecentsheetCell: UITableViewCell {
+    private let categoryImageView = UIImageView()
     private let categoryLabel = UILabel()
     private let titleLabel = UILabel()
     private let dateLabel = UILabel()
@@ -24,13 +25,21 @@ class RecentsheetCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
+        contentView.addSubview(categoryImageView)
         contentView.addSubview(categoryLabel)
         contentView.addSubview(titleLabel)
         contentView.addSubview(dateLabel)
         contentView.addSubview(bookmarkButton)
         
-        categoryLabel.snp.makeConstraints { make in
+        categoryImageView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(32)
+            make.centerY.equalToSuperview()
+            make.width.equalTo(60)
+            make.height.equalTo(28)
+        }
+        
+        categoryLabel.snp.makeConstraints { make in
+            make.leading.equalTo(categoryImageView.snp.trailing).offset(8)
             make.centerY.equalToSuperview()
             make.width.equalTo(75)
             make.height.equalTo(28)
@@ -84,6 +93,17 @@ class RecentsheetCell: UITableViewCell {
         dateLabel.text = dateString
         dateLabel.font = MemorableFont.BodyCaption()
         dateLabel.textColor = MemorableColor.Gray1
+        
+        switch document.fileType {
+        case "빈칸학습지":
+            categoryImageView.image = UIImage(named: "work-list")
+        case "나만의 시험지":
+            categoryImageView.image = UIImage(named: "test-list")
+        case "오답노트":
+            categoryImageView.image = UIImage(named: "wrong-list")
+        default:
+            categoryImageView.image = nil
+        }
         
         updateBookmarkButton()
     }
