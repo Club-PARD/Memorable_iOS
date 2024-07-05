@@ -136,7 +136,7 @@ class StarView: UIView {
         filteredDocuments = allDocuments
         tableView.reloadData()
     }
-
+    
     @objc private func filterButtonTapped(_ sender: UIButton) {
         updateButtonState(sender, isSelected: true)
         
@@ -208,9 +208,22 @@ extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellD
         
         switch document.fileType {
         case "빈칸학습지":
-            let workSheetVC = WorkSheetViewController()
-            // workSheetVC.document = document // 필요하다면 document를 ViewController에 전달
-            navigateToViewController(workSheetVC)
+            if let worksheet = document as? Worksheet {
+                // Fetch WorksheetDetail before navigating
+                APIManagere.shared.getWorksheet(worksheetId: worksheet.id) { result in
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .success(let worksheetDetail):
+                            let workSheetVC = WorkSheetViewController()
+                            workSheetVC.worksheetDetail = worksheetDetail
+                            self.navigateToViewController(workSheetVC)
+                        case .failure(let error):
+                            print("Error fetching worksheet detail: \(error)")
+                            // Handle error (e.g., show an alert to the user)
+                        }
+                    }
+                }
+            }
         case "나만의 시험지":
             let testSheetVC = TestSheetViewController()
             // testSheetVC.document = document // 필요하다면 document를 ViewController에 전달
@@ -233,7 +246,24 @@ extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellD
     }
     
     func didTapBookmark(for document: Document) {
-        // 테이블 뷰 리로드
-        // recentTableView.reloadData()
+        if let worksheet = document as? Worksheet {
+            APIManagere.shared.toggleWorksheetBookmark(worksheetId: worksheet.id) { [weak self] result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let updatedWorksheet):
+                        if let index = self?.allDocuments.firstIndex(where: { $0.id == updatedWorksheet.id }) {
+                            self?.allDocuments[index] = updatedWorksheet
+                        }
+                        if let index = self?.filteredDocuments.firstIndex(where: { $0.id == updatedWorksheet.id }) {
+                            self?.filteredDocuments[index] = updatedWorksheet
+                        }
+                        self?.tableView.reloadData()
+                    case .failure(let error):
+                        print("Error toggling bookmark: \(error)")
+                        // 에러 처리 (예: 사용자에게 알림 표시)
+                    }
+                }
+            }
+        }
     }
 }
