@@ -32,20 +32,19 @@ class HomeViewController: UIViewController {
     private var viewStack: [String] = ["home"]
     
     var documents: [Document] = []
-    // TODO: API 연결중
-    let userId: Int = 123
-    // TODO: API 연결중 이까지
     
     let attendanceRecord: [Bool] = [true, true, true, false, false, true, false, true, false, false, false, false, false, false]
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        fetchDocuments()
         navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor = MemorableColor.Gray5
         headerComponent.delegate = self
         
         userIdentifier = UserDefaults.standard.string(forKey: SignInManager.userIdentifierKey)!
+        print("USERIDENTIFIER: \(userIdentifier)")
+        
+        fetchDocuments()
         
         if let userData = UserDefaults.standard.data(forKey: "userInfo") {
             if let decodedData = try? JSONDecoder().decode(User.self, from: userData) {
@@ -73,9 +72,9 @@ class HomeViewController: UIViewController {
     
     // TODO: API 연결중
     func fetchDocuments() {
-        print("Fetching documents for user ID: \(userId)")
+        print("Fetching documents for user ID: \(userIdentifier)")
         
-        APIManagere.shared.getWorksheets(userId: String(userId)) { [weak self] result in
+        APIManagere.shared.getWorksheets(userId: userIdentifier) { [weak self] result in
             switch result {
             case .success(let worksheets):
                 print("Successfully fetched \(worksheets.count) worksheets")
@@ -210,9 +209,9 @@ class HomeViewController: UIViewController {
         
         // TODO: API 연결중
         // Worksheet 데이터만 사용
-            let worksheetDocuments = documents // 모든 문서가 Worksheet입니다
-            let testsheetDocuments: [Document] = [] // 빈 배열
-            let wrongsheetDocuments: [Document] = [] // 빈 배열
+        let worksheetDocuments = documents // 모든 문서가 Worksheet입니다
+        let testsheetDocuments: [Document] = [] // 빈 배열
+        let wrongsheetDocuments: [Document] = [] // 빈 배열
         // TODO: API 연결중 이까지
         
         // LibraryViewComponent에 데이터 설정
@@ -390,8 +389,7 @@ extension HomeViewController: LibraryViewComponentDelegate {
     }
     
     func didTapRecentButton() {
-        
-        APIManagere.shared.getMostRecentWorksheet(userId: self.userId) { [weak self] result in
+        APIManagere.shared.getMostRecentWorksheet(userId: userIdentifier) { [weak self] result in
             switch result {
             case .success(let worksheet):
                 APIManagere.shared.getWorksheet(worksheetId: worksheet.id) { worksheetDetailResult in
@@ -418,14 +416,10 @@ extension HomeViewController: LibraryViewComponentDelegate {
         }
     }
     
-    func getUserId() -> Int? {
-        return self.userId
-    }
-    
     private func showErrorAlert(message: String) {
         let alert = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-        self.present(alert, animated: true, completion: nil)
+        present(alert, animated: true, completion: nil)
     }
 }
 
