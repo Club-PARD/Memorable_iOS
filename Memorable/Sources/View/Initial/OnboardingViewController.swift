@@ -58,7 +58,7 @@ class OnboardingViewController: UIViewController {
             view.addSubview(onBoardingView)
             onBoardingView.snp.makeConstraints { make in
                 make.centerX.equalToSuperview().offset(10)
-                make.bottom.equalTo(nextButton.snp.top).offset(-24)
+                make.centerY.equalToSuperview()
             }
 
             if idx == 2 {
@@ -73,27 +73,27 @@ class OnboardingViewController: UIViewController {
     }
 
     private func addSubViews() {
-        view.addSubview(progressBarView)
         view.addSubview(onBoardingView)
+        view.addSubview(progressBarView)
         view.addSubview(nextButton)
     }
 
     private func setupConstraints() {
         progressBarView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(80)
-        }
-
-        nextButton.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-80)
-            make.width.equalTo(460)
-            make.height.equalTo(60)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(50)
         }
 
         onBoardingView.snp.makeConstraints { make in
             make.centerX.equalToSuperview().offset(10)
-            make.bottom.equalTo(nextButton.snp.top).offset(-24)
+            make.centerY.equalToSuperview()
+        }
+
+        nextButton.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-50)
+            make.width.equalTo(460)
+            make.height.equalTo(60)
         }
     }
 }

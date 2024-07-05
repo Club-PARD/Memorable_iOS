@@ -46,13 +46,13 @@ class Onboarding2: UIView {
     
     private func setupConstraints() {
         snp.makeConstraints { make in
-            make.width.equalTo(550)
             make.height.equalTo(550)
+            make.width.equalTo(550)
         }
         
         titleLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.centerY.equalToSuperview().offset(-180)
+            make.top.equalToSuperview()
         }
         
         descriptionLabel.snp.makeConstraints { make in
@@ -61,9 +61,9 @@ class Onboarding2: UIView {
         }
         
         onboardingImage.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
             make.bottom.equalToSuperview()
-            make.width.equalTo(400)
+            make.centerX.equalToSuperview()
+            make.width.equalTo(600)
         }
     }
 }
