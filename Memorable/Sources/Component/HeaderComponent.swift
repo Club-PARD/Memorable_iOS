@@ -17,6 +17,8 @@ protocol HeaderComponentDelegate: AnyObject {
     func didTapWorksheetButton(with documents: [Document])
     func didTapTestsheetButton(with documents: [Document])
     func didSearchDocuments(with documents: [Document], searchText: String)
+    func didCreateWorksheet(name: String, category: String, content: String)
+    func refreshDocumentsAfterCreation()
 }
 
 class HeaderComponent: UIView {
@@ -550,9 +552,9 @@ class HeaderComponent: UIView {
     private func saveDocument(sheetName: String, category: String) {
         print("sheetName: \(sheetName), category: \(category), extractedText: \(extractedText)")
         
-        // TODO: 클백작업해야함
+        delegate?.didCreateWorksheet(name: sheetName, category: category, content: extractedText)
         
-        // 원래 홈뷰로 이동
+        // UI 상태 변경
         isMasked.toggle()
         delegate?.didTapPlusButton(isMasked: isMasked)
         deRotatePlusButton()
