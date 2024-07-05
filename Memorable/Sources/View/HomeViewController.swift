@@ -32,20 +32,19 @@ class HomeViewController: UIViewController {
     private var viewStack: [String] = ["home"]
     
     var documents: [Document] = []
-    // TODO: API 연결중
-    let userId: String = "123"
-    // TODO: API 연결중 이까지
     
     let attendanceRecord: [Bool] = [true, true, true, false, false, true, false, true, false, false, false, false, false, false]
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        fetchDocuments()
         navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor = MemorableColor.Gray5
         headerComponent.delegate = self
         
         userIdentifier = UserDefaults.standard.string(forKey: SignInManager.userIdentifierKey)!
+        print("USERIDENTIFIER: \(userIdentifier)")
+        
+        fetchDocuments()
         
         if let userData = UserDefaults.standard.data(forKey: "userInfo") {
             if let decodedData = try? JSONDecoder().decode(User.self, from: userData) {
@@ -73,9 +72,9 @@ class HomeViewController: UIViewController {
     
     // TODO: API 연결중
     func fetchDocuments() {
-        print("Fetching documents for user ID: \(userId)")
+        print("Fetching documents for user ID: \(userIdentifier)")
         
-        APIManagere.shared.getWorksheets(userId: String(userId)) { [weak self] result in
+        APIManagere.shared.getWorksheets(userId: userIdentifier) { [weak self] result in
             switch result {
             case .success(let worksheets):
                 print("Successfully fetched \(worksheets.count) worksheets")
@@ -210,9 +209,9 @@ class HomeViewController: UIViewController {
         
         // TODO: API 연결중
         // Worksheet 데이터만 사용
-            let worksheetDocuments = documents // 모든 문서가 Worksheet입니다
-            let testsheetDocuments: [Document] = [] // 빈 배열
-            let wrongsheetDocuments: [Document] = [] // 빈 배열
+        let worksheetDocuments = documents // 모든 문서가 Worksheet입니다
+        let testsheetDocuments: [Document] = [] // 빈 배열
+        let wrongsheetDocuments: [Document] = [] // 빈 배열
         // TODO: API 연결중 이까지
         
         // LibraryViewComponent에 데이터 설정
@@ -349,15 +348,41 @@ extension HomeViewController: HeaderComponentDelegate {
         showView(config: "searchedSheet")
         titleLabel.text = "총 \(documents.count)개의\n\"\(searchText)\" 검색결과가 있어요"
     }
+    
+    func didCreateWorksheet(name: String, category: String, content: String) {
+        APIManagere.shared.createWorksheet(userId: userIdentifier, name: name, category: category, content: content) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let worksheetDetail):
+                    print("Successfully created worksheet: \(worksheetDetail)")
+                    let workSheetVC = WorkSheetViewController()
+                    workSheetVC.worksheetDetail = worksheetDetail
+                    self?.navigationController?.pushViewController(workSheetVC, animated: true)
+                    self?.refreshDocumentsAfterCreation()
+                case .failure(let error):
+                    print("Error creating worksheet: \(error)")
+                    self?.showErrorAlert(message: "학습지 생성에 실패했습니다.")
+                }
+            }
+        }
+    }
+    
+    func refreshDocumentsAfterCreation() {
+        fetchDocuments()
+    }
+    
+    private func showErrorAlert(message: String) {
+        let alert = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
 }
 
 extension HomeViewController: LibraryViewComponentDelegate {
-    func didUpdateBookmark(for document: any Document) {
-        updateDocumentBookmarkStatus(document)
-        
-        // Optionally, you can refresh the data from the API here
-        fetchDocuments()
-    }
+    func didUpdateBookmark(for document: Document) {
+            updateDocumentBookmarkStatus(document)
+            fetchDocuments()
+        }
     
     func didTapBackButton() {
         if viewStack.count > 1 {
@@ -397,7 +422,7 @@ extension HomeViewController: LibraryViewComponentDelegate {
     }
     
     func didTapRecentButton() {
-        APIManagere.shared.getMostRecentWorksheet(userId: self.userId) { [weak self] result in
+        APIManagere.shared.getMostRecentWorksheet(userId: userIdentifier) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let worksheetDetail):
@@ -406,20 +431,16 @@ extension HomeViewController: LibraryViewComponentDelegate {
                     self?.navigationController?.pushViewController(workSheetVC, animated: true)
                 case .failure(let error):
                     print("Error fetching most recent worksheet: \(error)")
-                    self?.showErrorAlert(message: "최근 워크시트를 불러오는 데 실패했습니다.")
+                    self?.showCreateErrorAlert(message: "최근 워크시트를 불러오는 데 실패했습니다.")
                 }
             }
         }
     }
     
-    func getUserId() -> String? {
-        return self.userId
-    }
-    
-    private func showErrorAlert(message: String) {
+    private func showCreateErrorAlert(message: String) {
         let alert = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-        self.present(alert, animated: true, completion: nil)
+        present(alert, animated: true, completion: nil)
     }
 }
 
@@ -429,7 +450,6 @@ extension HomeViewController {
             documents[index] = document
         }
         
-        // Update views that display documents
         setupHeaderComponent()
         setupLibraryViewComponent()
         updateStarView()
