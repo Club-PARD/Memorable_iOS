@@ -10,6 +10,10 @@ import Then
 import UIKit
 
 class WorkSheetViewController: UIViewController {
+    // TODO: API 연결중
+    var worksheetDetail: WorksheetDetail?
+    // TODO: API 연결중 이까지
+    
     private let logoImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
         $0.image = UIImage(named: "applogo-v2")
@@ -130,26 +134,53 @@ class WorkSheetViewController: UIViewController {
     private var answerLength: Int = 0
 
     private var correctCount: Int = 0
-
+    
+    // TODO: API 연결중
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .gray5
-
-        workSheetView = WorkSheetView(
-            frame: view.bounds,
-            viewWidth: view.frame.width - 48,
-            text: mockText,
-            answers: mockAnswers
-        )
-
-        reloadUserAnswers()
-
+        updateRecentDate()
+        
+        setupUI()
         setupButtons()
-
         addSubViews()
         setupConstraints()
     }
-
+    
+    private func updateRecentDate() {
+        guard let worksheetDetail = worksheetDetail else {
+            print("WorkSheetViewController: WorksheetDetail is missing")
+            return
+        }
+        
+        APIManagere.shared.updateWorksheetRecentDate(worksheetId: worksheetDetail.worksheetId) { result in
+            switch result {
+            case .success:
+                print("Recent date updated successfully")
+            case .failure(let error):
+                print("Failed to update recent date: \(error)")
+                // 필요한 경우 에러 처리
+            }
+        }
+    }
+    
+    private func setupUI() {
+        guard let worksheetDetail = worksheetDetail else { return }
+        
+        titleLabel.text = worksheetDetail.name
+        categoryLabel.text = worksheetDetail.category
+        
+        workSheetView = WorkSheetView(
+            frame: view.bounds,
+            viewWidth: view.frame.width - 48,
+            text: worksheetDetail.content,
+            answers: worksheetDetail.answer1
+        )
+        
+        reloadUserAnswers()
+    }
+    // TODO: API 연결중 이까지
+    
     // MARK: - Button Action
 
     @objc func didTapResetButton() {
@@ -519,6 +550,10 @@ class WorkSheetViewController: UIViewController {
 
     @objc func didTapFirstSheetButton() {
         print("FirstSheetButton")
+        // TODO: API 연결중
+        guard let worksheetDetail = worksheetDetail else { return }
+        // TODO: API 연결중 이까지
+        
         saveUserAnswers()
         isFirstSheetSelected = true
 
@@ -545,15 +580,17 @@ class WorkSheetViewController: UIViewController {
         addWorkSheetButton.removeFromSuperview()
         firstSheetButton.removeFromSuperview()
         secondSheetButton.removeFromSuperview()
-
+        
+        // TODO: API 연결중
         workSheetView = WorkSheetView(
             frame: view.bounds,
             viewWidth: view.frame.width - 48,
-            text: mockText,
-            answers: mockAnswers
+            text: worksheetDetail.content,
+            answers: worksheetDetail.answer1
         )
+        // TODO: API 연결중 이까지
         reloadUserAnswers()
-
+        
         if let newWorkSheetView = workSheetView {
             view.addSubview(newWorkSheetView)
             view.addSubview(addWorkSheetButton)
@@ -591,6 +628,9 @@ class WorkSheetViewController: UIViewController {
 
     @objc func didTapSecondSheetButton() {
         print("SecondSheetButton")
+        // TODO: API 연결중
+        guard let worksheetDetail = worksheetDetail else { return }
+        // TODO: API 연결중 이까지
         saveUserAnswers()
         isFirstSheetSelected = false
 
@@ -618,15 +658,17 @@ class WorkSheetViewController: UIViewController {
         firstSheetButton.removeFromSuperview()
         secondSheetButton.removeFromSuperview()
         finishAddImage.removeFromSuperview()
-
+        
+        // TODO: API 연결중
         workSheetView = WorkSheetView(
             frame: view.bounds,
             viewWidth: view.frame.width - 48,
-            text: mockText,
-            answers: mockAnswers2
+            text: worksheetDetail.content,
+            answers: worksheetDetail.answer2
         )
+        // TODO: API 연결중 이까지
         reloadUserAnswers()
-
+        
         if let newWorkSheetView = workSheetView {
             view.addSubview(newWorkSheetView)
             view.addSubview(addWorkSheetButton)

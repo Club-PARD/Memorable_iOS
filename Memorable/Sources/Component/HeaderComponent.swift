@@ -463,24 +463,71 @@ class HeaderComponent: UIView {
     }
     
     private func showCategoryAlert(sheetName: String) {
-        let categoryAlertController = UIAlertController(title: "카테고리 설정하기", message: "학습지의 카테고리를 설정해 주세요", preferredStyle: .alert)
-        categoryAlertController.addTextField { textField in
-            textField.placeholder = "카테고리"
+        let existingCategories = getExistingCategories()
+        let alertController: UIAlertController
+        
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            alertController = UIAlertController(title: "카테고리 설정하기", message: "해당 학습지의 카테고리를 설정해주세요", preferredStyle: .alert)
+        } else {
+            alertController = UIAlertController(title: "카테고리 설정하기", message: "해당 학습지의 카테고리를 설정해주세요", preferredStyle: .actionSheet)
+        }
+        
+        for category in existingCategories {
+            let action = UIAlertAction(title: category, style: .default) { [weak self] _ in
+                self?.saveDocument(sheetName: sheetName, category: category)
+            }
+            alertController.addAction(action)
+        }
+        
+        if existingCategories.count < 9 {
+            let newCategoryAction = UIAlertAction(title: "새 카테고리 만들기", style: .default) { [weak self] _ in
+                self?.showNewCategoryAlert(sheetName: sheetName)
+            }
+            alertController.addAction(newCategoryAction)
+        } else {
+            let newCategoryAction = UIAlertAction(title: "새 카테고리 만들기", style: .default) { [weak self] _ in
+                self?.showCanNotAddCategoryToast(message: "카테고리는 최대 9개만 만들 수 있습니다.")
+            }
+            alertController.addAction(newCategoryAction)
+        }
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { [weak self] _ in
+            self?.showNameAlert(fileName: sheetName, previousName: sheetName)
+        }
+        alertController.addAction(cancelAction)
+        
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            if let popoverController = alertController.popoverPresentationController {
+                popoverController.sourceView = self
+                popoverController.sourceRect = CGRect(x: self.bounds.midX, y: self.bounds.midY, width: 0, height: 0)
+                popoverController.permittedArrowDirections = []
+            }
+        }
+        
+        presentAlert(alertController)
+    }
+    
+    private func showNewCategoryAlert(sheetName: String) {
+        let alertController = UIAlertController(title: "새 카테고리", message: "새로운 카테고리 이름을 입력해주세요", preferredStyle: .alert)
+        alertController.addTextField { textField in
+            textField.placeholder = "카테고리 이름"
             textField.autocorrectionType = .no
             textField.spellCheckingType = .no
         }
-        let categoryConfirmAction = UIAlertAction(title: "확인", style: .default) { [weak self] _ in
-            guard let category = categoryAlertController.textFields?.first?.text, !category.isEmpty else { return }
+        
+        let confirmAction = UIAlertAction(title: "확인", style: .default) { [weak self] _ in
+            guard let category = alertController.textFields?.first?.text, !category.isEmpty else { return }
             self?.saveDocument(sheetName: sheetName, category: category)
         }
-        let categoryCancelAction = UIAlertAction(title: "취소", style: .cancel) { [weak self] _ in
-            self?.showNameAlert(fileName: sheetName, previousName: sheetName)
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { [weak self] _ in
+            self?.showCategoryAlert(sheetName: sheetName)
         }
         
-        categoryAlertController.addAction(categoryConfirmAction)
-        categoryAlertController.addAction(categoryCancelAction)
+        alertController.addAction(confirmAction)
+        alertController.addAction(cancelAction)
         
-        presentAlert(categoryAlertController)
+        presentAlert(alertController)
     }
     
     private func presentAlert(_ alertController: UIAlertController) {
@@ -489,7 +536,14 @@ class HeaderComponent: UIView {
             .first?.windows
             .first?.rootViewController
         {
-            rootViewController.present(alertController, animated: true, completion: nil)
+            // 현재 표시된 뷰 컨트롤러를 찾습니다.
+            var currentViewController = rootViewController
+            while let presentedViewController = currentViewController.presentedViewController {
+                currentViewController = presentedViewController
+            }
+            
+            // 찾은 뷰 컨트롤러에서 알림을 표시합니다.
+            currentViewController.present(alertController, animated: true, completion: nil)
         }
     }
     
@@ -549,6 +603,52 @@ class HeaderComponent: UIView {
         deRotatePlusButton()
         toggleSubButtons()
     }
+    
+    // 카테고리 설정
+    private func getExistingCategories() -> [String] {
+        return Array(Set(documents.map { $0.category })).sorted()
+    }
+    
+    private func showCanNotAddCategoryToast(message: String) {
+        let window: UIWindow?
+        if #available(iOS 13.0, *) {
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let firstWindow = windowScene.windows.first else { return }
+            window = firstWindow
+        } else {
+            window = UIApplication.shared.windows.first
+        }
+        
+        guard let window = window else { return }
+        
+        let toastLabel = UILabel()
+        toastLabel.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+        toastLabel.textColor = .white
+        toastLabel.textAlignment = .center
+        toastLabel.font = UIFont.systemFont(ofSize: 14)
+        toastLabel.text = message
+        toastLabel.alpha = 0.0
+        toastLabel.layer.cornerRadius = 10
+        toastLabel.clipsToBounds = true
+        
+        let toastWidth: CGFloat = 250
+        let toastHeight: CGFloat = 35
+        toastLabel.frame = CGRect(x: window.frame.size.width/2 - toastWidth/2,
+                                  y: window.frame.size.height - 100,
+                                  width: toastWidth, height: toastHeight)
+        
+        window.addSubview(toastLabel)
+        
+        UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseIn, animations: {
+            toastLabel.alpha = 1.0
+        }) { _ in
+            UIView.animate(withDuration: 0.5, delay: 1.5, options: .curveEaseOut, animations: {
+                toastLabel.alpha = 0.0
+            }) { _ in
+                toastLabel.removeFromSuperview()
+            }
+        }
+    }
 }
 
 extension HeaderComponent: UIDocumentPickerDelegate {
@@ -582,5 +682,18 @@ extension HeaderComponent: UISearchBarDelegate {
         
         delegate?.didSearchDocuments(with: filteredDocuments, searchText: searchText)
         searchBar.resignFirstResponder() // 키보드 숨기기
+    }
+}
+
+extension UIView {
+    var parentViewController: UIViewController? {
+        var parentResponder: UIResponder? = self
+        while parentResponder != nil {
+            parentResponder = parentResponder!.next
+            if let viewController = parentResponder as? UIViewController {
+                return viewController
+            }
+        }
+        return nil
     }
 }
