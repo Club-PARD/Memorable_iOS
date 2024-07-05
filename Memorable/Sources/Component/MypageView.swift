@@ -226,7 +226,7 @@ class MypageView: UIView {
             UIView.animate(withDuration: 0.3) {
                 self.toggleViewHeightConstraint.deactivate()
                 self.membershipToggleView.snp.makeConstraints { make in
-                    make.top.equalTo(self.profileView.snp.bottom).offset(16)
+                    make.top.equalTo(self.profileView.snp.bottom).offset(40)
                     make.leading.trailing.equalTo(self.profileView)
                     self.toggleViewHeightConstraint = make.height.equalTo(newHeight).constraint
                 }
@@ -284,7 +284,7 @@ class MypageView: UIView {
                 UIView.animate(withDuration: 0.3) {
                     self.toggleViewHeightConstraint.deactivate()
                     self.membershipToggleView.snp.makeConstraints { make in
-                        make.top.equalTo(self.profileView.snp.bottom).offset(16)
+                        make.top.equalTo(self.profileView.snp.bottom).offset(40)
                         make.leading.trailing.equalTo(self.profileView)
                         self.toggleViewHeightConstraint = make.height.equalTo(64).constraint
                     }
@@ -528,7 +528,7 @@ class MypageView: UIView {
         }
         
         membershipToggleView.snp.makeConstraints { make in
-            make.top.equalTo(profileView.snp.bottom).offset(16)
+            make.top.equalTo(profileView.snp.bottom).offset(40)
             make.leading.trailing.equalTo(profileView)
             self.toggleViewHeightConstraint = make.height.equalTo(64).constraint
         }
