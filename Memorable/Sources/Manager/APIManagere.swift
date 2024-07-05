@@ -378,19 +378,67 @@ class APIManagere {
     }
     
     // 3. 가장 최근에 이용한 빈칸학습지 불러오기
-    func getMostRecentWorksheet(userId: Int, completion: @escaping (Result<Worksheet, Error>) -> Void) {
-        getWorksheets(userId: String(userId)) { result in
-            switch result {
-            case .success(let worksheets):
-                if let mostRecent = worksheets.max(by: { $0.createdDate < $1.createdDate }) {
-                    completion(.success(mostRecent))
-                } else {
-                    completion(.failure(NSError(domain: "No worksheets found", code: 0, userInfo: nil)))
-                }
-            case .failure(let error):
+    func getMostRecentWorksheet(userId: String, completion: @escaping (Result<WorksheetDetail, Error>) -> Void) {
+        let urlString = "\(baseURL)/api/worksheet/recentDate/\(userId)"
+        
+        guard let url = URL(string: urlString) else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 0, userInfo: nil)))
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(NSError(domain: "No data received", code: 0, userInfo: nil)))
+                return
+            }
+            
+            do {
+                let decoder = JSONDecoder()
+                let worksheetDetail = try decoder.decode(WorksheetDetail.self, from: data)
+                completion(.success(worksheetDetail))
+            } catch {
                 completion(.failure(error))
             }
         }
+        
+        task.resume()
+    }
+    
+    // 5. 즐겨찾기 토글 기능
+    func toggleWorksheetBookmark(worksheetId: Int, completion: @escaping (Result<Worksheet, Error>) -> Void) {
+        let urlString = "\(baseURL)/api/worksheet/\(worksheetId)"
+        guard let url = URL(string: urlString) else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 0, userInfo: nil)))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "PATCH"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(NSError(domain: "No data received", code: 0, userInfo: nil)))
+                return
+            }
+            
+            do {
+                let worksheet = try JSONDecoder().decode(Worksheet.self, from: data)
+                completion(.success(worksheet))
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
     }
     
     // 6. 빈칸학습지 마지막 이용 시간 서버에 Patch
@@ -423,23 +471,11 @@ class APIManagere {
         
         task.resume()
     }
-    
-    
-        
-        func getRecentWorksheet(userId: String, completion: @escaping (Result<WorksheetDetail, Error>) -> Void) {
-            let urlString = "\(baseURL)/api/worksheet/recentDate/\(userId)"
-            performRequest(urlString: urlString, completion: completion)
-        }
         
         func createWorksheet(userId: String, name: String, category: String, content: String, completion: @escaping (Result<WorksheetDetail, Error>) -> Void) {
             let urlString = "\(baseURL)/api/worksheet"
             let body: [String: Any] = ["userId": userId, "name": name, "category": category, "content": content]
             performRequest(urlString: urlString, method: "POST", body: body, completion: completion)
-        }
-        
-        func toggleWorksheetBookmark(worksheetId: Int, completion: @escaping (Result<Worksheet, Error>) -> Void) {
-            let urlString = "\(baseURL)/api/worksheet/\(worksheetId)"
-            performRequest(urlString: urlString, method: "PATCH", completion: completion)
         }
         
         func deleteWorksheet(worksheetId: Int, completion: @escaping (Result<EmptyResponse, Error>) -> Void) {
