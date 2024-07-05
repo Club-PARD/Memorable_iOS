@@ -60,7 +60,10 @@ class MypageView: UIView {
     private let removeUserButton: UIButton
     
     private var selectedMembershipButton: UIView?
-    private let purchaseButton = UIButton(type: .system)
+    private let purchaseButton = UIButton(type: .system).then {
+        $0.isHidden = true
+    }
+
     private let toastLabel = UILabel()
     
     private let inquiryDropdownView: UIView = .init()
@@ -230,6 +233,9 @@ class MypageView: UIView {
                     make.leading.trailing.equalTo(self.profileView)
                     self.toggleViewHeightConstraint = make.height.equalTo(newHeight).constraint
                 }
+                
+                self.contentView.addSubview(self.purchaseButton)
+                
                 self.layoutIfNeeded()
             }
             completion: { _ in
@@ -687,6 +693,8 @@ class MypageView: UIView {
             make.bottom.equalTo(tappedView.snp.bottom).offset(-24)
             make.height.equalTo(60)
         }
+        purchaseButton.isHidden = false
+        layoutIfNeeded()
         
         // titleLabel, detailsLabel, selectedLabel을 보여줌
         for view in tappedView.subviews {
