@@ -22,9 +22,34 @@ class MypageView: UIView {
     
     private let notificationBanner: UIView
     
-    private let membershipExpandableView = ExpandableMembershipView()
+    var toggleViewHeightConstraint: Constraint!
+    private let membershipToggleView = UIView().then {
+        $0.backgroundColor = MemorableColor.Black
+        $0.layer.cornerRadius = 32
+    }
     
-    private let membershipTitle: UILabel
+    private var titleToggleLabel = UIStackView().then {
+        let label = UILabel().then {
+            $0.text = "현재 PRO 멤버십 플랜을 사용중이에요"
+            $0.textColor = MemorableColor.White
+            $0.font = MemorableFont.Body2(size: 20)
+        }
+        
+        $0.addArrangedSubview(label)
+        
+        $0.axis = .horizontal
+        $0.alignment = .center
+        $0.spacing = 10
+    }
+    
+    private var imageView = UIImageView().then {
+        $0.image = UIImage(systemName: "chevron.down")
+        $0.contentMode = .scaleAspectFit
+        $0.tintColor = MemorableColor.White
+    }
+
+    private var isMembershipExpanded = false
+    
     private let membershipStandardButton: UIView
     private let membershipProButton: UIView
     private let membershipPremiumButton: UIView
@@ -55,7 +80,6 @@ class MypageView: UIView {
         
         notificationBanner = UIView()
         
-        membershipTitle = UILabel()
         membershipStandardButton = UIView()
         membershipProButton = UIView()
         membershipPremiumButton = UIView()
@@ -88,6 +112,7 @@ class MypageView: UIView {
         setupProfile()
         setupNotificationBanner()
         setupMemberships()
+        setupMembershipToggle()
         setupService()
         
         setupToastLabel()
@@ -180,28 +205,102 @@ class MypageView: UIView {
         }
     }
     
+    private func setupMembershipToggle() {
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleMembership(_:)))
+        membershipToggleView.addGestureRecognizer(tapGestureRecognizer)
+        contentView.addSubview(membershipToggleView)
+        membershipToggleView.addSubview(titleToggleLabel)
+        titleToggleLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(20)
+        }
+        titleToggleLabel.addArrangedSubview(imageView)
+    }
+    
+    @objc private func toggleMembership(_ sender: UITapGestureRecognizer) {
+        isMembershipExpanded.toggle()
+        
+        let newHeight = isMembershipExpanded ? 350 : 0
+        
+        if isMembershipExpanded {
+            UIView.animate(withDuration: 0.3) {
+                self.toggleViewHeightConstraint.deactivate()
+                self.membershipToggleView.snp.makeConstraints { make in
+                    make.top.equalTo(self.profileView.snp.bottom).offset(16)
+                    make.leading.trailing.equalTo(self.profileView)
+                    self.toggleViewHeightConstraint = make.height.equalTo(newHeight).constraint
+                }
+                self.layoutIfNeeded()
+            }
+            completion: { _ in
+                self.membershipToggleView.addSubview(self.membershipStandardButton)
+                self.membershipToggleView.addSubview(self.membershipProButton)
+                self.membershipToggleView.addSubview(self.membershipPremiumButton)
+                
+                self.membershipStandardButton.alpha = 0
+                self.membershipProButton.alpha = 0
+                self.membershipPremiumButton.alpha = 0
+
+                self.membershipProButton.snp.makeConstraints { make in
+                    make.top.equalToSuperview().offset(68)
+                    make.bottom.equalToSuperview().offset(-22)
+                    make.centerX.equalToSuperview()
+                    make.width.equalToSuperview().multipliedBy(0.31)
+                }
+
+                self.membershipStandardButton.snp.makeConstraints { make in
+                    make.top.equalToSuperview().offset(68)
+                    make.bottom.equalToSuperview().offset(-22)
+                    make.leading.equalToSuperview().offset(20)
+                    make.width.equalToSuperview().multipliedBy(0.31)
+                }
+
+                self.membershipPremiumButton.snp.makeConstraints { make in
+                    make.top.equalToSuperview().offset(68)
+                    make.bottom.equalToSuperview().offset(-22)
+                    make.trailing.equalToSuperview().offset(-20)
+                    make.width.equalToSuperview().multipliedBy(0.31)
+                }
+                
+                self.layoutIfNeeded()
+                
+                UIView.animate(withDuration: 0.2) {
+                    self.membershipStandardButton.alpha = 1
+                    self.membershipProButton.alpha = 1
+                    self.membershipPremiumButton.alpha = 1
+                }
+            }
+        } else {
+            UIView.animate(withDuration: 0.2) {
+                self.membershipStandardButton.removeFromSuperview()
+                self.membershipProButton.removeFromSuperview()
+                self.membershipPremiumButton.removeFromSuperview()
+                
+                self.resetAllMembershipButtons()
+                self.purchaseButton.removeFromSuperview()
+                
+                self.layoutIfNeeded()
+            } completion: { _ in
+                UIView.animate(withDuration: 0.3) {
+                    self.toggleViewHeightConstraint.deactivate()
+                    self.membershipToggleView.snp.makeConstraints { make in
+                        make.top.equalTo(self.profileView.snp.bottom).offset(16)
+                        make.leading.trailing.equalTo(self.profileView)
+                        self.toggleViewHeightConstraint = make.height.equalTo(64).constraint
+                    }
+                    
+                    self.layoutIfNeeded()
+                }
+            }
+        }
+       
+        imageView.image = isMembershipExpanded ? UIImage(systemName: "chevron.up") : UIImage(systemName: "chevron.down")
+    }
+    
     private func setupMemberships() {
-        contentView.addSubview(membershipExpandableView)
-        
-        contentView.addSubview(membershipTitle)
-        membershipTitle.text = "멤버십 플랜"
-        membershipTitle.font = MemorableFont.Title()
-        
         setupMembershipButton(membershipStandardButton, title: "Standard", details: "· PDF 파일 10개 업로드\n· 빈칸학습지, 시험지 재추출 1회\n· 오답노트 사용 제한", sale: "", price: "10,000원")
         setupMembershipButton(membershipProButton, title: "Pro", details: "· PDF 파일 50개 업로드\n· 빈칸학습지, 시험지 재추출 3회\n· 오답노트 사용 가능", sale: "36,000", price: "25,000원", isSelected: true)
         setupMembershipButton(membershipPremiumButton, title: "Premium", details: "· PDF 파일 업로드 무제한\n· 빈칸학습지, 시험지 재추출 무제한\n· 오답노트 사용 가능\n· 광고배너 삭제 및 추가 업데이트 우선 사용 가능", sale: "48,000", price: "35,000원")
-        
-        let memberships = [
-            membershipStandardButton,
-            membershipProButton,
-            membershipPremiumButton
-        ]
-        
-        membershipExpandableView.configure(with: memberships)
-        
-//        contentView.addSubview(membershipStandardButton)
-//        contentView.addSubview(membershipProButton)
-//        contentView.addSubview(membershipPremiumButton)
         
         setupPurchaseButton()
     }
@@ -331,15 +430,7 @@ class MypageView: UIView {
         purchaseButton.backgroundColor = MemorableColor.Blue1
         purchaseButton.layer.cornerRadius = 30
         purchaseButton.addTarget(self, action: #selector(purchaseButtonTapped), for: .touchUpInside)
-        purchaseButton.isHidden = true
         contentView.addSubview(purchaseButton)
-        
-        purchaseButton.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.width.equalTo(268)
-            make.height.equalTo(60)
-            make.bottom.equalTo(membershipPremiumButton).offset(-24)
-        }
     }
     
     private func setupTapGesture() {
@@ -436,41 +527,14 @@ class MypageView: UIView {
             make.height.equalTo(36)
         }
         
-        membershipExpandableView.snp.makeConstraints { make in
+        membershipToggleView.snp.makeConstraints { make in
             make.top.equalTo(profileView.snp.bottom).offset(16)
             make.leading.trailing.equalTo(profileView)
-        }
-        
-        membershipTitle.snp.makeConstraints { make in
-            make.top.equalTo(profileView.snp.bottom).offset(124)
-            make.leading.equalToSuperview().inset(16)
-            make.height.equalTo(35)
-        }
-        
-        membershipStandardButton.snp.makeConstraints { make in
-            make.top.equalTo(membershipTitle.snp.bottom).offset(16)
-            make.leading.equalToSuperview()
-            make.width.equalTo(membershipProButton)
-            make.height.equalTo(260)
-        }
-        
-        membershipProButton.snp.makeConstraints { make in
-            make.top.equalTo(membershipTitle.snp.bottom).offset(16)
-            make.leading.equalTo(membershipStandardButton.snp.trailing).offset(20)
-            make.width.equalTo(membershipPremiumButton)
-            make.height.equalTo(membershipStandardButton)
-        }
-        
-        membershipPremiumButton.snp.makeConstraints { make in
-            make.top.equalTo(membershipTitle.snp.bottom).offset(16)
-            make.leading.equalTo(membershipProButton.snp.trailing).offset(20)
-            make.trailing.equalToSuperview()
-            make.width.equalTo(membershipStandardButton)
-            make.height.equalTo(membershipStandardButton)
+            self.toggleViewHeightConstraint = make.height.equalTo(64).constraint
         }
         
         serviceLabel.snp.makeConstraints { make in
-            make.top.equalTo(membershipPremiumButton.snp.bottom).offset(44)
+            make.top.equalTo(membershipToggleView.snp.bottom).offset(40)
             make.leading.equalToSuperview().offset(20)
         }
         
@@ -563,7 +627,7 @@ class MypageView: UIView {
     
     // updateButtonUI 메서드 수정
     private func updateButtonUI(_ button: UIView) {
-        button.backgroundColor = MemorableColor.Blue2?.withAlphaComponent(0.5)
+        button.backgroundColor = MemorableColor.Blue3
         button.layer.borderColor = MemorableColor.Blue2?.cgColor
         button.layer.borderWidth = 1
 
@@ -589,9 +653,6 @@ class MypageView: UIView {
         } else {
             purchaseButton.setTitle("구매하기", for: .normal)
         }
-
-        let chevronImage = UIImage(systemName: "chevron.right")
-        purchaseButton.setImage(chevronImage, for: .normal)
         
         var buttonConfig = purchaseButton.configuration
         buttonConfig?.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: -4, bottom: 0, trailing: 0)
@@ -617,8 +678,9 @@ class MypageView: UIView {
         updateButtonUI(tappedView)
         
         // purchaseButton 설정
-        purchaseButton.isHidden = false
-        purchaseButton.snp.remakeConstraints { make in
+        purchaseButton.removeFromSuperview()
+        contentView.addSubview(purchaseButton)
+        purchaseButton.snp.makeConstraints { make in
             make.centerX.equalTo(tappedView.snp.centerX)
             make.leading.equalTo(tappedView.snp.leading).offset(24)
             make.trailing.equalTo(tappedView.snp.trailing).offset(-24)
@@ -688,17 +750,6 @@ class MypageView: UIView {
         
         guard let navigationController = window?.rootViewController as? UINavigationController else { return }
         navigationController.setViewControllers([LoginViewController()], animated: false)
-
-//        userIdentifier = ""
-//        givenName = ""
-//        familyName = ""
-//        email = ""
-
-//        DispatchQueue.main.async {
-//            guard let navController = navigationController else { return }
-//
-//            navController.setViewControllers([HomeViewController()], animated: false)
-//        }
     }
     
     @objc private func showInquiryActionSheet() {

@@ -74,7 +74,6 @@
 		DDDA80212C33ADB80077E5F2 /* Pretendard-ExtraBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = DDDA80192C33ADB80077E5F2 /* Pretendard-ExtraBold.otf */; };
 		DDDA80222C33ADB80077E5F2 /* Pretendard-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = DDDA801A2C33ADB80077E5F2 /* Pretendard-Light.otf */; };
 		DDDA80232C33ADB80077E5F2 /* Pretendard-ExtraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = DDDA801B2C33ADB80077E5F2 /* Pretendard-ExtraLight.otf */; };
-		DDEA00192C3671930007B03A /* ExpandableMembershipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDEA00182C3671930007B03A /* ExpandableMembershipView.swift */; };
 		DDF67E862C32F9D900F37BFC /* WrongSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF67E852C32F9D900F37BFC /* WrongSheetViewController.swift */; };
 		DDF67E882C32FB3800F37BFC /* WrongSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF67E872C32FB3800F37BFC /* WrongSheetView.swift */; };
 		DDF67E8A2C330F3400F37BFC /* WrongQuestionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF67E892C330F3400F37BFC /* WrongQuestionView.swift */; };
@@ -130,8 +129,6 @@
 		DB3CEC942C31A5DA00F8211C /* SearchedSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchedSheetView.swift; sourceTree = "<group>"; };
 		DB3CEC962C31E16100F8211C /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		DB62475F2C35C38D00592773 /* InquiryViewcontroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InquiryViewcontroller.swift; sourceTree = "<group>"; };
-		DB6247612C35DA1500592773 /* MemorableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableTests.xctest; path = "/Users/minhyeokkim/Desktop/Pard/Memorable_iOS/build/Debug-iphoneos/Memorable.app/PlugIns/MemorableTests.xctest"; sourceTree = "<absolute>"; };
-		DB6247622C35DA1500592773 /* MemorableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableUITests.xctest; path = "/Users/minhyeokkim/Desktop/Pard/Memorable_iOS/build/Debug-iphoneos/MemorableUITests-Runner.app/PlugIns/MemorableUITests.xctest"; sourceTree = "<absolute>"; };
 		DBD820482C2A804700A9B1C3 /* TabViewComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabViewComponent.swift; sourceTree = "<group>"; };
 		DBD8204C2C2ADF5C00A9B1C3 /* HeaderComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderComponent.swift; sourceTree = "<group>"; };
 		DBD8204E2C2BE31800A9B1C3 /* LibraryViewComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewComponent.swift; sourceTree = "<group>"; };
@@ -187,11 +184,10 @@
 		DDDA801A2C33ADB80077E5F2 /* Pretendard-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Light.otf"; sourceTree = "<group>"; };
 		DDDA801B2C33ADB80077E5F2 /* Pretendard-ExtraLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-ExtraLight.otf"; sourceTree = "<group>"; };
 		DDDA80272C33F0600077E5F2 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		DDEA00112C35D65F0007B03A /* Memorable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Memorable.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		DDEA00122C35D65F0007B03A /* PDFShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PDFShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		DDEA00132C35D65F0007B03A /* MemorableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableTests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/Memorable.app/PlugIns/MemorableTests.xctest"; sourceTree = "<absolute>"; };
-		DDEA00142C35D65F0007B03A /* MemorableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableUITests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/MemorableUITests-Runner.app/PlugIns/MemorableUITests.xctest"; sourceTree = "<absolute>"; };
-		DDEA00182C3671930007B03A /* ExpandableMembershipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableMembershipView.swift; sourceTree = "<group>"; };
+		DDEA001A2C367F900007B03A /* Memorable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Memorable.app; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/Memorable.app"; sourceTree = "<absolute>"; };
+		DDEA001B2C367F900007B03A /* PDFShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; name = PDFShareExtension.appex; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/PDFShareExtension.appex"; sourceTree = "<absolute>"; };
+		DDEA001C2C367F900007B03A /* MemorableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableTests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/Memorable.app/PlugIns/MemorableTests.xctest"; sourceTree = "<absolute>"; };
+		DDEA001D2C367F900007B03A /* MemorableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableUITests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/MemorableUITests-Runner.app/PlugIns/MemorableUITests.xctest"; sourceTree = "<absolute>"; };
 		DDF67E852C32F9D900F37BFC /* WrongSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongSheetViewController.swift; sourceTree = "<group>"; };
 		DDF67E872C32FB3800F37BFC /* WrongSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongSheetView.swift; sourceTree = "<group>"; };
 		DDF67E892C330F3400F37BFC /* WrongQuestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongQuestionView.swift; sourceTree = "<group>"; };
@@ -289,7 +285,6 @@
 				DB3CEC962C31E16100F8211C /* GradientView.swift */,
 				DBEB96A02C32BACF00106866 /* StreakView.swift */,
 				DBEB96A22C32BF8000106866 /* DayCell.swift */,
-				DDEA00182C3671930007B03A /* ExpandableMembershipView.swift */,
 			);
 			path = Component;
 			sourceTree = "<group>";
@@ -483,7 +478,7 @@
 				DDAB24DC2C31466500AAEDB6 /* Then */,
 			);
 			productName = PDFShareExtension;
-			productReference = DDEA00122C35D65F0007B03A /* PDFShareExtension.appex */;
+			productReference = DDEA001B2C367F900007B03A /* PDFShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		DDAC4BD12C2805AB006206EB /* Memorable */ = {
@@ -507,7 +502,7 @@
 				DD421DB22C33FABA00E4D320 /* Gifu */,
 			);
 			productName = Memorable;
-			productReference = DDEA00112C35D65F0007B03A /* Memorable.app */;
+			productReference = DDEA001A2C367F900007B03A /* Memorable.app */;
 			productType = "com.apple.product-type.application";
 		};
 		DDAC4BEA2C2805AC006206EB /* MemorableTests */ = {
@@ -525,7 +520,7 @@
 			);
 			name = MemorableTests;
 			productName = MemorableTests;
-			productReference = DB6247612C35DA1500592773 /* MemorableTests.xctest */;
+			productReference = DDEA001C2C367F900007B03A /* MemorableTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		DDAC4BF42C2805AC006206EB /* MemorableUITests */ = {
@@ -543,7 +538,7 @@
 			);
 			name = MemorableUITests;
 			productName = MemorableUITests;
-			productReference = DB6247622C35DA1500592773 /* MemorableUITests.xctest */;
+			productReference = DDEA001D2C367F900007B03A /* MemorableUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -675,7 +670,6 @@
 				DD421DC42C3585DF00E4D320 /* OnboardingViewController.swift in Sources */,
 				DDAB24E02C3148A700AAEDB6 /* APIManager.swift in Sources */,
 				DDC1EE922C2AAD2400C88CD7 /* SignInManager.swift in Sources */,
-				DDEA00192C3671930007B03A /* ExpandableMembershipView.swift in Sources */,
 				DDDA80112C33A8820077E5F2 /* MemorableFont.swift in Sources */,
 				DB3CEC812C2E90BE00F8211C /* Question.swift in Sources */,
 				DB3CEC872C2FF66D00F8211C /* ProgressBarView.swift in Sources */,
