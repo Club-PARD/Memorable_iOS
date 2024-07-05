@@ -36,12 +36,34 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
     private var isFirstSheetSelected: Bool = true
     private let firstSheetButton = UIButton()
     private let secondSheetButton = UIButton()
-    private let addTestSheetButton = UIButton()
     
     private var firstSheetState: TestSheetState?
     private var secondSheetState: TestSheetState?
     
     private let sheetToggleStackView = UIStackView()
+    
+    private let addTestSheetButton: UIButton = {
+        let button = UIButton(type: .system)
+        var configuration = UIButton.Configuration.plain()
+        
+        // 버튼 타이틀 설정
+        var title = AttributedString("추가 시험지 받기")
+        title.font = MemorableFont.Body1()
+        configuration.attributedTitle = title
+        configuration.baseForegroundColor = MemorableColor.Blue1
+        
+        // 시스템 이미지 추가
+        let image = UIImage(systemName: "arrow.counterclockwise")?.withRenderingMode(.alwaysTemplate)
+        configuration.image = image
+        configuration.imagePadding = 8
+        configuration.imagePlacement = .leading
+        
+        // 이미지 틴트 색상 설정
+        button.tintColor = MemorableColor.Blue1
+        
+        button.configuration = configuration
+        return button
+    }()
     
     private var containerView = UIView().then {
         $0.backgroundColor = MemorableColor.White
@@ -165,23 +187,23 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         view.addSubview(logoImageView)
         logoImageView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(51)
-            make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
+            make.leading.equalTo(view.safeAreaLayoutGuide).offset(40)
             make.width.equalTo(126)
             make.height.equalTo(15.07)
         }
         
         view.addSubview(backButton)
         backButton.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(30)
-            make.leading.equalTo(logoImageView.snp.trailing).offset(22)
+            make.top.equalTo(logoImageView.snp.bottom).offset(33.72)
+            make.leading.equalTo(view.safeAreaLayoutGuide).offset(39)
             make.height.equalTo(44)
             make.width.equalTo(44)
         }
         
         view.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(logoImageView.snp.bottom).offset(28)
-            make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
+            make.centerY.equalTo(backButton)
+            make.leading.equalTo(backButton.snp.trailing).offset(12)
         }
         
         view.addSubview(categoryLabel)
@@ -200,13 +222,13 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         
         view.addSubview(scoreLabel)
         scoreLabel.snp.makeConstraints { make in
-            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-58)
+            make.trailing.equalTo(containerView.snp.trailing).offset(-18)
             make.bottom.equalTo(containerView.snp.top).offset(-88)
         }
         
         view.addSubview(resultLabel)
         resultLabel.snp.makeConstraints { make in
-            make.bottom.equalTo(scoreLabel)
+            make.bottom.equalTo(scoreLabel).offset(5)
             make.trailing.equalTo(scoreLabel.snp.leading).offset(-8)
         }
         
@@ -245,7 +267,7 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         
         let previousButtonImage = UIImage(systemName: "chevron.left")
         previousButton.setImage(previousButtonImage, for: .normal)
-        previousButton.tintColor = MemorableColor.Blue2
+        previousButton.tintColor = MemorableColor.Gray1
         previousButton.backgroundColor = MemorableColor.White
         previousButton.contentMode = .scaleAspectFit
         previousButton.layer.cornerRadius = 32
@@ -321,23 +343,21 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
             $0.layer.cornerRadius = 12.5
             $0.clipsToBounds = true
             $0.addTarget(self, action: #selector(sheetButtonTapped(_:)), for: .touchUpInside)
+            $0.titleLabel?.font = MemorableFont.Body1() // 폰트 설정 추가
+            $0.setTitleColor(MemorableColor.Black, for: .normal) // 텍스트 색상 설정 추가
         }
         
-        firstSheetButton.backgroundColor = MemorableColor.Yellow1
-        secondSheetButton.backgroundColor = MemorableColor.Gray2
+        updateSheetSelection() // 초기 선택 상태 설정
     }
     
     private func setupAddTestSheetButton() {
-        addTestSheetButton.setTitle("추가 시험지 만들기", for: .normal)
-        addTestSheetButton.setTitleColor(MemorableColor.Blue1, for: .normal)
-        addTestSheetButton.titleLabel?.font = MemorableFont.Body1()
         addTestSheetButton.addTarget(self, action: #selector(addTestSheetButtonTapped), for: .touchUpInside)
         
         view.addSubview(addTestSheetButton)
         
         addTestSheetButton.snp.makeConstraints { make in
             make.bottom.equalTo(containerView.snp.top).offset(-10)
-            make.trailing.equalTo(containerView.snp.trailing).offset(-28)
+            make.trailing.equalTo(containerView.snp.trailing).offset(-24)
         }
         
         addTestSheetButton.isEnabled = !(testsheetDetail?.isReExtracted ?? false)
@@ -357,6 +377,14 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
             make.top.equalTo(containerView.snp.top).offset(18)
             make.trailing.equalTo(containerView.snp.trailing).offset(-45)
             make.height.equalTo(25)
+            make.width.equalTo(60) // 전체 너비 설정
+        }
+        
+        // 각 버튼의 크기를 동일하게 설정
+        [firstSheetButton, secondSheetButton].forEach { button in
+            button.snp.makeConstraints { make in
+                make.width.height.equalTo(25)
+            }
         }
         
         sheetToggleStackView.isHidden = true // 초기에는 숨김 처리
@@ -578,25 +606,38 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
     }
     
     @objc private func retryTest() {
-        if isFirstSheetSelected {
-            firstSheetState = TestSheetState(userAnswers: Array(repeating: nil, count: testsheetDetail?.questions1.count ?? 0), isSubmitted: false, score: nil)
-        } else {
-            secondSheetState = TestSheetState(userAnswers: Array(repeating: nil, count: testsheetDetail?.questions2.count ?? 0), isSubmitted: false, score: nil)
+        let alertController = UIAlertController(title: "재응시하기", message: "해당 시험을 재응시하시겠습니까?\n답안과 결과가 모두 지워집니다.", preferredStyle: .alert)
+        
+        let confirmAction = UIAlertAction(title: "확인", style: .default) { [weak self] _ in
+            guard let self = self else { return }
+            
+            if self.isFirstSheetSelected {
+                self.firstSheetState = TestSheetState(userAnswers: Array(repeating: nil, count: self.testsheetDetail?.questions1.count ?? 0), isSubmitted: false, score: nil)
+            } else {
+                self.secondSheetState = TestSheetState(userAnswers: Array(repeating: nil, count: self.testsheetDetail?.questions2.count ?? 0), isSubmitted: false, score: nil)
+            }
+            
+            self.currentPage = 0
+            self.resultLabel.isHidden = true
+            self.updateUI()
+            
+            for questionView in self.questionViews {
+                questionView.answerTextField.isHidden = false
+                questionView.answerTextField.text = ""
+                questionView.correctAnswerView.removeFromSuperview()
+                questionView.correctAnswerLabel.removeFromSuperview()
+                questionView.userAnswerLabel.removeFromSuperview()
+            }
+            
+            print("재시험 시작")
         }
         
-        currentPage = 0
-        resultLabel.isHidden = true
-        updateUI()
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
         
-        for questionView in questionViews {
-            questionView.answerTextField.isHidden = false
-            questionView.answerTextField.text = ""
-            questionView.correctAnswerView.removeFromSuperview()
-            questionView.correctAnswerLabel.removeFromSuperview()
-            questionView.userAnswerLabel.removeFromSuperview()
-        }
+        alertController.addAction(confirmAction)
+        alertController.addAction(cancelAction)
         
-        print("재시험 시작")
+        present(alertController, animated: true, completion: nil)
     }
     
     @objc private func sendWrongAnswers() {
@@ -649,12 +690,17 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
     }
     
     @objc private func addTestSheetButtonTapped() {
+        addTestSheetButton.setTitleColor(MemorableColor.Gray1, for: .normal)
+        addTestSheetButton.tintColor = MemorableColor.Gray1
         showReExtractAlert()
     }
     
     private func updateSheetSelection() {
         firstSheetButton.backgroundColor = isFirstSheetSelected ? MemorableColor.Yellow1 : MemorableColor.Gray2
         secondSheetButton.backgroundColor = isFirstSheetSelected ? MemorableColor.Gray2 : MemorableColor.Yellow1
+        
+        firstSheetButton.setTitleColor(isFirstSheetSelected ? MemorableColor.Black : MemorableColor.Gray1, for: .normal)
+        secondSheetButton.setTitleColor(isFirstSheetSelected ? MemorableColor.Gray1 : MemorableColor.Black, for: .normal)
     }
     
     private func showReExtractAlert() {
@@ -674,7 +720,6 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         
         sheetToggleStackView.isHidden = false
         addTestSheetButton.isEnabled = false
-        addTestSheetButton.setTitleColor(MemorableColor.Gray2, for: .normal)
         
         isFirstSheetSelected = false
         updateSheetSelection()

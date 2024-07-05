@@ -16,8 +16,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
 
         let initialVC = SplashViewController()
-//        let initialVC = HomeViewController()
-
         let navigationVC = UINavigationController(rootViewController: initialVC)
         
         if #available(iOS 13.0, *) {
