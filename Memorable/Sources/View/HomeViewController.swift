@@ -32,6 +32,9 @@ class HomeViewController: UIViewController {
     private var viewStack: [String] = ["home"]
     
     var documents: [Document] = []
+    // TODO: API 연결중
+    let userId: Int = 123
+    // TODO: API 연결중 이까지
     
     let attendanceRecord: [Bool] = [true, true, true, false, false, true, false, true, false, false, false, false, false, false]
     
@@ -68,18 +71,23 @@ class HomeViewController: UIViewController {
         view.insertSubview(gradientView, belowSubview: maskView)
     }
     
+    // TODO: API 연결중
     func fetchDocuments() {
-        APIManagere.shared.getDocuments(userId: userIdentifier) { [weak self] result in
+        print("Fetching documents for user ID: \(userId)")
+        
+        APIManagere.shared.getWorksheets(userId: String(userId)) { [weak self] result in
             switch result {
-            case .success(let documents):
-                self?.documents = documents
+            case .success(let worksheets):
+                print("Successfully fetched \(worksheets.count) worksheets")
+                self?.documents = worksheets // Worksheet를 Document로 취급
                 DispatchQueue.main.async {
+                    print("Updating UI with \(worksheets.count) worksheets")
                     self?.setupHeaderComponent()
                     self?.setupLibraryViewComponent()
+                    self?.updateStarView()
                 }
             case .failure(let error):
-                print("Error fetching documents: \(error)")
-                // 에러 처리 로직 추가
+                print("Error fetching worksheets: \(error.localizedDescription)")
             }
         }
     }
@@ -200,10 +208,13 @@ class HomeViewController: UIViewController {
             make.edges.equalToSuperview()
         }
         
-        // mockData를 필터링하여 각 타입별로 분류
-        let worksheetDocuments = documents.filter { $0.fileType == "빈칸학습지" }
-        let testsheetDocuments = documents.filter { $0.fileType == "나만의 시험지" }
-        let wrongsheetDocuments = documents.filter { $0.fileType == "오답노트" }
+        // TODO: API 연결중
+        // Worksheet 데이터만 사용
+            let worksheetDocuments = documents // 모든 문서가 Worksheet입니다
+            let testsheetDocuments: [Document] = [] // 빈 배열
+            let wrongsheetDocuments: [Document] = [] // 빈 배열
+        // TODO: API 연결중 이까지
+        
         // LibraryViewComponent에 데이터 설정
         libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
                                           testsheet: testsheetDocuments,
@@ -376,6 +387,45 @@ extension HomeViewController: LibraryViewComponentDelegate {
     
     @objc func handleMaskViewTap() {
         headerComponent.plusButton.sendActions(for: .touchUpInside)
+    }
+    
+    func didTapRecentButton() {
+        
+        APIManagere.shared.getMostRecentWorksheet(userId: self.userId) { [weak self] result in
+            switch result {
+            case .success(let worksheet):
+                APIManagere.shared.getWorksheet(worksheetId: worksheet.id) { worksheetDetailResult in
+                    DispatchQueue.main.async {
+                        switch worksheetDetailResult {
+                        case .success(let worksheetDetail):
+                            let workSheetVC = WorkSheetViewController()
+                            workSheetVC.worksheetDetail = worksheetDetail
+                            self?.navigationController?.pushViewController(workSheetVC, animated: true)
+                        case .failure(let error):
+                            print("Error fetching worksheet detail: \(error)")
+                            // 사용자에게 오류 메시지 표시
+                            self?.showErrorAlert(message: "워크시트 상세 정보를 불러오는 데 실패했습니다.")
+                        }
+                    }
+                }
+            case .failure(let error):
+                print("Error fetching most recent worksheet: \(error)")
+                // 사용자에게 오류 메시지 표시
+                DispatchQueue.main.async {
+                    self?.showErrorAlert(message: "최근 워크시트를 불러오는 데 실패했습니다.")
+                }
+            }
+        }
+    }
+    
+    func getUserId() -> Int? {
+        return self.userId
+    }
+    
+    private func showErrorAlert(message: String) {
+        let alert = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
     }
 }
 

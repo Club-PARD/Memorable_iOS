@@ -265,45 +265,187 @@
 
 import Foundation
 
+enum APIError: Error {
+    case invalidURL
+    case networkError(Error)
+    case decodingError(Error)
+    case serverError(statusCode: Int, message: String)
+}
+
 class APIManagere {
     static let shared = APIManagere()
-    private let baseURL = "http://172.30.1.11:8080"
-    
-    struct EmptyResponse: Codable {}
-    
-    private init() {}
-    
-    // MARK: - Worksheet
-    
+        private let baseURL = "http://172.30.1.26:8080"
+        
+        struct EmptyResponse: Codable {}
+        
+        private init() {}
+        
+        // MARK: - Worksheet
+        
+    // 1. 빈칸 학습지 간략 정보 불러오기
     func getWorksheets(userId: String, completion: @escaping (Result<[Worksheet], Error>) -> Void) {
-        // Mock data 사용
-        completion(.success(getMockWorksheets()))
+        let urlString = "\(baseURL)/api/worksheet/user/\(userId)"
+        print("Requesting worksheets from: \(urlString)")
+        
+        guard let url = URL(string: urlString) else {
+            print("Invalid URL: \(urlString)")
+            completion(.failure(APIError.invalidURL))
+            return
+        }
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
+                print("Network error: \(error.localizedDescription)")
+                completion(.failure(APIError.networkError(error)))
+                return
+            }
+            
+            if let httpResponse = response as? HTTPURLResponse {
+                print("HTTP Status Code: \(httpResponse.statusCode)")
+                
+                // Check for non-200 status codes
+                guard (200...299).contains(httpResponse.statusCode) else {
+                    print("Server error with status code: \(httpResponse.statusCode)")
+                    completion(.failure(APIError.serverError(statusCode: httpResponse.statusCode, message: "Server error")))
+                    return
+                }
+            }
+            
+            guard let data = data else {
+                print("No data received")
+                completion(.failure(APIError.serverError(statusCode: 0, message: "No data received")))
+                return
+            }
+            
+            print("Received data: \(String(data: data, encoding: .utf8) ?? "Unable to convert data to string")")
+            
+            do {
+                let worksheets = try JSONDecoder().decode([Worksheet].self, from: data)
+                print("Successfully decoded \(worksheets.count) worksheets")
+                completion(.success(worksheets))
+            } catch {
+                print("Decoding error: \(error)")
+                if let decodingError = error as? DecodingError {
+                    switch decodingError {
+                    case .keyNotFound(let key, let context):
+                        print("Key '\(key)' not found: \(context.debugDescription)")
+                    case .valueNotFound(let value, let context):
+                        print("Value '\(value)' not found: \(context.debugDescription)")
+                    case .typeMismatch(let type, let context):
+                        print("Type '\(type)' mismatch: \(context.debugDescription)")
+                    case .dataCorrupted(let context):
+                        print("Data corrupted: \(context.debugDescription)")
+                    @unknown default:
+                        print("Unknown decoding error")
+                    }
+                }
+                completion(.failure(APIError.decodingError(error)))
+            }
+        }.resume()
     }
-    
+        
+    // 2. 빈칸 학습지 텍스트, 정답 불러오기
     func getWorksheet(worksheetId: Int, completion: @escaping (Result<WorksheetDetail, Error>) -> Void) {
-        // Mock data 사용
-        completion(.success(getMockWorksheetDetail()))
+        let urlString = "\(baseURL)/api/worksheet/ws/\(worksheetId)"
+        
+        guard let url = URL(string: urlString) else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 0, userInfo: nil)))
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(NSError(domain: "No data received", code: 0, userInfo: nil)))
+                return
+            }
+            
+            do {
+                let decoder = JSONDecoder()
+                let worksheetDetail = try decoder.decode(WorksheetDetail.self, from: data)
+                
+                completion(.success(worksheetDetail))
+            } catch {
+                completion(.failure(error))
+            }
+        }
+        
+        task.resume()
     }
     
-    func getRecentWorksheet(userId: String, completion: @escaping (Result<WorksheetDetail, Error>) -> Void) {
-        // Mock data 사용
-        completion(.success(getMockWorksheetDetail()))
+    // 3. 가장 최근에 이용한 빈칸학습지 불러오기
+    func getMostRecentWorksheet(userId: Int, completion: @escaping (Result<Worksheet, Error>) -> Void) {
+        getWorksheets(userId: String(userId)) { result in
+            switch result {
+            case .success(let worksheets):
+                if let mostRecent = worksheets.max(by: { $0.createdDate < $1.createdDate }) {
+                    completion(.success(mostRecent))
+                } else {
+                    completion(.failure(NSError(domain: "No worksheets found", code: 0, userInfo: nil)))
+                }
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
     }
     
-    func createWorksheet(userId: String, name: String, category: String, content: String, completion: @escaping (Result<WorksheetDetail, Error>) -> Void) {
-        // Mock data 사용
-        completion(.success(getMockWorksheetDetail()))
+    // 6. 빈칸학습지 마지막 이용 시간 서버에 Patch
+    func updateWorksheetRecentDate(worksheetId: Int, completion: @escaping (Result<Void, Error>) -> Void) {
+        let urlString = "\(baseURL)/api/worksheet/recentDate/\(worksheetId)"
+        
+        guard let url = URL(string: urlString) else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 0, userInfo: nil)))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "PATCH"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse,
+                  (200...299).contains(httpResponse.statusCode) else {
+                completion(.failure(NSError(domain: "Invalid response", code: 0, userInfo: nil)))
+                return
+            }
+            
+            completion(.success(()))
+        }
+        
+        task.resume()
     }
     
-    func toggleWorksheetBookmark(worksheetId: Int, completion: @escaping (Result<Worksheet, Error>) -> Void) {
-        // Mock data 사용
-        completion(.success(getMockWorksheets().first!))
-    }
     
-    func deleteWorksheet(worksheetId: Int, completion: @escaping (Result<EmptyResponse, Error>) -> Void) {
-        // Mock data 사용
-        completion(.success(EmptyResponse()))
-    }
+        
+        func getRecentWorksheet(userId: String, completion: @escaping (Result<WorksheetDetail, Error>) -> Void) {
+            let urlString = "\(baseURL)/api/worksheet/recentDate/\(userId)"
+            performRequest(urlString: urlString, completion: completion)
+        }
+        
+        func createWorksheet(userId: String, name: String, category: String, content: String, completion: @escaping (Result<WorksheetDetail, Error>) -> Void) {
+            let urlString = "\(baseURL)/api/worksheet"
+            let body: [String: Any] = ["userId": userId, "name": name, "category": category, "content": content]
+            performRequest(urlString: urlString, method: "POST", body: body, completion: completion)
+        }
+        
+        func toggleWorksheetBookmark(worksheetId: Int, completion: @escaping (Result<Worksheet, Error>) -> Void) {
+            let urlString = "\(baseURL)/api/worksheet/\(worksheetId)"
+            performRequest(urlString: urlString, method: "PATCH", completion: completion)
+        }
+        
+        func deleteWorksheet(worksheetId: Int, completion: @escaping (Result<EmptyResponse, Error>) -> Void) {
+            let urlString = "\(baseURL)/api/worksheet/\(worksheetId)"
+            performRequest(urlString: urlString, method: "DELETE", completion: completion)
+        }
     
     // MARK: - Testsheet
     
@@ -422,18 +564,6 @@ class APIManagere {
     }
     
     // MARK: - Mock Data
-    
-    func getMockWorksheets() -> [Worksheet] {
-        return [
-            Worksheet(worksheetId: 1, name: "Worksheet 1", category: "Math", worksheetBookmark: true, worksheetCreate_date: Date()),
-            Worksheet(worksheetId: 2, name: "Worksheet 2", category: "Science", worksheetBookmark: false, worksheetCreate_date: Date()),
-            Worksheet(worksheetId: 3, name: "Worksheet 3", category: "History", worksheetBookmark: true, worksheetCreate_date: Date())
-        ]
-    }
-    
-    func getMockWorksheetDetail() -> WorksheetDetail {
-        return WorksheetDetail(worksheetId: 1, name: "Worksheet 1", category: "Math", isCompleteAllBlanks: false, isReExtracted: false, answer1: ["Answer 1", "Answer 2"], answer2: ["Answer 3", "Answer 4"])
-    }
     
     func getMockTestsheets() -> [Testsheet] {
         return [
