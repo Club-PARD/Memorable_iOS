@@ -13,6 +13,7 @@ protocol LibraryViewComponentDelegate: AnyObject {
     func didTapTestsheetButton(with documents: [Document])
     func didTapWrongsheetButton(with documents: [Document])
     func didTapRecentButton()
+    func didUpdateBookmark(for document: Document)
 }
 
 class LibraryViewComponent: UIView {
@@ -607,7 +608,26 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
     }
     
     func didTapBookmark(for document: Document) {
-        // 테이블 뷰 리로드
-        // recentTableView.reloadData()
+        delegate?.didUpdateBookmark(for:document)
+        if let index = currentDocuments.firstIndex(where: { $0.id == document.id }) {
+            currentDocuments[index] = document
+        }
+        
+        // Update the corresponding document in the appropriate array
+        if let worksheet = document as? Worksheet {
+            if let index = worksheetDocuments.firstIndex(where: { $0.id == worksheet.id }) {
+                worksheetDocuments[index] = worksheet
+            }
+        } else if let testsheet = document as? Testsheet {
+            if let index = testsheetDocuments.firstIndex(where: { $0.id == testsheet.id }) {
+                testsheetDocuments[index] = testsheet
+            }
+        } else if let wrongsheet = document as? Wrongsheet {
+            if let index = wrongsheetDocuments.firstIndex(where: { $0.id == wrongsheet.id }) {
+                wrongsheetDocuments[index] = wrongsheet
+            }
+        }
+        
+        recentTableView.reloadData()
     }
 }
