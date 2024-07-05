@@ -348,9 +348,42 @@ extension HomeViewController: HeaderComponentDelegate {
         showView(config: "searchedSheet")
         titleLabel.text = "총 \(documents.count)개의\n\"\(searchText)\" 검색결과가 있어요"
     }
+    
+    func didCreateWorksheet(name: String, category: String, content: String) {
+        APIManagere.shared.createWorksheet(userId: userIdentifier, name: name, category: category, content: content) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let worksheetDetail):
+                    print("Successfully created worksheet: \(worksheetDetail)")
+                    let workSheetVC = WorkSheetViewController()
+                    workSheetVC.worksheetDetail = worksheetDetail
+                    self?.navigationController?.pushViewController(workSheetVC, animated: true)
+                    self?.refreshDocumentsAfterCreation()
+                case .failure(let error):
+                    print("Error creating worksheet: \(error)")
+                    self?.showErrorAlert(message: "학습지 생성에 실패했습니다.")
+                }
+            }
+        }
+    }
+    
+    func refreshDocumentsAfterCreation() {
+        fetchDocuments()
+    }
+    
+    private func showErrorAlert(message: String) {
+        let alert = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
 }
 
 extension HomeViewController: LibraryViewComponentDelegate {
+    func didUpdateBookmark(for document: Document) {
+            updateDocumentBookmarkStatus(document)
+            fetchDocuments()
+        }
+    
     func didTapBackButton() {
         if viewStack.count > 1 {
             viewStack.removeLast()
@@ -390,42 +423,36 @@ extension HomeViewController: LibraryViewComponentDelegate {
     
     func didTapRecentButton() {
         APIManagere.shared.getMostRecentWorksheet(userId: userIdentifier) { [weak self] result in
-            switch result {
-            case .success(let worksheet):
-                APIManagere.shared.getWorksheet(worksheetId: worksheet.id) { worksheetDetailResult in
-                    DispatchQueue.main.async {
-                        switch worksheetDetailResult {
-                        case .success(let worksheetDetail):
-                            let workSheetVC = WorkSheetViewController()
-                            workSheetVC.worksheetDetail = worksheetDetail
-                            self?.navigationController?.pushViewController(workSheetVC, animated: true)
-                        case .failure(let error):
-                            print("Error fetching worksheet detail: \(error)")
-                            // 사용자에게 오류 메시지 표시
-                            self?.showErrorAlert(message: "워크시트 상세 정보를 불러오는 데 실패했습니다.")
-                        }
-                    }
-                }
-            case .failure(let error):
-                print("Error fetching most recent worksheet: \(error)")
-                // 사용자에게 오류 메시지 표시
-                DispatchQueue.main.async {
-                    self?.showErrorAlert(message: "최근 워크시트를 불러오는 데 실패했습니다.")
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let worksheetDetail):
+                    let workSheetVC = WorkSheetViewController()
+                    workSheetVC.worksheetDetail = worksheetDetail
+                    self?.navigationController?.pushViewController(workSheetVC, animated: true)
+                case .failure(let error):
+                    print("Error fetching most recent worksheet: \(error)")
+                    self?.showCreateErrorAlert(message: "최근 워크시트를 불러오는 데 실패했습니다.")
                 }
             }
         }
     }
     
-    private func showErrorAlert(message: String) {
+    private func showCreateErrorAlert(message: String) {
         let alert = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
     }
 }
 
-extension HomeViewController: RecentsheetCellDelegate {
-    func didTapBookmark(for document: Document) {
-        // TODO: 클백
+extension HomeViewController {
+    func updateDocumentBookmarkStatus(_ document: Document) {
+        if let index = documents.firstIndex(where: { $0.id == document.id }) {
+            documents[index] = document
+        }
+        
+        setupHeaderComponent()
+        setupLibraryViewComponent()
+        updateStarView()
     }
 }
 

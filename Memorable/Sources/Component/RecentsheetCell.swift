@@ -132,9 +132,28 @@ class RecentsheetCell: UITableViewCell {
     
     @objc private func bookmarkTapped() {
         guard var document = document else { return }
-        document.isBookmarked.toggle()
-        self.document = document
-        updateBookmarkButton()
-        delegate?.didTapBookmark(for: document)
+        
+        if let worksheet = document as? Worksheet {
+            APIManagere.shared.toggleWorksheetBookmark(worksheetId: worksheet.id) { [weak self] result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let updatedWorksheet):
+                        document = updatedWorksheet
+                        self?.document = updatedWorksheet
+                        self?.updateBookmarkButton()
+                        self?.delegate?.didTapBookmark(for: updatedWorksheet)
+                    case .failure(let error):
+                        print("Error toggling bookmark: \(error)")
+                        // Handle error (e.g., show an alert to the user)
+                    }
+                }
+            }
+        } else {
+            // Handle other document types if necessary
+            document.isBookmarked.toggle()
+            self.document = document
+            updateBookmarkButton()
+            delegate?.didTapBookmark(for: document)
+        }
     }
 }
