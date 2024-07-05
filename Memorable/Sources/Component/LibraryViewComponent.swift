@@ -13,7 +13,6 @@ protocol LibraryViewComponentDelegate: AnyObject {
     func didTapTestsheetButton(with documents: [Document])
     func didTapWrongsheetButton(with documents: [Document])
     func didTapRecentButton()
-    func getUserId() -> Int?
 }
 
 class LibraryViewComponent: UIView {
@@ -163,13 +162,14 @@ class LibraryViewComponent: UIView {
         recentView.addSubview(recentLabel)
         recentView.addSubview(recentButton)
     
-    // TODO: API 연결중
+        // TODO: API 연결중
         recentButton.addTarget(self, action: #selector(recentButtonTapped), for: .touchUpInside)
     }
     
     @objc private func recentButtonTapped() {
         delegate?.didTapRecentButton()
     }
+
     // TODO: API 연결중 이까지
     
     private func setupLabels() {
@@ -595,6 +595,7 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
             print("Unknown file type")
         }
     }
+
     // TODO: API 연결중 이까지
     
     private func navigateToViewController(_ viewController: UIViewController) {
