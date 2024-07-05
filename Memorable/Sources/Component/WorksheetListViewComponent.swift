@@ -6,17 +6,26 @@
 //
 
 import UIKit
-
+import SnapKit
 
 class WorksheetListViewComponent: UIView {
     private let worksheetTableView: UITableView
     private let filterScrollView: UIScrollView
     private let filterStackView: UIStackView
     private let settingButton: UIButton
+    private var editButton: UIBarButtonItem?
+    private var doneButton: UIBarButtonItem?
     
     private var worksheets: [Document] = []
     private var categories: Set<String> = []
     private var filteredWorksheets: [Document] = []
+    
+    private var isEditingMode: Bool = false {
+        didSet {
+            worksheetTableView.setEditing(isEditingMode, animated: true)
+            updateEditingUI()
+        }
+    }
     
     override init(frame: CGRect) {
         self.worksheetTableView = UITableView(frame: .zero, style: .plain)
@@ -31,6 +40,7 @@ class WorksheetListViewComponent: UIView {
         setupViews()
         setupTableView()
         setupGradientView()
+        setupEditingButtons()
     }
     
     required init?(coder: NSCoder) {
@@ -77,6 +87,151 @@ class WorksheetListViewComponent: UIView {
             make.top.equalTo(filterScrollView.snp.bottom).offset(2)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview().offset(-56)
+        }
+    }
+    
+    private func setupTableView() {
+        worksheetTableView.dataSource = self
+        worksheetTableView.delegate = self
+        worksheetTableView.rowHeight = 62
+        worksheetTableView.allowsSelection = true
+        worksheetTableView.allowsMultipleSelectionDuringEditing = true
+        
+        let headerView = UIView()
+        headerView.frame = CGRect(x: 0, y: 0, width: worksheetTableView.frame.width, height: 22)
+        worksheetTableView.tableHeaderView = headerView
+    }
+    
+    private func setupGradientView() {
+        let gradientView = GradientView(startColor: MemorableColor.White ?? .white, endColor: MemorableColor.White ?? .white)
+        self.addSubview(gradientView)
+        
+        gradientView.snp.makeConstraints{ make in
+            make.top.equalTo(filterScrollView.snp.bottom).offset(2)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(20)
+        }
+    }
+    
+    private func setupEditingButtons() {
+        editButton = UIBarButtonItem(title: "편집", style: .plain, target: self, action: #selector(toggleEditingMode))
+        doneButton = UIBarButtonItem(title: "완료", style: .done, target: self, action: #selector(toggleEditingMode))
+        
+        if let viewController = self.findViewController() as? UIViewController {
+            viewController.navigationItem.rightBarButtonItem = editButton
+        }
+    }
+    
+    @objc private func toggleEditingMode() {
+        isEditingMode.toggle()
+    }
+    
+    private func updateEditingUI() {
+        if let viewController = self.findViewController() as? UIViewController {
+            viewController.navigationItem.rightBarButtonItem = isEditingMode ? doneButton : editButton
+        }
+        
+        if isEditingMode {
+            let deleteButton = UIBarButtonItem(title: "삭제", style: .plain, target: self, action: #selector(deleteSelectedItems))
+            let editButton = UIBarButtonItem(title: "수정", style: .plain, target: self, action: #selector(editSelectedItem))
+            if let viewController = self.findViewController() as? UIViewController {
+                viewController.navigationItem.leftBarButtonItems = [deleteButton, editButton]
+            }
+        } else {
+            if let viewController = self.findViewController() as? UIViewController {
+                viewController.navigationItem.leftBarButtonItems = nil
+            }
+        }
+    }
+    
+    @objc private func deleteSelectedItems() {
+        guard let selectedIndexPaths = worksheetTableView.indexPathsForSelectedRows, !selectedIndexPaths.isEmpty else {
+            return
+        }
+        
+        let alertController = UIAlertController(title: nil, message: "선택한 항목을 삭제하시겠습니까?", preferredStyle: .alert)
+        
+        let deleteAction = UIAlertAction(title: "삭제", style: .destructive) { [weak self] _ in
+            guard let self = self else { return }
+            
+            let itemsToDelete = selectedIndexPaths.map { self.filteredWorksheets[$0.row] }
+            
+            // TODO: 서버에 삭제 요청
+            // let documentIds = itemsToDelete.map { $0.id }
+            // APIManager.shared.deleteDocuments(documentIds: documentIds) { result in
+            //     DispatchQueue.main.async {
+            //         switch result {
+            //         case .success:
+            //             self.filteredWorksheets = self.filteredWorksheets.filter { !itemsToDelete.contains($0) }
+            //             self.worksheetTableView.deleteRows(at: selectedIndexPaths, with: .automatic)
+            //         case .failure(let error):
+            //             print("Error deleting documents: \(error)")
+            //             // 에러 처리 (예: 사용자에게 알림 표시)
+            //         }
+            //     }
+            // }
+            
+            // 임시로 로컬에서만 삭제
+//            self.filteredWorksheets = self.filteredWorksheets.filter { !itemsToDelete.contains($0) }
+//            self.worksheetTableView.deleteRows(at: selectedIndexPaths, with: .automatic)
+        }
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        
+        alertController.addAction(deleteAction)
+        alertController.addAction(cancelAction)
+        
+        if let viewController = self.findViewController() {
+            viewController.present(alertController, animated: true, completion: nil)
+        }
+    }
+    
+    @objc private func editSelectedItem() {
+        guard let selectedIndexPaths = worksheetTableView.indexPathsForSelectedRows, selectedIndexPaths.count == 1,
+              let indexPath = selectedIndexPaths.first else {
+            // 하나의 항목만 선택되었을 때 수정 가능
+            return
+        }
+        
+        let document = filteredWorksheets[indexPath.row]
+        
+        let alertController = UIAlertController(title: "파일 이름 수정", message: nil, preferredStyle: .alert)
+        alertController.addTextField { textField in
+            textField.text = document.name
+        }
+        
+        let saveAction = UIAlertAction(title: "저장", style: .default) { [weak self] _ in
+            guard let self = self,
+                  let newTitle = alertController.textFields?.first?.text,
+                  !newTitle.isEmpty else { return }
+            
+            // 로컬에서 이름 변경
+//            document.name = newTitle
+            
+            // TODO: 서버에 이름 변경 요청
+            // APIManager.shared.updateDocumentTitle(documentId: document.id, newTitle: newTitle) { result in
+            //     DispatchQueue.main.async {
+            //         switch result {
+            //         case .success:
+            //             self.worksheetTableView.reloadRows(at: [indexPath], with: .automatic)
+            //         case .failure(let error):
+            //             print("Error updating document title: \(error)")
+            //             // 에러 처리 (예: 사용자에게 알림 표시)
+            //         }
+            //     }
+            // }
+            
+            // 임시로 로컬에서만 변경
+            self.worksheetTableView.reloadRows(at: [indexPath], with: .automatic)
+        }
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        
+        alertController.addAction(saveAction)
+        alertController.addAction(cancelAction)
+        
+        if let viewController = self.findViewController() {
+            viewController.present(alertController, animated: true, completion: nil)
         }
     }
     
@@ -159,11 +314,11 @@ class WorksheetListViewComponent: UIView {
         settingButton.tintColor = MemorableColor.Gray1
         
         let editAction = UIAction(title: "수정하기", image: UIImage(systemName: "pencil")) { _ in
-            self.handleEditAction()
+            self.toggleEditingMode()
         }
         
         let deleteAction = UIAction(title: "삭제하기", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-            self.handleDeleteAction()
+            self.toggleEditingMode()
         }
         
         let menu = UIMenu(title: "", children: [editAction, deleteAction])
@@ -171,144 +326,70 @@ class WorksheetListViewComponent: UIView {
         settingButton.menu = menu
         settingButton.showsMenuAsPrimaryAction = true
     }
-
-    private func handleEditAction() {
-        // 수정하기 로직 구현
-        print("수정하기 버튼 클릭됨")
-    }
-
-    // 삭제하기 액션 핸들러
-    private func handleDeleteAction() {
-        guard let selectedIndexPaths = worksheetTableView.indexPathsForSelectedRows else {
-            print("선택된 셀이 없습니다.")
-            return
-        }
-
-        // 파일을 삭제하시겠습니까? 확인 메시지 표시
-        let alertController = UIAlertController(title: nil, message: "파일을 삭제하시겠습니까?", preferredStyle: .alert)
-        
-        let deleteAction = UIAlertAction(title: "삭제", style: .destructive) { _ in
-            print("삭제 작업을 시작합니다.")
-            self.worksheetTableView.setEditing(true, animated: true)
-            
-            // 선택된 셀들을 삭제하는 로직 구현
-            let itemsToDelete = selectedIndexPaths.map { self.filteredWorksheets[$0.row] }
-            
-            // 현재는 로직을 주석 처리했으므로 주석 해제 필요
-//            self.filteredWorksheets = self.filteredWorksheets.filter { item in
-//                !itemsToDelete.contains { $0 == item }
-//            }
-            
-            // 테이블 뷰에서 선택 해제
-            for indexPath in selectedIndexPaths {
-                self.worksheetTableView.deselectRow(at: indexPath, animated: true)
-            }
-            
-            // TODO: 서버와 연동하여 삭제 로직 구현
-            
-            // 테이블 뷰 업데이트
-            self.worksheetTableView.deleteRows(at: selectedIndexPaths, with: .automatic)
-            
-            print("삭제 작업이 완료되었습니다.")
-        }
-        
-        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: { _ in
-            print("삭제 작업이 취소되었습니다.")
-        })
-        
-        alertController.addAction(deleteAction)
-        alertController.addAction(cancelAction)
-        
-        // 현재 View Controller를 찾아 alertController를 표시
-        if let viewController = self.findViewController() {
-            viewController.present(alertController, animated: true, completion: nil)
-        }
-    }
-
-    private func setupTableView() {
-        worksheetTableView.dataSource = self
-        worksheetTableView.delegate = self
-        worksheetTableView.rowHeight = 62
-        worksheetTableView.allowsSelection = true
-        worksheetTableView.allowsSelectionDuringEditing = true  // 편집 중에도 셀 선택 가능하도록 설정
-        
-        let headerView = UIView()
-        headerView.frame = CGRect(x: 0, y: 0, width: worksheetTableView.frame.width, height: 22)
-        worksheetTableView.tableHeaderView = headerView
-    }
-
-    private func setupGradientView() {
-        let gradientView = GradientView(startColor: MemorableColor.White ?? .white, endColor: MemorableColor.White ?? .white)
-        self.addSubview(gradientView)
-        
-        gradientView.snp.makeConstraints{ make in
-            make.top.equalTo(filterScrollView.snp.bottom).offset(2)
-            make.leading.trailing.equalToSuperview()
-            make.height.equalTo(20)
-        }
-    }
 }
 
 extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate, RecentsheetCellDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filteredWorksheets.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "WorksheetTableViewCell", for: indexPath) as! RecentsheetCell
-        let document = filteredWorksheets[indexPath.row]
-        cell.configure(with: document)
-        cell.delegate = self
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 62
-    }
-    
-    // 라우팅
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
+            return filteredWorksheets.count
+        }
         
-        let document = worksheets[indexPath.row]
+        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "WorksheetTableViewCell", for: indexPath) as! RecentsheetCell
+            let document = filteredWorksheets[indexPath.row]
+            cell.configure(with: document)
+            return cell
+        }
         
-        switch document.fileType {
-        case "빈칸학습지":
-            if let worksheet = document as? Worksheet {
-                // Fetch WorksheetDetail before navigating
-                APIManagere.shared.getWorksheet(worksheetId: worksheet.id) { result in
-                    DispatchQueue.main.async {
-                        switch result {
-                        case .success(let worksheetDetail):
-                            let workSheetVC = WorkSheetViewController()
-                            workSheetVC.worksheetDetail = worksheetDetail
-                            self.navigateToViewController(workSheetVC)
-                        case .failure(let error):
-                            print("Error fetching worksheet detail: \(error)")
-                            // Handle error (e.g., show an alert to the user)
+        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+            if isEditingMode {
+                updateEditingUI()
+            } else {
+                tableView.deselectRow(at: indexPath, animated: true)
+                let document = worksheets[indexPath.row]
+                
+                switch document.fileType {
+                case "빈칸학습지":
+                    if let worksheet = document as? Worksheet {
+                        // Fetch WorksheetDetail before navigating
+                        APIManagere.shared.getWorksheet(worksheetId: worksheet.id) { result in
+                            DispatchQueue.main.async {
+                                switch result {
+                                case .success(let worksheetDetail):
+                                    let workSheetVC = WorkSheetViewController()
+                                    workSheetVC.worksheetDetail = worksheetDetail
+                                    self.navigateToViewController(workSheetVC)
+                                case .failure(let error):
+                                    print("Error fetching worksheet detail: \(error)")
+                                    // Handle error (e.g., show an alert to the user)
+                                }
+                            }
                         }
                     }
+                case "나만의 시험지":
+                    let testSheetVC = TestSheetViewController()
+                    navigateToViewController(testSheetVC)
+                case "오답노트":
+                    let wrongSheetVC = WrongSheetViewController()
+                    navigateToViewController(wrongSheetVC)
+                default:
+                    print("Unknown file type")
                 }
             }
-        case "나만의 시험지":
-            let testSheetVC = TestSheetViewController()
-//            testSheetVC.document = document
-            navigateToViewController(testSheetVC)
-        case "오답노트":
-            let wrongSheetVC = WrongSheetViewController()
-            navigateToViewController(wrongSheetVC)
-        default:
-            print("Unknown file type")
         }
-    }
-    
-    private func navigateToViewController(_ viewController: UIViewController) {
-        if let navigationController = self.window?.rootViewController as? UINavigationController {
-            navigationController.pushViewController(viewController, animated: true)
-        } else if let presentingViewController = self.window?.rootViewController {
-            presentingViewController.present(viewController, animated: true, completion: nil)
+        
+        func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+            if isEditingMode {
+                updateEditingUI()
+            }
         }
-    }
+        
+        private func navigateToViewController(_ viewController: UIViewController) {
+            if let navigationController = self.window?.rootViewController as? UINavigationController {
+                navigationController.pushViewController(viewController, animated: true)
+            } else if let presentingViewController = self.window?.rootViewController {
+                presentingViewController.present(viewController, animated: true, completion: nil)
+            }
+        }
     
     func didTapBookmark(for document: Document) {
         // 테이블 뷰 리로드
