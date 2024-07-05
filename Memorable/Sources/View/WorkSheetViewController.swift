@@ -255,11 +255,16 @@ class WorkSheetViewController: UIViewController {
             return
         }
 
+        guard let detail = worksheetDetail else {
+            print("WorkSheetDetail을 찾을 수 없습니다.")
+            return
+        }
+
         if isFirstSheetSelected {
             userAnswer = worksheet.userAnswers.map { $0.text ?? "" }
             answerLength = worksheet.userAnswers.count
 
-            print("✅ 실제 답안: \(mockAnswers)")
+            print("✅ 실제 답안: \(detail.answer1)")
             print("☑️ 유저 답안: \(userAnswer)")
 
             DispatchQueue.main.async {
@@ -271,10 +276,10 @@ class WorkSheetViewController: UIViewController {
                         .isEmpty
                     {
                         textField.textColor = .lightGray
-                        textField.text = mockAnswers[idx]
+                        textField.text = detail.answer1[idx]
                     }
                     // 값이 동일
-                    else if mockAnswers[idx].replacingOccurrences(of: " ", with: "")
+                    else if detail.answer1[idx].replacingOccurrences(of: " ", with: "")
                         == self.userAnswer[idx].replacingOccurrences(of: " ", with: "")
                     {
                         self.correctCount += 1
@@ -283,7 +288,7 @@ class WorkSheetViewController: UIViewController {
                     // 나머지 (= 틀림)
                     else {
                         textField.textColor = .red
-                        textField.text = mockAnswers[idx]
+                        textField.text = detail.answer1[idx]
                     }
 
                     textField.isEnabled = false
@@ -301,7 +306,7 @@ class WorkSheetViewController: UIViewController {
             userAnswer = worksheet.userAnswers.map { $0.text ?? "" }
             answerLength = worksheet.userAnswers.count
 
-            print("✅ 실제 답안: \(mockAnswers2)")
+            print("✅ 실제 답안: \(detail.answer2)")
             print("☑️ 유저 답안: \(userAnswer)")
 
             DispatchQueue.main.async {
@@ -313,10 +318,10 @@ class WorkSheetViewController: UIViewController {
                         .isEmpty
                     {
                         textField.textColor = .lightGray
-                        textField.text = mockAnswers2[idx]
+                        textField.text = detail.answer2[idx]
                     }
                     // 값이 동일
-                    else if mockAnswers2[idx].replacingOccurrences(of: " ", with: "")
+                    else if detail.answer2[idx].replacingOccurrences(of: " ", with: "")
                         == self.userAnswer[idx].replacingOccurrences(of: " ", with: "")
                     {
                         self.correctCount += 1
@@ -325,7 +330,7 @@ class WorkSheetViewController: UIViewController {
                     // 나머지 (= 틀림)
                     else {
                         textField.textColor = .red
-                        textField.text = mockAnswers2[idx]
+                        textField.text = detail.answer2[idx]
                     }
 
                     textField.isEnabled = false
@@ -401,6 +406,11 @@ class WorkSheetViewController: UIViewController {
             print("WorkSheetView를 찾을 수 없습니다.")
             return
         }
+        guard let detail = worksheetDetail else {
+            print("Detail을 찾을 수 없습니다.")
+            return
+        }
+
         answerLength = worksheet.userAnswers.count
 
         if isShowingAnswer {
@@ -412,10 +422,10 @@ class WorkSheetViewController: UIViewController {
 
         // TODO: 클백 들어오면 key값 변경되어야 함 WorkSheetID로
         if isFirstSheetSelected {
-            UserDefaults.standard.set(userAnswer, forKey: "mockUserAnswer1")
+            UserDefaults.standard.set(userAnswer, forKey: "\(detail.worksheetId)-1")
         }
         else {
-            UserDefaults.standard.set(userAnswer, forKey: "mockUserAnswer2")
+            UserDefaults.standard.set(userAnswer, forKey: "\(detail.worksheetId)-2")
         }
     }
 
@@ -424,8 +434,10 @@ class WorkSheetViewController: UIViewController {
             print("WorkSheetView를 찾을 수 없습니다.")
             return
         }
+        guard let detail = worksheetDetail else { return }
+
         if isFirstSheetSelected {
-            let prevUserAnswers: [String] = UserDefaults.standard.array(forKey: "mockUserAnswer1") as? [String] ?? []
+            let prevUserAnswers: [String] = UserDefaults.standard.array(forKey: "\(detail.worksheetId)-1") as? [String] ?? []
             if !prevUserAnswers.isEmpty {
                 print(prevUserAnswers)
                 for (index, field) in worksheet.userAnswers.enumerated() {
@@ -434,7 +446,7 @@ class WorkSheetViewController: UIViewController {
             }
         }
         else {
-            let prevUserAnswers: [String] = UserDefaults.standard.array(forKey: "mockUserAnswer2") as? [String] ?? []
+            let prevUserAnswers: [String] = UserDefaults.standard.array(forKey: "\(detail.worksheetId)-2") as? [String] ?? []
             if !prevUserAnswers.isEmpty {
                 for (index, field) in worksheet.userAnswers.enumerated() {
                     field.text = prevUserAnswers[index]
@@ -464,6 +476,10 @@ class WorkSheetViewController: UIViewController {
 
         let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
             print("PRESS CONFIRM")
+            guard let detail = self.worksheetDetail else {
+                print("detail이 없습니다.")
+                return
+            }
 
             self.saveUserAnswers()
 
@@ -499,8 +515,8 @@ class WorkSheetViewController: UIViewController {
             self.workSheetView = WorkSheetView(
                 frame: self.view.bounds,
                 viewWidth: self.view.frame.width - 48,
-                text: mockText,
-                answers: mockAnswers2
+                text: detail.content,
+                answers: detail.answer2
             )
 
             if let newWorkSheetView = self.workSheetView {
