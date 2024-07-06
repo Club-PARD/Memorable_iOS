@@ -586,8 +586,20 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
                 }
             }
         case "나만의 시험지":
-            let testSheetVC = TestSheetViewController()
-            navigateToViewController(testSheetVC)
+            if let testsheet = document as? Testsheet {
+                APIManagere.shared.getTestsheet(testsheetId: testsheet.id) { result in
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .success(let testsheetDetail):
+                            let testSheetVC = TestSheetViewController()
+                            testSheetVC.testsheetDetail = testsheetDetail
+                            self.navigateToViewController(testSheetVC)
+                        case .failure(let error):
+                            print("Error fetching testsheet detail: \(error)")
+                        }
+                    }
+                }
+            }
         case "오답노트":
             print("오답")
             let wrongSheetVC = WrongSheetViewController()

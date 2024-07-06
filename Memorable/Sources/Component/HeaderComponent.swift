@@ -99,7 +99,7 @@ class HeaderComponent: UIView {
         backButton.isHidden = true // 초기에는 숨김 상태
         
         backButton.snp.makeConstraints { make in
-            make.leading.equalTo(appLogoImageView.snp.trailing).offset(45)
+            make.leading.equalTo(appLogoImageView.snp.trailing).offset(16)
             make.centerY.equalToSuperview()
             make.width.height.equalTo(44)
         }
@@ -138,7 +138,7 @@ class HeaderComponent: UIView {
     private func setupSearchButton() {
         addSubview(searchButton)
         searchButton.snp.makeConstraints { make in
-            make.trailing.equalTo(plusButton.snp.leading).offset(-20)
+            make.trailing.equalTo(plusButton.snp.leading).offset(-12)
             make.centerY.equalToSuperview()
             make.width.height.equalTo(44)
         }
@@ -164,7 +164,7 @@ class HeaderComponent: UIView {
     private func setupSearchBar() {
         addSubview(searchBar)
         searchBar.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-124)
+            make.trailing.equalTo(plusButton.snp.leading).offset(-12)
             make.centerY.equalTo(searchButton.snp.centerY)
             make.height.equalTo(44)
             make.width.equalTo(0)
