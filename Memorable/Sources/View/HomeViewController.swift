@@ -42,7 +42,6 @@ class HomeViewController: UIViewController {
         headerComponent.delegate = self
         
         userIdentifier = UserDefaults.standard.string(forKey: SignInManager.userIdentifierKey)!
-        print("USERIDENTIFIER: \(userIdentifier)")
         
         fetchDocuments()
         
@@ -70,7 +69,6 @@ class HomeViewController: UIViewController {
         view.insertSubview(gradientView, belowSubview: maskView)
     }
     
-    // TODO: API 연결중
     func fetchDocuments() {
         print("Fetching documents for user ID: \(userIdentifier)")
         
@@ -380,9 +378,9 @@ extension HomeViewController: HeaderComponentDelegate {
 
 extension HomeViewController: LibraryViewComponentDelegate {
     func didUpdateBookmark(for document: Document) {
-            updateDocumentBookmarkStatus(document)
-            fetchDocuments()
-        }
+        updateDocumentBookmarkStatus(document)
+        fetchDocuments()
+    }
     
     func didTapBackButton() {
         if viewStack.count > 1 {

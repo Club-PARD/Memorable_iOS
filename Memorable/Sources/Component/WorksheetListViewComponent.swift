@@ -7,7 +7,6 @@
 
 import UIKit
 
-
 class WorksheetListViewComponent: UIView {
     private let worksheetTableView: UITableView
     private let filterScrollView: UIScrollView
@@ -25,7 +24,7 @@ class WorksheetListViewComponent: UIView {
         self.settingButton = UIButton()
         super.init(frame: frame)
         self.backgroundColor = MemorableColor.White
-        self.layer.cornerRadius = 40
+        layer.cornerRadius = 40
         self.clipsToBounds = true
         
         setupViews()
@@ -33,6 +32,7 @@ class WorksheetListViewComponent: UIView {
         setupGradientView()
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -129,7 +129,7 @@ class WorksheetListViewComponent: UIView {
     }
     
     @objc private func filterButtonTapped(_ sender: UIButton) {
-        filterStackView.arrangedSubviews.forEach { view in
+        for view in filterStackView.arrangedSubviews {
             if let button = view as? UIButton {
                 var config = button.configuration
                 config?.baseBackgroundColor = MemorableColor.Gray1
@@ -220,7 +220,7 @@ class WorksheetListViewComponent: UIView {
         alertController.addAction(cancelAction)
         
         // 현재 View Controller를 찾아 alertController를 표시
-        if let viewController = self.findViewController() {
+        if let viewController = findViewController() {
             viewController.present(alertController, animated: true, completion: nil)
         }
     }
@@ -230,7 +230,7 @@ class WorksheetListViewComponent: UIView {
         worksheetTableView.delegate = self
         worksheetTableView.rowHeight = 62
         worksheetTableView.allowsSelection = true
-        worksheetTableView.allowsSelectionDuringEditing = true  // 편집 중에도 셀 선택 가능하도록 설정
+        worksheetTableView.allowsSelectionDuringEditing = true // 편집 중에도 셀 선택 가능하도록 설정
         
         let headerView = UIView()
         headerView.frame = CGRect(x: 0, y: 0, width: worksheetTableView.frame.width, height: 22)
@@ -239,9 +239,9 @@ class WorksheetListViewComponent: UIView {
 
     private func setupGradientView() {
         let gradientView = GradientView(startColor: MemorableColor.White ?? .white, endColor: MemorableColor.White ?? .white)
-        self.addSubview(gradientView)
+        addSubview(gradientView)
         
-        gradientView.snp.makeConstraints{ make in
+        gradientView.snp.makeConstraints { make in
             make.top.equalTo(filterScrollView.snp.bottom).offset(2)
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(20)
@@ -275,18 +275,28 @@ extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate
         switch document.fileType {
         case "빈칸학습지":
             if let worksheet = document as? Worksheet {
-                // Fetch WorksheetDetail before navigating
-                APIManagere.shared.getWorksheet(worksheetId: worksheet.id) { result in
+                APIManager.shared.getData(to: "/api/worksheet/ws/\(worksheet.id)") { (sheetDetail: WorksheetDetail?, error: Error?) in
+                    
                     DispatchQueue.main.async {
-                        switch result {
-                        case .success(let worksheetDetail):
-                            let workSheetVC = WorkSheetViewController()
-                            workSheetVC.worksheetDetail = worksheetDetail
-                            self.navigateToViewController(workSheetVC)
-                        case .failure(let error):
-                            print("Error fetching worksheet detail: \(error)")
-                            // Handle error (e.g., show an alert to the user)
+                        if let error = error {
+                            print("Error fetching data: \(error)")
+                            return
                         }
+                        
+                        guard let detail = sheetDetail else {
+                            print("No data received")
+                            return
+                        }
+                        
+                        print("---GET WorkSheet---")
+                        print("NAME: \(detail.name)")
+                        print("CATE: \(detail.category)")
+                        print("isComplete: \(detail.isCompleteAllBlanks)")
+                        print("isAddWorksheet: \(detail.isAddWorksheet)")
+                    
+                        let workSheetVC = WorkSheetViewController()
+                        workSheetVC.worksheetDetail = detail
+                        self.navigateToViewController(workSheetVC)
                     }
                 }
             }
@@ -295,17 +305,40 @@ extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate
 //            testSheetVC.document = document
             navigateToViewController(testSheetVC)
         case "오답노트":
-            let wrongSheetVC = WrongSheetViewController()
-            navigateToViewController(wrongSheetVC)
+            APIManager.shared.getData(to: "/api/wrongsheet/\(document.id)") { [weak self] (sheetDetail: WrongsheetDetail?, error: Error?) in
+                guard let self = self else { return }
+                
+                DispatchQueue.main.async {
+                    // 3. 받아온 데이터 처리
+                    if let error = error {
+                        print("Error fetching data: \(error)")
+                        return
+                    }
+                    
+                    guard let detail = sheetDetail else {
+                        print("No data received")
+                        return
+                    }
+                    
+                    // wrong sheet detail
+                    print("GET: \(detail.name)")
+                    print("GET: \(detail.category)")
+                    print("GET: \(detail.questions)")
+                    
+                    let wrongSheetVC = WrongSheetViewController()
+                    wrongSheetVC.wrongsheetDetail = detail
+                    self.navigateToViewController(wrongSheetVC)
+                }
+            }
         default:
             print("Unknown file type")
         }
     }
     
     private func navigateToViewController(_ viewController: UIViewController) {
-        if let navigationController = self.window?.rootViewController as? UINavigationController {
+        if let navigationController = window?.rootViewController as? UINavigationController {
             navigationController.pushViewController(viewController, animated: true)
-        } else if let presentingViewController = self.window?.rootViewController {
+        } else if let presentingViewController = window?.rootViewController {
             presentingViewController.present(viewController, animated: true, completion: nil)
         }
     }
@@ -318,9 +351,9 @@ extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate
 
 extension UIView {
     func findViewController() -> UIViewController? {
-        if let nextResponder = self.next as? UIViewController {
+        if let nextResponder = next as? UIViewController {
             return nextResponder
-        } else if let nextResponder = self.next as? UIView {
+        } else if let nextResponder = next as? UIView {
             return nextResponder.findViewController()
         } else {
             return nil

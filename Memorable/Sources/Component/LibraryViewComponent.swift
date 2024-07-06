@@ -560,8 +560,6 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
         return 62
     }
     
-    // 라우팅
-    // TODO: API 연결중
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
@@ -570,18 +568,28 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
         switch document.fileType {
         case "빈칸학습지":
             if let worksheet = document as? Worksheet {
-                // Fetch WorksheetDetail before navigating
-                APIManagere.shared.getWorksheet(worksheetId: worksheet.id) { result in
+                APIManager.shared.getData(to: "/api/worksheet/ws/\(worksheet.id)") { (sheetDetail: WorksheetDetail?, error: Error?) in
+                    
                     DispatchQueue.main.async {
-                        switch result {
-                        case .success(let worksheetDetail):
-                            let workSheetVC = WorkSheetViewController()
-                            workSheetVC.worksheetDetail = worksheetDetail
-                            self.navigateToViewController(workSheetVC)
-                        case .failure(let error):
-                            print("Error fetching worksheet detail: \(error)")
-                            // Handle error (e.g., show an alert to the user)
+                        if let error = error {
+                            print("Error fetching data: \(error)")
+                            return
                         }
+                        
+                        guard let detail = sheetDetail else {
+                            print("No data received")
+                            return
+                        }
+                        
+                        print("---GET WorkSheet---")
+                        print("NAME: \(detail.name)")
+                        print("CATE: \(detail.category)")
+                        print("isComplete: \(detail.isCompleteAllBlanks)")
+                        print("isAddWorksheet: \(detail.isAddWorksheet)")
+                    
+                        let workSheetVC = WorkSheetViewController()
+                        workSheetVC.worksheetDetail = detail
+                        self.navigateToViewController(workSheetVC)
                     }
                 }
             }
@@ -608,7 +616,7 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
     }
     
     func didTapBookmark(for document: Document) {
-        delegate?.didUpdateBookmark(for:document)
+        delegate?.didUpdateBookmark(for: document)
         if let index = currentDocuments.firstIndex(where: { $0.id == document.id }) {
             currentDocuments[index] = document
         }
