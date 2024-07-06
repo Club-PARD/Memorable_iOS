@@ -10,6 +10,8 @@ import Then
 import UIKit
 
 class WrongSheetViewController: UIViewController {
+    var wrongsheetDetail: WrongsheetDetail?
+
     private let logoImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
         $0.image = UIImage(named: "applogo-v2")

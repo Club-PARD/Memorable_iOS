@@ -17,7 +17,7 @@ struct TestSheetState {
 
 class TestSheetViewController: UIViewController, UITextFieldDelegate {
     private let apiManager = APIManagere.shared
-    private var testsheetDetail: TestsheetDetail?
+    var testsheetDetail: TestsheetDetail?
     
     var sharedName: String?
     var sharedCategory: String?
@@ -232,7 +232,7 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
             make.trailing.equalTo(scoreLabel.snp.leading).offset(-8)
         }
         
-        for _ in 0..<3 {
+        for _ in 0 ..< 3 {
             let questionView = QuestionView()
             containerView.addSubview(questionView)
             questionViews.append(questionView)
@@ -339,12 +339,12 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         firstSheetButton.setTitle("1", for: .normal)
         secondSheetButton.setTitle("2", for: .normal)
         
-        [firstSheetButton, secondSheetButton].forEach {
-            $0.layer.cornerRadius = 12.5
-            $0.clipsToBounds = true
-            $0.addTarget(self, action: #selector(sheetButtonTapped(_:)), for: .touchUpInside)
-            $0.titleLabel?.font = MemorableFont.Body1() // 폰트 설정 추가
-            $0.setTitleColor(MemorableColor.Black, for: .normal) // 텍스트 색상 설정 추가
+        for item in [firstSheetButton, secondSheetButton] {
+            item.layer.cornerRadius = 12.5
+            item.clipsToBounds = true
+            item.addTarget(self, action: #selector(sheetButtonTapped(_:)), for: .touchUpInside)
+            item.titleLabel?.font = MemorableFont.Body1() // 폰트 설정 추가
+            item.setTitleColor(MemorableColor.Black, for: .normal) // 텍스트 색상 설정 추가
         }
         
         updateSheetSelection() // 초기 선택 상태 설정
@@ -381,7 +381,7 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         }
         
         // 각 버튼의 크기를 동일하게 설정
-        [firstSheetButton, secondSheetButton].forEach { button in
+        for button in [firstSheetButton, secondSheetButton] {
             button.snp.makeConstraints { make in
                 make.width.height.equalTo(25)
             }
@@ -392,24 +392,24 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
     
     private func updateUI() {
         let startIndex = currentPage * questionsPerPage
-            for (index, questionView) in questionViews.enumerated() {
-                let questionIndex = startIndex + index
-                if questionIndex < questionManager.questions.count {
-                    let question = questionManager.questions[questionIndex]
-                    let currentState = isFirstSheetSelected ? firstSheetState : secondSheetState
-                    let userAnswer = currentState?.userAnswers[questionIndex]
-                    questionView.configure(with: question, questionNumberValue: questionIndex + 1, userAnswer: userAnswer)
-                    questionView.isHidden = false
+        for (index, questionView) in questionViews.enumerated() {
+            let questionIndex = startIndex + index
+            if questionIndex < questionManager.questions.count {
+                let question = questionManager.questions[questionIndex]
+                let currentState = isFirstSheetSelected ? firstSheetState : secondSheetState
+                let userAnswer = currentState?.userAnswers[questionIndex]
+                questionView.configure(with: question, questionNumberValue: questionIndex + 1, userAnswer: userAnswer)
+                questionView.isHidden = false
                     
-                    if currentState?.isSubmitted ?? false {
-                        questionView.replaceTextFieldWithLabels()
-                    } else {
-                        questionView.resetView()
-                    }
+                if currentState?.isSubmitted ?? false {
+                    questionView.replaceTextFieldWithLabels()
                 } else {
-                    questionView.isHidden = true
+                    questionView.resetView()
                 }
+            } else {
+                questionView.isHidden = true
             }
+        }
         
         let totalPages = (questionManager.questions.count + questionsPerPage - 1) / questionsPerPage
         
@@ -654,7 +654,7 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
     }
     
     private func showToast(_ message: String) {
-        let toastLabel = UILabel(frame: CGRect(x: self.view.frame.size.width/2 - 150, y: self.view.frame.size.height-100, width: 300, height: 70))
+        let toastLabel = UILabel(frame: CGRect(x: view.frame.size.width / 2 - 150, y: view.frame.size.height - 100, width: 300, height: 70))
         toastLabel.backgroundColor = UIColor.black.withAlphaComponent(0.6)
         toastLabel.textColor = UIColor.white
         toastLabel.textAlignment = .center
@@ -664,11 +664,11 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         toastLabel.alpha = 1.0
         toastLabel.layer.cornerRadius = 10
         toastLabel.clipsToBounds = true
-        self.view.addSubview(toastLabel)
+        view.addSubview(toastLabel)
         
         UIView.animate(withDuration: 4.0, delay: 0.1, options: .curveEaseOut, animations: {
             toastLabel.alpha = 0.0
-        }, completion: {(isCompleted) in
+        }, completion: { _ in
             toastLabel.removeFromSuperview()
         })
     }

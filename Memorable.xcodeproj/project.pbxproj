@@ -29,13 +29,14 @@
 		DBEB96FC2C35770C00106866 /* Worksheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEB96FB2C35770C00106866 /* Worksheet.swift */; };
 		DBEB96FE2C35774500106866 /* Testsheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEB96FD2C35774500106866 /* Testsheet.swift */; };
 		DBEB97002C35775900106866 /* Wrongsheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEB96FF2C35775900106866 /* Wrongsheet.swift */; };
+		DD06594C2C381CF4005B037D /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD06594B2C381CF4005B037D /* Common.swift */; };
+		DD0659502C3833E7005B037D /* EmptyResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD06594F2C3833E7005B037D /* EmptyResponse.swift */; };
 		DD1A05FF2C2B1B4900DE0CB8 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1A05FE2C2B1B4900DE0CB8 /* User.swift */; };
 		DD2F8B8E2C3089C8003F077D /* FloatingImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2F8B8D2C3089C8003F077D /* FloatingImage.swift */; };
 		DD421DB32C33FABA00E4D320 /* Gifu in Frameworks */ = {isa = PBXBuildFile; productRef = DD421DB22C33FABA00E4D320 /* Gifu */; };
 		DD421DB52C33FB9000E4D320 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DB42C33FB9000E4D320 /* SplashViewController.swift */; };
 		DD421DB72C33FC2200E4D320 /* memorable_splash.gif in Resources */ = {isa = PBXBuildFile; fileRef = DD421DB62C33FC2200E4D320 /* memorable_splash.gif */; };
 		DD421DB92C34EB7C00E4D320 /* Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DB82C34EB7C00E4D320 /* Deprecated.swift */; };
-		DD421DC12C357E7600E4D320 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DC02C357E7600E4D320 /* Common.swift */; };
 		DD421DC42C3585DF00E4D320 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DC32C3585DF00E4D320 /* OnboardingViewController.swift */; };
 		DD421DC92C3586D200E4D320 /* Onboarding1.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DC82C3586D200E4D320 /* Onboarding1.swift */; };
 		DD421DCB2C3586D900E4D320 /* Onboarding2.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DCA2C3586D900E4D320 /* Onboarding2.swift */; };
@@ -143,12 +144,13 @@
 		DD0659472C37AF77005B037D /* PDFShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; name = PDFShareExtension.appex; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/PDFShareExtension.appex"; sourceTree = "<absolute>"; };
 		DD0659482C37AF77005B037D /* MemorableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableTests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/Memorable.app/PlugIns/MemorableTests.xctest"; sourceTree = "<absolute>"; };
 		DD0659492C37AF77005B037D /* MemorableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableUITests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/MemorableUITests-Runner.app/PlugIns/MemorableUITests.xctest"; sourceTree = "<absolute>"; };
+		DD06594B2C381CF4005B037D /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
+		DD06594F2C3833E7005B037D /* EmptyResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyResponse.swift; sourceTree = "<group>"; };
 		DD1A05FE2C2B1B4900DE0CB8 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		DD2F8B8D2C3089C8003F077D /* FloatingImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingImage.swift; sourceTree = "<group>"; };
 		DD421DB42C33FB9000E4D320 /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		DD421DB62C33FC2200E4D320 /* memorable_splash.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = memorable_splash.gif; sourceTree = "<group>"; };
 		DD421DB82C34EB7C00E4D320 /* Deprecated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deprecated.swift; sourceTree = "<group>"; };
-		DD421DC02C357E7600E4D320 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		DD421DC32C3585DF00E4D320 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
 		DD421DC82C3586D200E4D320 /* Onboarding1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding1.swift; sourceTree = "<group>"; };
 		DD421DCA2C3586D900E4D320 /* Onboarding2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding2.swift; sourceTree = "<group>"; };
@@ -230,20 +232,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DD06594A2C381CE6005B037D /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				DD06594B2C381CF4005B037D /* Common.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
 		DD2F8B8C2C3089A5003F077D /* Widget */ = {
 			isa = PBXGroup;
 			children = (
 				DD2F8B8D2C3089C8003F077D /* FloatingImage.swift */,
 			);
 			path = Widget;
-			sourceTree = "<group>";
-		};
-		DD421DBF2C357E5700E4D320 /* Common */ = {
-			isa = PBXGroup;
-			children = (
-				DD421DC02C357E7600E4D320 /* Common.swift */,
-			);
-			path = Common;
 			sourceTree = "<group>";
 		};
 		DD421DC22C3585B500E4D320 /* Initial */ = {
@@ -394,7 +396,7 @@
 			isa = PBXGroup;
 			children = (
 				DDBD12F02C298FCD006E7D92 /* App */,
-				DD421DBF2C357E5700E4D320 /* Common */,
+				DD06594A2C381CE6005B037D /* Common */,
 				DDC1EE8E2C2AACE700C88CD7 /* Manager */,
 				DDBD12F62C29C586006E7D92 /* Model */,
 				DDBD12ED2C298F61006E7D92 /* View */,
@@ -423,6 +425,7 @@
 				DBEB96FB2C35770C00106866 /* Worksheet.swift */,
 				DBEB96FD2C35774500106866 /* Testsheet.swift */,
 				DBEB96FF2C35775900106866 /* Wrongsheet.swift */,
+				DD06594F2C3833E7005B037D /* EmptyResponse.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -667,11 +670,13 @@
 				DDC1EE902C2AACFB00C88CD7 /* AuthState.swift in Sources */,
 				DD1A05FF2C2B1B4900DE0CB8 /* User.swift in Sources */,
 				DD4B40B32C2BE4AD00524757 /* MockData.swift in Sources */,
+				DD06594C2C381CF4005B037D /* Common.swift in Sources */,
 				DD421DC42C3585DF00E4D320 /* OnboardingViewController.swift in Sources */,
 				DDAB24E02C3148A700AAEDB6 /* APIManager.swift in Sources */,
 				DDC1EE922C2AAD2400C88CD7 /* SignInManager.swift in Sources */,
 				DDDA80112C33A8820077E5F2 /* MemorableFont.swift in Sources */,
 				DB3CEC812C2E90BE00F8211C /* Question.swift in Sources */,
+				DD0659502C3833E7005B037D /* EmptyResponse.swift in Sources */,
 				DB3CEC872C2FF66D00F8211C /* ProgressBarView.swift in Sources */,
 				DDAC4BD82C2805AB006206EB /* SceneDelegate.swift in Sources */,
 				DDF67E862C32F9D900F37BFC /* WrongSheetViewController.swift in Sources */,
@@ -684,7 +689,6 @@
 				DB3CEC7B2C2E10E000F8211C /* WorksheetListViewComponent.swift in Sources */,
 				DDB3E3852C2FE16200AF9182 /* TestLoginViewController.swift in Sources */,
 				DBD820492C2A804700A9B1C3 /* TabViewComponent.swift in Sources */,
-				DD421DC12C357E7600E4D320 /* Common.swift in Sources */,
 				DB3CEC932C31655A00F8211C /* RecentsheetCell.swift in Sources */,
 				DDDA800F2C33A8110077E5F2 /* MemorableColor.swift in Sources */,
 				DBD820552C2C7CDA00A9B1C3 /* Document.swift in Sources */,
