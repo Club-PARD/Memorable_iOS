@@ -10,5 +10,5 @@ struct Question: Codable {
     let questionId: Int
     let question: String
     let answer: String
-    var userAnswer: String?
+    var userAnswer: String
 }
