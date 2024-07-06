@@ -5,14 +5,13 @@
 //  Created by 김현기 on 6/30/24.
 //
 
-import UIKit
 import MobileCoreServices
-import UniformTypeIdentifiers
 import PDFKit
+import UIKit
+import UniformTypeIdentifiers
 import Vision
 
 class ShareViewController: UIViewController {
-
     override func viewDidLoad() {
         super.viewDidLoad()
         handleSharedItems()
@@ -78,7 +77,7 @@ class ShareViewController: UIViewController {
             let endIndex = min(startIndex + batchSize, pageCount)
             let dispatchGroup = DispatchGroup()
 
-            for pageIndex in startIndex..<endIndex {
+            for pageIndex in startIndex ..< endIndex {
                 if let page = pdfDocument.page(at: pageIndex) {
                     if let pageText = page.string {
                         extractedText += pageText
@@ -122,7 +121,7 @@ class ShareViewController: UIViewController {
 
     func downsampleImage(_ image: UIImage, to size: CGSize) -> UIImage {
         let renderer = UIGraphicsImageRenderer(size: size)
-        return renderer.image { (context) in
+        return renderer.image { _ in
             image.draw(in: CGRect(origin: .zero, size: size))
         }
     }
@@ -134,7 +133,7 @@ class ShareViewController: UIViewController {
         }
 
         let requestHandler = VNImageRequestHandler(cgImage: cgImage, options: [:])
-        let request = VNRecognizeTextRequest { request, error in
+        let request = VNRecognizeTextRequest { request, _ in
             guard let observations = request.results as? [VNRecognizedTextObservation] else {
                 completion("")
                 return
@@ -231,10 +230,10 @@ class ShareViewController: UIViewController {
         }
 
         // Complete the Share Extension request
-        self.extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
+        extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
 
         // Open the URL
-        self.openURL(url)
+        openURL(url)
     }
 
     @objc func openURL(_ url: URL) {

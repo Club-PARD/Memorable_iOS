@@ -11,8 +11,13 @@ class QuestionManager {
     var questions: [Question] = []
 
     func parseQuestions(from data: [Int: [String: String]]) {
-        questions = data.map { (id, dict) in
-            Question(questionId: id, question: dict["question"] ?? "", answer: dict["answer"] ?? "", userAnswer: dict["userAnswer"] ?? "")
+        questions = data.map { id, dict in
+            Question(
+                questionId: id,
+                question: dict["question"] ?? "",
+                answer: dict["answer"] ?? "",
+                userAnswer: dict["userAnswer"] ?? ""
+            )
         }.sorted { $0.questionId < $1.questionId }
     }
 }

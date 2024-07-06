@@ -33,8 +33,14 @@ class WorkSheetViewController: UIViewController {
         $0.isHidden = true
     }
 
+    private let finishImage2 = FloatingImage(frame: CGRect(x: 0, y: 0, width: 260, height: 36)).then {
+        $0.image = UIImage(named: "finish_add")
+        $0.contentMode = .scaleAspectFit
+        $0.isHidden = true
+    }
+
     private let doneButton = UIButton().then {
-        $0.setTitle("학습완료", for: .normal)
+        $0.setTitle("시험지 받기", for: .normal)
         $0.setTitleColor(MemorableColor.Gray1, for: .normal)
         $0.backgroundColor = MemorableColor.Gray4
         $0.layer.cornerRadius = 22
@@ -78,6 +84,8 @@ class WorkSheetViewController: UIViewController {
         $0.contentMode = .scaleAspectFit
         $0.isHidden = true
     }
+
+    private var hideWorkItem: DispatchWorkItem?
 
     private let addWorkSheetButton = UIButton().then {
         var config = UIButton.Configuration.plain()
@@ -133,10 +141,10 @@ class WorkSheetViewController: UIViewController {
 
     private var correctCount: Int = 0
 
-    // TODO: API 연결중
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .gray5
+
         updateRecentDate()
 
         setupUI()
@@ -152,6 +160,7 @@ class WorkSheetViewController: UIViewController {
         }
 
         APIManagere.shared.updateWorksheetRecentDate(worksheetId: worksheetDetail.worksheetId) { result in
+
             switch result {
             case .success:
                 print("Recent date updated successfully")
@@ -163,22 +172,42 @@ class WorkSheetViewController: UIViewController {
     }
 
     private func setupUI() {
-        guard let worksheetDetail = worksheetDetail else { return }
+        guard let detail = worksheetDetail else { return }
 
-        titleLabel.text = worksheetDetail.name
-        categoryLabel.text = worksheetDetail.category
+        titleLabel.text = detail.name
+        categoryLabel.text = detail.category
 
         workSheetView = WorkSheetView(
             frame: view.bounds,
             viewWidth: view.frame.width - 48,
-            text: worksheetDetail.content,
-            answers: worksheetDetail.answer1
+            text: detail.content,
+            answers: detail.answer1
         )
 
         reloadUserAnswers()
-    }
 
-    // TODO: API 연결중 이까지
+        if detail.isCompleteAllBlanks {
+            finishImage.isHidden = false
+            doneButton.setTitleColor(MemorableColor.White, for: .normal)
+            doneButton.backgroundColor = MemorableColor.Blue2
+            doneButton.isEnabled = true
+        }
+
+        if detail.isAddWorksheet {
+            finishAddWorksheet()
+        }
+
+        if detail.isMakeTestSheet {
+            finishImage.removeFromSuperview()
+            finishImage.snp.removeConstraints()
+            finishImage.isHidden = true
+            finishImage2.isHidden = false
+
+            doneButton.setTitleColor(MemorableColor.Gray1, for: .normal)
+            doneButton.backgroundColor = MemorableColor.Gray4
+            doneButton.isEnabled = false
+        }
+    }
 
     // MARK: - Button Action
 
@@ -368,23 +397,64 @@ class WorkSheetViewController: UIViewController {
 
     func correctAll() {
         print("CORRECT ALL")
+        guard let detail = worksheetDetail else {
+            print("detail 없음")
+            return
+        }
+
         finishImage.isHidden = false
         doneButton.setTitleColor(MemorableColor.White, for: .normal)
         doneButton.backgroundColor = MemorableColor.Blue2
         doneButton.isEnabled = true
+
+        // DONE
+        APIManager.shared.updateData(to: "/api/worksheet/done/\(detail.worksheetId)", body: detail) { result in
+            switch result {
+            case .success:
+                print("isCompleteAllBlanks Update 성공")
+            case .failure(let error):
+                print("Update 실패: \(error.localizedDescription)")
+            }
+        }
     }
 
     @objc func didTapDoneButton() {
         print("DONE")
-        let alert = UIAlertController(title: "학습완료", message: "학습완료 하시겠습니까?\n해당 파일로 나만의 시험지를\n바로 생성할 수 있습니다.", preferredStyle: .alert)
+        let alert = UIAlertController(title: "시험지 받기", message: "시험지가 자동으로 생성되고\n생성된 시험지로 이동합니다.", preferredStyle: .alert)
 
-        let cancelAction = UIAlertAction(title: "나가기", style: .cancel) { _ in
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
             print("PRESS CANCEL")
-            self.navigationController?.popViewController(animated: true)
         }
 
-        let confirmAction = UIAlertAction(title: "시험지 생성하기", style: .default) { _ in
+        let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
             print("PRESS CONFIRM")
+            guard let detail = self.worksheetDetail else {
+                print("detail 없음")
+                return
+            }
+            APIManager.shared.updateData(to: "/api/worksheet/make/\(detail.worksheetId)", body: detail) { result in
+                switch result {
+                case .success:
+                    print("isMakeTestSheet Update 성공")
+                case .failure(let error):
+                    print("Update 실패: \(error.localizedDescription)")
+                }
+            }
+
+            APIManager.shared.postData(to: "/api/testsheet/\(detail.worksheetId)", body: detail) { (result: Result<TestsheetDetail, Error>) in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let testSheetDetail):
+                        print("Testsheet successfully posted")
+                        let testSheetVC = TestSheetViewController()
+                        testSheetVC.testsheetDetail = testSheetDetail
+                        self.navigationController?.setViewControllers([HomeViewController(), testSheetVC], animated: true)
+
+                    case .failure(let error):
+                        print("Error posting testsheet: \(error.localizedDescription)")
+                    }
+                }
+            }
         }
 
         alert.addAction(cancelAction)
@@ -420,7 +490,6 @@ class WorkSheetViewController: UIViewController {
         }
         userAnswer = worksheet.userAnswers.map { $0.text ?? "" }
 
-        // TODO: 클백 들어오면 key값 변경되어야 함 WorkSheetID로
         if isFirstSheetSelected {
             UserDefaults.standard.set(userAnswer, forKey: "\(detail.worksheetId)-1")
         }
@@ -439,7 +508,6 @@ class WorkSheetViewController: UIViewController {
         if isFirstSheetSelected {
             let prevUserAnswers: [String] = UserDefaults.standard.array(forKey: "\(detail.worksheetId)-1") as? [String] ?? []
             if !prevUserAnswers.isEmpty {
-                print(prevUserAnswers)
                 for (index, field) in worksheet.userAnswers.enumerated() {
                     field.text = prevUserAnswers[index]
                 }
@@ -456,13 +524,27 @@ class WorkSheetViewController: UIViewController {
         worksheet.layoutIfNeeded()
     }
 
-    func finishReExtract() {
-        addWorkSheetButton.backgroundColor = MemorableColor.Gray2
+    func finishAddWorksheet() {
+        firstSheetButton.isHidden = false
+        firstSheetButton.isEnabled = true
+        secondSheetButton.isHidden = false
+        secondSheetButton.isEnabled = true
+
+        if isFirstSheetSelected {
+            firstSheetButton.backgroundColor = MemorableColor.Yellow1
+            secondSheetButton.backgroundColor = MemorableColor.Gray2
+        }
+        else {
+            firstSheetButton.backgroundColor = MemorableColor.Gray2
+            secondSheetButton.backgroundColor = MemorableColor.Yellow1
+        }
+
+        addWorkSheetButton.setTitleColor(MemorableColor.Gray2, for: .normal)
         addWorkSheetButton.isEnabled = false
     }
 
-    @objc func didTapReExtractButton() {
-        print("REEXTRACT KEYWORD")
+    @objc func didTapAddWorksheetButton() {
+        print("AddWorksheet")
 
         let alert = UIAlertController(
             title: "추가 학습지 만들기",
@@ -481,6 +563,16 @@ class WorkSheetViewController: UIViewController {
                 return
             }
 
+            // DONE
+            APIManager.shared.updateData(to: "/api/worksheet/addsheet/\(detail.worksheetId)", body: detail) { result in
+                switch result {
+                case .success:
+                    print("isAddWorksheet Update 성공")
+                case .failure(let error):
+                    print("Update 실패: \(error.localizedDescription)")
+                }
+            }
+
             self.saveUserAnswers()
 
             self.isShowingAnswer = false
@@ -497,15 +589,8 @@ class WorkSheetViewController: UIViewController {
             config.cornerStyle = .large
             self.showAnswerButton.configuration = config
 
-            self.firstSheetButton.isHidden = false
-            self.firstSheetButton.isEnabled = true
-            self.secondSheetButton.isHidden = false
-            self.secondSheetButton.isEnabled = true
-
-            self.firstSheetButton.backgroundColor = MemorableColor.Gray2
-            self.secondSheetButton.backgroundColor = MemorableColor.Yellow1
-
             self.isFirstSheetSelected.toggle()
+            self.finishAddWorksheet()
 
             self.workSheetView?.removeFromSuperview()
             self.addWorkSheetButton.removeFromSuperview()
@@ -552,9 +637,6 @@ class WorkSheetViewController: UIViewController {
 
             self.view.setNeedsLayout()
             self.view.layoutIfNeeded()
-
-            self.addWorkSheetButton.isEnabled = false
-            self.addWorkSheetButton.setTitleColor(MemorableColor.Gray2, for: .normal)
         }
 
         alert.addAction(cancelAction)
@@ -565,9 +647,10 @@ class WorkSheetViewController: UIViewController {
 
     @objc func didTapFirstSheetButton() {
         print("FirstSheetButton")
-        // TODO: API 연결중
         guard let worksheetDetail = worksheetDetail else { return }
-        // TODO: API 연결중 이까지
+
+        hideWorkItem?.cancel()
+        finishAddImage.isHidden = true
 
         saveUserAnswers()
         isFirstSheetSelected = true
@@ -596,14 +679,12 @@ class WorkSheetViewController: UIViewController {
         firstSheetButton.removeFromSuperview()
         secondSheetButton.removeFromSuperview()
 
-        // TODO: API 연결중
         workSheetView = WorkSheetView(
             frame: view.bounds,
             viewWidth: view.frame.width - 48,
             text: worksheetDetail.content,
             answers: worksheetDetail.answer1
         )
-        // TODO: API 연결중 이까지
         reloadUserAnswers()
 
         if let newWorkSheetView = workSheetView {
@@ -643,9 +724,8 @@ class WorkSheetViewController: UIViewController {
 
     @objc func didTapSecondSheetButton() {
         print("SecondSheetButton")
-        // TODO: API 연결중
         guard let worksheetDetail = worksheetDetail else { return }
-        // TODO: API 연결중 이까지
+
         saveUserAnswers()
         isFirstSheetSelected = false
 
@@ -674,14 +754,12 @@ class WorkSheetViewController: UIViewController {
         secondSheetButton.removeFromSuperview()
         finishAddImage.removeFromSuperview()
 
-        // TODO: API 연결중
         workSheetView = WorkSheetView(
             frame: view.bounds,
             viewWidth: view.frame.width - 48,
             text: worksheetDetail.content,
             answers: worksheetDetail.answer2
         )
-        // TODO: API 연결중 이까지
         reloadUserAnswers()
 
         if let newWorkSheetView = workSheetView {
@@ -725,9 +803,15 @@ class WorkSheetViewController: UIViewController {
         view.layoutIfNeeded()
 
         finishAddImage.isHidden = false
-        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
-            self.finishAddImage.isHidden = true
+
+        hideWorkItem?.cancel()
+
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.finishAddImage.isHidden = true
         }
+        hideWorkItem = workItem
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: workItem)
     }
 
     // MARK: - Default Setting
@@ -735,7 +819,7 @@ class WorkSheetViewController: UIViewController {
     func setupButtons() {
         backButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
         doneButton.addTarget(self, action: #selector(didTapDoneButton), for: .touchUpInside)
-        addWorkSheetButton.addTarget(self, action: #selector(didTapReExtractButton), for: .touchUpInside)
+        addWorkSheetButton.addTarget(self, action: #selector(didTapAddWorksheetButton), for: .touchUpInside)
         firstSheetButton.addTarget(self, action: #selector(didTapFirstSheetButton), for: .touchUpInside)
         secondSheetButton.addTarget(self, action: #selector(didTapSecondSheetButton), for: .touchUpInside)
         resetButton.addTarget(self, action: #selector(didTapResetButton), for: .touchUpInside)
@@ -755,6 +839,7 @@ class WorkSheetViewController: UIViewController {
         view.addSubview(logoImageView)
         view.addSubview(backButton)
         view.addSubview(finishImage)
+        view.addSubview(finishImage2)
         view.addSubview(doneButton)
         view.addSubview(titleLabel)
         view.addSubview(categoryLabel)
@@ -789,6 +874,13 @@ class WorkSheetViewController: UIViewController {
         }
 
         finishImage.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(13)
+            make.trailing.equalTo(doneButton.snp.leading).offset(-10)
+            make.height.equalTo(44)
+            make.width.equalTo(260)
+        }
+
+        finishImage2.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(13)
             make.trailing.equalTo(doneButton.snp.leading).offset(-10)
             make.height.equalTo(44)
