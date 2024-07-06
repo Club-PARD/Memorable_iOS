@@ -70,14 +70,16 @@ struct TestsheetDetail: Codable {
     let testsheetId: Int
     let name: String
     let category: String
-    var isReExtracted: Bool
+
+    var reExtracted: Bool
     var isCompleteAllBlanks: [Bool]
     let questions1: [Question]
     let questions2: [Question]
 
     enum CodingKeys: String, CodingKey {
         case testsheetId, name, category, questions1, questions2
-        case isReExtracted, isCompleteAllBlanks
+        case reExtracted
+        case isCompleteAllBlanks
     }
 
     init(from decoder: Decoder) throws {
@@ -87,7 +89,7 @@ struct TestsheetDetail: Codable {
         category = try container.decode(String.self, forKey: .category)
         questions1 = try container.decode([Question].self, forKey: .questions1)
         questions2 = try container.decode([Question].self, forKey: .questions2)
-        isReExtracted = try container.decodeIfPresent(Bool.self, forKey: .isReExtracted) ?? false
+        reExtracted = try container.decodeIfPresent(Bool.self, forKey: .reExtracted) ?? false
         isCompleteAllBlanks = try container.decodeIfPresent([Bool].self, forKey: .isCompleteAllBlanks) ?? [false, false]
     }
 }

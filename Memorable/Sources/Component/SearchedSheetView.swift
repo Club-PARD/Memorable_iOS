@@ -197,8 +197,65 @@ extension SearchedSheetView: UITableViewDataSource, UITableViewDelegate, Recents
         return 62
     }
     
+    // 라우팅
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        let document = filteredDocuments[indexPath.row]
+        
+        switch document.fileType {
+        case "빈칸학습지":
+            if let worksheet = document as? Worksheet {
+                // Fetch WorksheetDetail before navigating
+                APIManagere.shared.getWorksheet(worksheetId: worksheet.id) { result in
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .success(let worksheetDetail):
+                            let workSheetVC = WorkSheetViewController()
+                            workSheetVC.worksheetDetail = worksheetDetail
+                            self.navigateToViewController(workSheetVC)
+                        case .failure(let error):
+                            print("Error fetching worksheet detail: \(error)")
+                            // Handle error (e.g., show an alert to the user)
+                        }
+                    }
+                }
+            }
+        case "나만의 시험지":
+            if let testsheet = document as? Testsheet {
+                APIManagere.shared.getTestsheet(testsheetId: testsheet.id) { result in
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .success(let testsheetDetail):
+                            let testSheetVC = TestSheetViewController()
+                            testSheetVC.testsheetDetail = testsheetDetail
+                            self.navigateToViewController(testSheetVC)
+                        case .failure(let error):
+                            print("Error fetching testsheet detail: \(error)")
+                        }
+                    }
+                }
+            }
+        case "오답노트":
+            let wrongSheetVC = WrongSheetViewController()
+            navigateToViewController(wrongSheetVC)
+            break
+        default:
+            print("Unknown file type")
+        }
+    }
+    
     func didTapBookmark(for document: Document) {
         // 테이블 뷰 리로드
         // recentTableView.reloadData()
+    }
+    
+    private func navigateToViewController(_ viewController: UIViewController) {
+        if let navigationController = self.window?.rootViewController as? UINavigationController {
+            navigationController.pushViewController(viewController, animated: true)
+        } else if let presentingViewController = self.window?.rootViewController {
+            presentingViewController.present(viewController, animated: true, completion: nil)
+        }
     }
 }
