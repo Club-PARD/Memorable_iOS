@@ -91,7 +91,7 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
             email: email
         )
         
-        APIManager.shared.postData(to: "/api/users", body: userData) { result in
+        APIManager.shared.postData(to: "/api/users", body: userData) { (result: Result<EmptyResponse, Error>) in
             switch result {
             case .success:
                 print("User successfully posted")

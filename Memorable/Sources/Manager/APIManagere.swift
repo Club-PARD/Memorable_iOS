@@ -129,7 +129,7 @@ class APIManagere {
             return
         }
         
-        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+        let task = URLSession.shared.dataTask(with: url) { data, _, error in
             if let error = error {
                 completion(.failure(error))
                 return
@@ -178,7 +178,7 @@ class APIManagere {
             return
         }
         
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        URLSession.shared.dataTask(with: request) { data, _, error in
             if let error = error {
                 completion(.failure(APIError.networkError(error)))
                 return
@@ -210,7 +210,7 @@ class APIManagere {
         request.httpMethod = "PATCH"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        URLSession.shared.dataTask(with: request) { data, _, error in
             if let error = error {
                 completion(.failure(error))
                 return
@@ -331,7 +331,8 @@ class APIManagere {
             }
             
             guard let httpResponse = response as? HTTPURLResponse,
-                  (200...299).contains(httpResponse.statusCode) else {
+                  (200...299).contains(httpResponse.statusCode)
+            else {
                 completion(.failure(APIError.serverError(statusCode: (response as? HTTPURLResponse)?.statusCode ?? 0, message: "Invalid response")))
                 return
             }
@@ -377,23 +378,23 @@ class APIManagere {
         }
         
         URLSession.shared.dataTask(with: request) { data, response, error in
-                if let error = error {
-                    print("Network error: \(error)")
-                    completion(.failure(APIError.networkError(error)))
-                    return
-                }
+            if let error = error {
+                print("Network error: \(error)")
+                completion(.failure(APIError.networkError(error)))
+                return
+            }
                 
-                guard let httpResponse = response as? HTTPURLResponse else {
-                    print("Invalid response")
-                    completion(.failure(APIError.serverError(statusCode: 0, message: "Invalid response")))
-                    return
-                }
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("Invalid response")
+                completion(.failure(APIError.serverError(statusCode: 0, message: "Invalid response")))
+                return
+            }
                 
-                print("Server response status code: \(httpResponse.statusCode)")
+            print("Server response status code: \(httpResponse.statusCode)")
                 
-                if let data = data, let responseString = String(data: data, encoding: .utf8) {
-                    print("Server response body: \(responseString)")
-                }
+            if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                print("Server response body: \(responseString)")
+            }
             
             completion(.success(()))
         }.resume()
@@ -420,7 +421,7 @@ class APIManagere {
             return
         }
         
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        URLSession.shared.dataTask(with: request) { data, _, error in
             if let error = error {
                 completion(.failure(APIError.networkError(error)))
                 return

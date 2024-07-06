@@ -7,11 +7,10 @@
 
 // StreakView.swift
 
-import UIKit
 import SnapKit
+import UIKit
 
 class StreakView: UIView {
-    
     private let collectionView: UICollectionView
     private var dates: [Date] = []
     var attendanceRecord: [Bool] = [true, true, true, false, false, true, true, true, false, false, false, false, false, false]
@@ -22,12 +21,12 @@ class StreakView: UIView {
         super.layoutSubviews()
         
         // Update gradient layers frame in layoutSubviews
-        if let streakLeftGradientView = self.layer.sublayers?.first(where: { $0 is CAGradientLayer && ($0 as! CAGradientLayer).startPoint.x == 0 }) {
-            streakLeftGradientView.frame = CGRect(x: 0, y: 0, width: self.bounds.width / 2, height: self.bounds.height)
+        if let streakLeftGradientView = layer.sublayers?.first(where: { $0 is CAGradientLayer && ($0 as! CAGradientLayer).startPoint.x == 0 }) {
+            streakLeftGradientView.frame = CGRect(x: 0, y: 0, width: bounds.width / 2, height: bounds.height)
         }
         
-        if let streakRightGradientView = self.layer.sublayers?.first(where: { $0 is CAGradientLayer && ($0 as! CAGradientLayer).startPoint.x == 0.5 }) {
-            streakRightGradientView.frame = CGRect(x: self.bounds.width / 2, y: 0, width: self.bounds.width / 2, height: self.bounds.height)
+        if let streakRightGradientView = layer.sublayers?.first(where: { $0 is CAGradientLayer && ($0 as! CAGradientLayer).startPoint.x == 0.5 }) {
+            streakRightGradientView.frame = CGRect(x: bounds.width / 2, y: 0, width: bounds.width / 2, height: bounds.height)
         }
     }
     
@@ -46,19 +45,20 @@ class StreakView: UIView {
         calculateWeekScore()
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     func setAttendanceRecord(_ record: [Bool]) {
-        self.attendanceRecord = record
+        attendanceRecord = record
         calculateWeekScore()
         collectionView.reloadData()
     }
     
     private func setupCollectionView() {
         addSubview(collectionView)
-        collectionView.snp.makeConstraints{ make in
+        collectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         
@@ -89,7 +89,7 @@ class StreakView: UIView {
         let endIndex = startIndex + 6
         
         score = attendanceRecord[startIndex...endIndex].filter { $0 }.count
-        print("This week's attendance score: \(score)")
+//        print("This week's attendance score: \(score)")
     }
 }
 

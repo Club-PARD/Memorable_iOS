@@ -5,11 +5,10 @@
 //  Created by Minhyeok Kim on 6/30/24.
 //
 
-import UIKit
 import SnapKit
+import UIKit
 
 class StarView: UIView {
-
     private let tableView: UITableView
     private let filterButtonsView = UIStackView()
     private let allFilterButton = UIButton(type: .system)
@@ -29,20 +28,21 @@ class StarView: UIView {
         setupConstraints()
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     private func setupView() {
-        self.backgroundColor = MemorableColor.White
-        self.layer.cornerRadius = 40
-        self.layer.masksToBounds = true
+        backgroundColor = MemorableColor.White
+        layer.cornerRadius = 40
+        layer.masksToBounds = true
         
         tableView.register(RecentsheetCell.self, forCellReuseIdentifier: "RecentsheetCell")
         tableView.separatorStyle = .none
         tableView.dataSource = self
         tableView.delegate = self
-                addSubview(filterButtonsView)
+        addSubview(filterButtonsView)
         addSubview(tableView)
         
         setupFilterButtons()
@@ -156,7 +156,7 @@ class StarView: UIView {
     }
     
     private func updateButtonState(_ selectedButton: UIButton, isSelected: Bool) {
-        [allFilterButton, worksheetFilterButton, testsheetFilterButton, wrongsheetFilterButton].forEach { button in
+        for button in [allFilterButton, worksheetFilterButton, testsheetFilterButton, wrongsheetFilterButton] {
             var config = button.configuration
             if button == selectedButton && isSelected {
                 config?.baseForegroundColor = MemorableColor.White
@@ -171,9 +171,9 @@ class StarView: UIView {
     
     private func setupGradientView() {
         let gradientView = GradientView(startColor: .white, endColor: .white)
-        self.addSubview(gradientView)
+        addSubview(gradientView)
         
-        gradientView.snp.makeConstraints{ make in
+        gradientView.snp.makeConstraints { make in
             make.top.equalTo(filterButtonsView.snp.bottom).offset(2)
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(20)
@@ -182,7 +182,6 @@ class StarView: UIView {
 }
 
 extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellDelegate {
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return filteredDocuments.count
     }
@@ -201,7 +200,6 @@ extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellD
     
     // 라우팅
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         tableView.deselectRow(at: indexPath, animated: true)
         
         let document = filteredDocuments[indexPath.row]
@@ -209,18 +207,29 @@ extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellD
         switch document.fileType {
         case "빈칸학습지":
             if let worksheet = document as? Worksheet {
-                // Fetch WorksheetDetail before navigating
-                APIManagere.shared.getWorksheet(worksheetId: worksheet.id) { result in
+                APIManager.shared.getData(to: "/api/worksheet/ws/\(worksheet.id)") { (sheetDetail: WorksheetDetail?, error: Error?) in
+                    
                     DispatchQueue.main.async {
-                        switch result {
-                        case .success(let worksheetDetail):
-                            let workSheetVC = WorkSheetViewController()
-                            workSheetVC.worksheetDetail = worksheetDetail
-                            self.navigateToViewController(workSheetVC)
-                        case .failure(let error):
-                            print("Error fetching worksheet detail: \(error)")
-                            // Handle error (e.g., show an alert to the user)
+                        if let error = error {
+                            print("Error fetching data: \(error)")
+                            return
                         }
+                        
+                        guard let detail = sheetDetail else {
+                            print("No data received")
+                            return
+                        }
+                        
+                        print("---GET WorkSheet---")
+                        print("NAME: \(detail.name)")
+                        print("CATE: \(detail.category)")
+                        print("isComplete: \(detail.isCompleteAllBlanks)")
+                        print("isAddWorksheet: \(detail.isAddWorksheet)")
+                        print("isMakeTestSheet: \(detail.isMakeTestSheet)")
+
+                        let workSheetVC = WorkSheetViewController()
+                        workSheetVC.worksheetDetail = detail
+                        self.navigateToViewController(workSheetVC)
                     }
                 }
             }
@@ -240,18 +249,39 @@ extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellD
                 }
             }
         case "오답노트":
-            let wrongSheetVC = WrongSheetViewController()
-            navigateToViewController(wrongSheetVC)
-            break
+            // TODO: API 검증해야함.
+            APIManager.shared.getData(to: "/api/wrongsheet/\(document.id)") { (sheetDetail: WrongsheetDetail?, error: Error?) in
+                DispatchQueue.main.async {
+                    // 3. 받아온 데이터 처리
+                    if let error = error {
+                        print("Error fetching data: \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    guard let detail = sheetDetail else {
+                        print("No data received")
+                        return
+                    }
+                    
+                    // wrong sheet detail
+                    print("GET: \(detail.name)")
+                    print("GET: \(detail.category)")
+                    print("GET: \(detail.questions)")
+                    
+//                    let wrongSheetVC = WrongSheetViewController()
+//                    wrongSheetVC.wrongsheetDetail = detail
+//                    self.navigateToViewController(wrongSheetVC)
+                }
+            }
         default:
             print("Unknown file type")
         }
     }
     
     private func navigateToViewController(_ viewController: UIViewController) {
-        if let navigationController = self.window?.rootViewController as? UINavigationController {
+        if let navigationController = window?.rootViewController as? UINavigationController {
             navigationController.pushViewController(viewController, animated: true)
-        } else if let presentingViewController = self.window?.rootViewController {
+        } else if let presentingViewController = window?.rootViewController {
             presentingViewController.present(viewController, animated: true, completion: nil)
         }
     }

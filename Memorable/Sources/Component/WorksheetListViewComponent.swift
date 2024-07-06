@@ -5,8 +5,8 @@
 //  Created by Minhyeok Kim on 6/28/24.
 //
 
-import UIKit
 import SnapKit
+import UIKit
 
 class WorksheetListViewComponent: UIView {
     private let worksheetTableView: UITableView
@@ -34,7 +34,7 @@ class WorksheetListViewComponent: UIView {
         self.settingButton = UIButton()
         super.init(frame: frame)
         self.backgroundColor = MemorableColor.White
-        self.layer.cornerRadius = 40
+        layer.cornerRadius = 40
         self.clipsToBounds = true
         
         setupViews()
@@ -43,6 +43,7 @@ class WorksheetListViewComponent: UIView {
         setupEditingButtons()
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -104,9 +105,9 @@ class WorksheetListViewComponent: UIView {
     
     private func setupGradientView() {
         let gradientView = GradientView(startColor: MemorableColor.White ?? .white, endColor: MemorableColor.White ?? .white)
-        self.addSubview(gradientView)
+        addSubview(gradientView)
         
-        gradientView.snp.makeConstraints{ make in
+        gradientView.snp.makeConstraints { make in
             make.top.equalTo(filterScrollView.snp.bottom).offset(2)
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(20)
@@ -117,7 +118,7 @@ class WorksheetListViewComponent: UIView {
         editButton = UIBarButtonItem(title: "편집", style: .plain, target: self, action: #selector(toggleEditingMode))
         doneButton = UIBarButtonItem(title: "완료", style: .done, target: self, action: #selector(toggleEditingMode))
         
-        if let viewController = self.findViewController() as? UIViewController {
+        if let viewController = findViewController() as? UIViewController {
             viewController.navigationItem.rightBarButtonItem = editButton
         }
     }
@@ -127,18 +128,18 @@ class WorksheetListViewComponent: UIView {
     }
     
     private func updateEditingUI() {
-        if let viewController = self.findViewController() as? UIViewController {
+        if let viewController = findViewController() as? UIViewController {
             viewController.navigationItem.rightBarButtonItem = isEditingMode ? doneButton : editButton
         }
         
         if isEditingMode {
             let deleteButton = UIBarButtonItem(title: "삭제", style: .plain, target: self, action: #selector(deleteSelectedItems))
             let editButton = UIBarButtonItem(title: "수정", style: .plain, target: self, action: #selector(editSelectedItem))
-            if let viewController = self.findViewController() as? UIViewController {
+            if let viewController = findViewController() as? UIViewController {
                 viewController.navigationItem.leftBarButtonItems = [deleteButton, editButton]
             }
         } else {
-            if let viewController = self.findViewController() as? UIViewController {
+            if let viewController = findViewController() as? UIViewController {
                 viewController.navigationItem.leftBarButtonItems = nil
             }
         }
@@ -181,14 +182,15 @@ class WorksheetListViewComponent: UIView {
         alertController.addAction(deleteAction)
         alertController.addAction(cancelAction)
         
-        if let viewController = self.findViewController() {
+        if let viewController = findViewController() {
             viewController.present(alertController, animated: true, completion: nil)
         }
     }
     
     @objc private func editSelectedItem() {
         guard let selectedIndexPaths = worksheetTableView.indexPathsForSelectedRows, selectedIndexPaths.count == 1,
-              let indexPath = selectedIndexPaths.first else {
+              let indexPath = selectedIndexPaths.first
+        else {
             // 하나의 항목만 선택되었을 때 수정 가능
             return
         }
@@ -230,7 +232,7 @@ class WorksheetListViewComponent: UIView {
         alertController.addAction(saveAction)
         alertController.addAction(cancelAction)
         
-        if let viewController = self.findViewController() {
+        if let viewController = findViewController() {
             viewController.present(alertController, animated: true, completion: nil)
         }
     }
@@ -284,7 +286,7 @@ class WorksheetListViewComponent: UIView {
     }
     
     @objc private func filterButtonTapped(_ sender: UIButton) {
-        filterStackView.arrangedSubviews.forEach { view in
+        for view in filterStackView.arrangedSubviews {
             if let button = view as? UIButton {
                 var config = button.configuration
                 config?.baseBackgroundColor = MemorableColor.Gray1
@@ -330,78 +332,105 @@ class WorksheetListViewComponent: UIView {
 
 extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate, RecentsheetCellDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return filteredWorksheets.count
-        }
+        return filteredWorksheets.count
+    }
         
-        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "WorksheetTableViewCell", for: indexPath) as! RecentsheetCell
-            let document = filteredWorksheets[indexPath.row]
-            cell.configure(with: document)
-            return cell
-        }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "WorksheetTableViewCell", for: indexPath) as! RecentsheetCell
+        let document = filteredWorksheets[indexPath.row]
+        cell.configure(with: document)
+        return cell
+    }
         
-        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            if isEditingMode {
-                updateEditingUI()
-            } else {
-                tableView.deselectRow(at: indexPath, animated: true)
-                let document = worksheets[indexPath.row]
-                
-                switch document.fileType {
-                case "빈칸학습지":
-                    if let worksheet = document as? Worksheet {
-                        // Fetch WorksheetDetail before navigating
-                        APIManagere.shared.getWorksheet(worksheetId: worksheet.id) { result in
-                            DispatchQueue.main.async {
-                                switch result {
-                                case .success(let worksheetDetail):
-                                    let workSheetVC = WorkSheetViewController()
-                                    workSheetVC.worksheetDetail = worksheetDetail
-                                    self.navigateToViewController(workSheetVC)
-                                case .failure(let error):
-                                    print("Error fetching worksheet detail: \(error)")
-                                    // Handle error (e.g., show an alert to the user)
-                                }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if isEditingMode {
+            updateEditingUI()
+        } else {
+            tableView.deselectRow(at: indexPath, animated: true)
+            let document = worksheets[indexPath.row]
+                    
+            switch document.fileType {
+            case "빈칸학습지":
+                if let worksheet = document as? Worksheet {
+                    // Fetch WorksheetDetail before navigating
+                    APIManager.shared.getData(to: "/api/worksheet/ws/\(worksheet.id)") { (sheetDetail: WorksheetDetail?, error: Error?) in
+                        
+                        DispatchQueue.main.async {
+                            if let error = error {
+                                print("Error fetching data: \(error)")
+                                return
                             }
+                            
+                            guard let detail = sheetDetail else {
+                                print("No data received")
+                                return
+                            }
+                            
+                            print("---GET WorkSheet---")
+                            print("NAME: \(detail.name)")
+                            print("CATE: \(detail.category)")
+                            print("isComplete: \(detail.isCompleteAllBlanks)")
+                            print("isAddWorksheet: \(detail.isAddWorksheet)")
+                            print("isMakeTestSheet: \(detail.isMakeTestSheet)")
+                            
+                            let workSheetVC = WorkSheetViewController()
+                            workSheetVC.worksheetDetail = detail
+                            self.navigateToViewController(workSheetVC)
                         }
                     }
-                case "나만의 시험지":
-                    if let testsheet = document as? Testsheet {
-                        APIManagere.shared.getTestsheet(testsheetId: testsheet.id) { result in
-                            DispatchQueue.main.async {
-                                switch result {
-                                case .success(let testsheetDetail):
-                                    let testSheetVC = TestSheetViewController()
-                                    testSheetVC.testsheetDetail = testsheetDetail
-                                    self.navigateToViewController(testSheetVC)
-                                case .failure(let error):
-                                    print("Error fetching testsheet detail: \(error)")
-                                }
-                            }
-                        }
-                    }
-                case "오답노트":
-                    let wrongSheetVC = WrongSheetViewController()
-                    navigateToViewController(wrongSheetVC)
-                default:
-                    print("Unknown file type")
                 }
+            case "나만의 시험지":
+                if let testsheet = document as? Testsheet {
+                    APIManagere.shared.getTestsheet(testsheetId: testsheet.id) { result in
+                        DispatchQueue.main.async {
+                            switch result {
+                            case .success(let testsheetDetail):
+                                let testSheetVC = TestSheetViewController()
+                                testSheetVC.testsheetDetail = testsheetDetail
+                                self.navigateToViewController(testSheetVC)
+                            case .failure(let error):
+                                print("Error fetching testsheet detail: \(error)")
+                            }
+                        }
+                    }
+                }
+            case "오답노트":
+                APIManager.shared.getData(to: "/api/wrongsheet/\(document.id)") { (sheetDetail: WrongsheetDetail?, error: Error?) in
+                    DispatchQueue.main.async {
+                        // 3. 받아온 데이터 처리
+                        if let error = error {
+                            print("Error fetching data: \(error.localizedDescription)")
+                            return
+                        }
+                                            
+                        guard let detail = sheetDetail else {
+                            print("No data received")
+                            return
+                        }
+                                            
+                        // wrong sheet detail
+                        print("GET: \(detail.name)")
+                        print("GET: \(detail.category)")
+                        print("GET: \(detail.questions)")
+                                            
+                        //                    let wrongSheetVC = WrongSheetViewController()
+                        //                    wrongSheetVC.wrongsheetDetail = detail
+                        //                    self.navigateToViewController(wrongSheetVC)
+                    }
+                }
+            default:
+                print("Unknown file type")
             }
         }
+    }
         
-        func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-            if isEditingMode {
-                updateEditingUI()
-            }
+    private func navigateToViewController(_ viewController: UIViewController) {
+        if let navigationController = window?.rootViewController as? UINavigationController {
+            navigationController.pushViewController(viewController, animated: true)
+        } else if let presentingViewController = window?.rootViewController {
+            presentingViewController.present(viewController, animated: true, completion: nil)
         }
-        
-        private func navigateToViewController(_ viewController: UIViewController) {
-            if let navigationController = self.window?.rootViewController as? UINavigationController {
-                navigationController.pushViewController(viewController, animated: true)
-            } else if let presentingViewController = self.window?.rootViewController {
-                presentingViewController.present(viewController, animated: true, completion: nil)
-            }
-        }
+    }
     
     func didTapBookmark(for document: Document) {
         // 테이블 뷰 리로드
@@ -411,9 +440,9 @@ extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate
 
 extension UIView {
     func findViewController() -> UIViewController? {
-        if let nextResponder = self.next as? UIViewController {
+        if let nextResponder = next as? UIViewController {
             return nextResponder
-        } else if let nextResponder = self.next as? UIView {
+        } else if let nextResponder = next as? UIView {
             return nextResponder.findViewController()
         } else {
             return nil
