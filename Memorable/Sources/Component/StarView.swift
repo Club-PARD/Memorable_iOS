@@ -225,6 +225,7 @@ extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellD
                         print("CATE: \(detail.category)")
                         print("isComplete: \(detail.isCompleteAllBlanks)")
                         print("isAddWorksheet: \(detail.isAddWorksheet)")
+                        print("isMakeTestSheet: \(detail.isMakeTestSheet)")
 
                         let workSheetVC = WorkSheetViewController()
                         workSheetVC.worksheetDetail = detail
@@ -237,8 +238,30 @@ extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellD
             // testSheetVC.document = document // 필요하다면 document를 ViewController에 전달
             navigateToViewController(testSheetVC)
         case "오답노트":
-            let wrongSheetVC = WrongSheetViewController()
-            navigateToViewController(wrongSheetVC)
+            // TODO: API 검증해야함.
+            APIManager.shared.getData(to: "/api/wrongsheet/\(document.id)") { (sheetDetail: WrongsheetDetail?, error: Error?) in
+                DispatchQueue.main.async {
+                    // 3. 받아온 데이터 처리
+                    if let error = error {
+                        print("Error fetching data: \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    guard let detail = sheetDetail else {
+                        print("No data received")
+                        return
+                    }
+                    
+                    // wrong sheet detail
+                    print("GET: \(detail.name)")
+                    print("GET: \(detail.category)")
+                    print("GET: \(detail.questions)")
+                    
+//                    let wrongSheetVC = WrongSheetViewController()
+//                    wrongSheetVC.wrongsheetDetail = detail
+//                    self.navigateToViewController(wrongSheetVC)
+                }
+            }
         default:
             print("Unknown file type")
         }

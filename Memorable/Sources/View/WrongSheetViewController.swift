@@ -75,7 +75,6 @@ class WrongSheetViewController: UIViewController {
 
         $0.configuration = config
 
-        // 버튼의 layer에 직접 cornerRadius를 설정합니다.
         $0.layer.cornerRadius = 25
         $0.clipsToBounds = true
     }
@@ -89,10 +88,14 @@ class WrongSheetViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = MemorableColor.Gray5
 
+        guard let detail = wrongsheetDetail else {
+            print("detail 없음")
+            return
+        }
+
         wrongSheetView = WrongSheetView(
             frame: CGRect.zero,
-            questions: mockWrongQuestions,
-            answers: mockWrongQuestionAnswers
+            QnA: detail.questions
         )
         loadUserAnswers()
 
@@ -135,6 +138,11 @@ class WrongSheetViewController: UIViewController {
             print("WrongSheetView를 찾을 수 없습니다.")
             return
         }
+        guard let detail = wrongsheetDetail else {
+            print("detail 없음")
+            return
+        }
+
         answerLength = wrongsheet.wrongQuestionViews.count
         if isShowingAnswer {
             for idx in 0 ..< answerLength {
@@ -143,8 +151,7 @@ class WrongSheetViewController: UIViewController {
         }
         userAnswer = wrongsheet.wrongQuestionViews.map { $0.answerTextField.text ?? "" }
 
-        // TODO: 클백 연결시 key 변경해주어야 함.
-        UserDefaults.standard.set(userAnswer, forKey: "wrongSheet")
+        UserDefaults.standard.set(userAnswer, forKey: "\(detail.wrongsheetId)")
     }
 
     private func loadUserAnswers() {
@@ -152,8 +159,12 @@ class WrongSheetViewController: UIViewController {
             print("WrongSheetView를 찾을 수 없습니다.")
             return
         }
+        guard let detail = wrongsheetDetail else {
+            print("detail 없음")
+            return
+        }
 
-        let prevUserAnswers: [String] = UserDefaults.standard.array(forKey: "wrongSheet") as? [String] ?? []
+        let prevUserAnswers: [String] = UserDefaults.standard.array(forKey: "\(detail.wrongsheetId)") as? [String] ?? []
         if !prevUserAnswers.isEmpty {
             print(prevUserAnswers)
             for (index, view) in wrongsheet.wrongQuestionViews.enumerated() {
@@ -234,11 +245,17 @@ class WrongSheetViewController: UIViewController {
             print("WrongSheetView를 찾을 수 없습니다.")
             return
         }
+        guard let detail = wrongsheetDetail else {
+            print("detail 없음")
+            return
+        }
 
         userAnswer = wrongsheet.wrongQuestionViews.map { $0.answerTextField.text ?? "" }
         answerLength = wrongsheet.wrongQuestionViews.count
 
-        print("✅ 실제 답안: \(mockWrongQuestionAnswers)")
+        let originalAnswer = detail.questions.map { $0.answer }
+
+        print("✅ 실제 답안: \(originalAnswer)")
         print("☑️ 유저 답안: \(userAnswer)")
 
         DispatchQueue.main.async {
@@ -251,10 +268,10 @@ class WrongSheetViewController: UIViewController {
                     .isEmpty
                 {
                     textField.textColor = MemorableColor.Gray2
-                    textField.text = mockWrongQuestionAnswers[idx]
+                    textField.text = originalAnswer[idx]
                 }
                 // 값이 동일
-                else if mockWrongQuestionAnswers[idx].replacingOccurrences(of: " ", with: "")
+                else if originalAnswer[idx].replacingOccurrences(of: " ", with: "")
                     == self.userAnswer[idx].replacingOccurrences(of: " ", with: "")
                 {
                     self.correctCount += 1
@@ -263,7 +280,7 @@ class WrongSheetViewController: UIViewController {
                 // 나머지 (= 틀림)
                 else {
                     textField.textColor = MemorableColor.Red
-                    textField.text = mockWrongQuestionAnswers[idx]
+                    textField.text = originalAnswer[idx]
 
                     myAnswerLabel.text = "사용자가 입력한 답: \(self.userAnswer[idx])"
                     myAnswerLabel.isHidden = false

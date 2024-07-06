@@ -72,30 +72,8 @@ struct WorksheetDetail: Codable {
     var category: String
     var isCompleteAllBlanks: Bool
     var isAddWorksheet: Bool
+    var isMakeTestSheet: Bool
     var answer1: [String]
     var answer2: [String]
     var content: String
-    
-//    enum CodingKeys: String, CodingKey {
-//        case worksheetId
-//        case name
-//        case category
-//        case isCompleteAllBlanks
-//        case isAddWorksheet
-//        case answer1
-//        case answer2
-//        case content
-//    }
-//
-//    init(from decoder: Decoder) throws {
-//        let container = try decoder.container(keyedBy: CodingKeys.self)
-//        worksheetId = try container.decode(Int.self, forKey: .worksheetId)
-//        name = try container.decode(String.self, forKey: .name)
-//        category = try container.decode(String.self, forKey: .category)
-//        isCompleteAllBlanks = try container.decodeIfPresent(Bool.self, forKey: .isCompleteAllBlanks)!
-//        isAddWorksheet = try container.decodeIfPresent(Bool.self, forKey: .isAddWorksheet)!
-//        answer1 = try container.decode([String].self, forKey: .answer1)
-//        answer2 = try container.decode([String].self, forKey: .answer2)
-//        content = try container.decode(String.self, forKey: .content)
-//    }
 }

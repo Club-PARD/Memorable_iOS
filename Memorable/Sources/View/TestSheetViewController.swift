@@ -154,7 +154,7 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadTestsheet()
+//        loadTestsheet()
         navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor = MemorableColor.Gray5
         setupUI()
@@ -170,11 +170,11 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
-    private func loadTestsheet() {
-        testsheetDetail = apiManager.getMockTestsheetDetail()
-        setupTestsheetInfo()
-        firstSheetState = TestSheetState(userAnswers: Array(repeating: nil, count: testsheetDetail?.questions1.count ?? 0), isSubmitted: false, score: nil)
-    }
+//    private func loadTestsheet() {
+//        testsheetDetail = apiManager.getMockTestsheetDetail()
+//        setupTestsheetInfo()
+//        firstSheetState = TestSheetState(userAnswers: Array(repeating: nil, count: testsheetDetail?.questions1.count ?? 0), isSubmitted: false, score: nil)
+//    }
     
     private func setupTestsheetInfo() {
         guard let testsheetDetail = testsheetDetail else { return }
