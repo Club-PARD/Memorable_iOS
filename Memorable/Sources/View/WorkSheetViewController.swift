@@ -176,6 +176,8 @@ class WorkSheetViewController: UIViewController {
             answers: detail.answer1
         )
 
+        reloadUserAnswers()
+
         if detail.isCompleteAllBlanks {
             finishImage.isHidden = false
             doneButton.setTitleColor(MemorableColor.White, for: .normal)
@@ -187,7 +189,15 @@ class WorkSheetViewController: UIViewController {
             finishAddWorksheet()
         }
 
-        reloadUserAnswers()
+        if detail.isMakeTestSheet {
+            finishImage.removeFromSuperview()
+            finishImage.snp.removeConstraints()
+            finishImage.isHidden = true
+
+            doneButton.setTitleColor(MemorableColor.Gray1, for: .normal)
+            doneButton.backgroundColor = MemorableColor.Gray4
+            doneButton.isEnabled = false
+        }
     }
 
     // MARK: - Button Action
@@ -413,6 +423,15 @@ class WorkSheetViewController: UIViewController {
                 print("detail 없음")
                 return
             }
+            APIManager.shared.updateData(to: "/api/worksheet/make/\(detail.worksheetId)", body: detail) { result in
+                switch result {
+                case .success:
+                    print("isMakeTestSheet Update 성공")
+                case .failure(let error):
+                    print("Update 실패: \(error.localizedDescription)")
+                }
+            }
+
             APIManager.shared.postData(to: "/api/testsheet/\(detail.worksheetId)", body: detail) { (result: Result<TestsheetDetail, Error>) in
                 DispatchQueue.main.async {
                     switch result {
