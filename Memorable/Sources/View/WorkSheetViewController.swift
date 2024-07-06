@@ -33,6 +33,12 @@ class WorkSheetViewController: UIViewController {
         $0.isHidden = true
     }
 
+    private let finishImage2 = FloatingImage(frame: CGRect(x: 0, y: 0, width: 260, height: 36)).then {
+        $0.image = UIImage(named: "finish_add")
+        $0.contentMode = .scaleAspectFit
+        $0.isHidden = true
+    }
+
     private let doneButton = UIButton().then {
         $0.setTitle("시험지 받기", for: .normal)
         $0.setTitleColor(MemorableColor.Gray1, for: .normal)
@@ -78,6 +84,8 @@ class WorkSheetViewController: UIViewController {
         $0.contentMode = .scaleAspectFit
         $0.isHidden = true
     }
+
+    private var hideWorkItem: DispatchWorkItem?
 
     private let addWorkSheetButton = UIButton().then {
         var config = UIButton.Configuration.plain()
@@ -193,6 +201,7 @@ class WorkSheetViewController: UIViewController {
             finishImage.removeFromSuperview()
             finishImage.snp.removeConstraints()
             finishImage.isHidden = true
+            finishImage2.isHidden = false
 
             doneButton.setTitleColor(MemorableColor.Gray1, for: .normal)
             doneButton.backgroundColor = MemorableColor.Gray4
@@ -640,6 +649,9 @@ class WorkSheetViewController: UIViewController {
         print("FirstSheetButton")
         guard let worksheetDetail = worksheetDetail else { return }
 
+        hideWorkItem?.cancel()
+        finishAddImage.isHidden = true
+
         saveUserAnswers()
         isFirstSheetSelected = true
 
@@ -791,9 +803,15 @@ class WorkSheetViewController: UIViewController {
         view.layoutIfNeeded()
 
         finishAddImage.isHidden = false
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.finishAddImage.isHidden = true
+
+        hideWorkItem?.cancel()
+
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.finishAddImage.isHidden = true
         }
+        hideWorkItem = workItem
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: workItem)
     }
 
     // MARK: - Default Setting
@@ -821,6 +839,7 @@ class WorkSheetViewController: UIViewController {
         view.addSubview(logoImageView)
         view.addSubview(backButton)
         view.addSubview(finishImage)
+        view.addSubview(finishImage2)
         view.addSubview(doneButton)
         view.addSubview(titleLabel)
         view.addSubview(categoryLabel)
@@ -855,6 +874,13 @@ class WorkSheetViewController: UIViewController {
         }
 
         finishImage.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(13)
+            make.trailing.equalTo(doneButton.snp.leading).offset(-10)
+            make.height.equalTo(44)
+            make.width.equalTo(260)
+        }
+
+        finishImage2.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(13)
             make.trailing.equalTo(doneButton.snp.leading).offset(-10)
             make.height.equalTo(44)
