@@ -172,6 +172,13 @@ class WorkSheetView: UIView {
                     make.height.equalTo(30)
                 }
                 $0.placeholder = "                           "
+
+                // 좌우 여백 추가
+                let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 30))
+                $0.leftView = paddingView
+                $0.leftViewMode = .always
+                $0.rightView = paddingView
+                $0.rightViewMode = .always
             }
             self.userAnswers.append(textField)
 
