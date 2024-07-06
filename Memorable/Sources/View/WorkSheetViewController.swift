@@ -34,7 +34,7 @@ class WorkSheetViewController: UIViewController {
     }
 
     private let doneButton = UIButton().then {
-        $0.setTitle("학습완료", for: .normal)
+        $0.setTitle("시험지 받기", for: .normal)
         $0.setTitleColor(MemorableColor.Gray1, for: .normal)
         $0.backgroundColor = MemorableColor.Gray4
         $0.layer.cornerRadius = 22
@@ -388,7 +388,7 @@ class WorkSheetViewController: UIViewController {
         doneButton.backgroundColor = MemorableColor.Blue2
         doneButton.isEnabled = true
 
-        // TODO: 서버 체크 필요
+        // DONE
         APIManager.shared.updateData(to: "/api/worksheet/done/\(detail.worksheetId)", body: detail) { result in
             switch result {
             case .success:
@@ -401,20 +401,18 @@ class WorkSheetViewController: UIViewController {
 
     @objc func didTapDoneButton() {
         print("DONE")
-        let alert = UIAlertController(title: "학습완료", message: "학습완료 하시겠습니까?\n해당 파일로 나만의 시험지를\n바로 생성할 수 있습니다.", preferredStyle: .alert)
+        let alert = UIAlertController(title: "시험지 받기", message: "시험지가 자동으로 생성되고\n생성된 시험지로 이동합니다.", preferredStyle: .alert)
 
-        let cancelAction = UIAlertAction(title: "나가기", style: .cancel) { _ in
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
             print("PRESS CANCEL")
-            self.navigationController?.popViewController(animated: true)
         }
 
-        let confirmAction = UIAlertAction(title: "시험지 생성하기", style: .default) { _ in
+        let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
             print("PRESS CONFIRM")
             guard let detail = self.worksheetDetail else {
                 print("detail 없음")
                 return
             }
-
             APIManager.shared.postData(to: "/api/testsheet/\(detail.worksheetId)", body: detail) { (result: Result<TestsheetDetail, Error>) in
                 DispatchQueue.main.async {
                     switch result {
@@ -422,7 +420,7 @@ class WorkSheetViewController: UIViewController {
                         print("Testsheet successfully posted")
                         let testSheetVC = TestSheetViewController()
                         testSheetVC.testsheetDetail = testSheetDetail
-                        self.navigationController?.pushViewController(testSheetVC, animated: true)
+                        self.navigationController?.setViewControllers([HomeViewController(), testSheetVC], animated: true)
 
                     case .failure(let error):
                         print("Error posting testsheet: \(error.localizedDescription)")
@@ -464,7 +462,6 @@ class WorkSheetViewController: UIViewController {
         }
         userAnswer = worksheet.userAnswers.map { $0.text ?? "" }
 
-        // TODO: 클백 들어오면 key값 변경되어야 함 WorkSheetID로
         if isFirstSheetSelected {
             UserDefaults.standard.set(userAnswer, forKey: "\(detail.worksheetId)-1")
         }
@@ -538,7 +535,7 @@ class WorkSheetViewController: UIViewController {
                 return
             }
 
-            // TODO: 서버 체크 필요
+            // DONE
             APIManager.shared.updateData(to: "/api/worksheet/addsheet/\(detail.worksheetId)", body: detail) { result in
                 switch result {
                 case .success:
@@ -622,9 +619,7 @@ class WorkSheetViewController: UIViewController {
 
     @objc func didTapFirstSheetButton() {
         print("FirstSheetButton")
-        // TODO: API 연결중
         guard let worksheetDetail = worksheetDetail else { return }
-        // TODO: API 연결중 이까지
 
         saveUserAnswers()
         isFirstSheetSelected = true
@@ -653,14 +648,12 @@ class WorkSheetViewController: UIViewController {
         firstSheetButton.removeFromSuperview()
         secondSheetButton.removeFromSuperview()
 
-        // TODO: API 연결중
         workSheetView = WorkSheetView(
             frame: view.bounds,
             viewWidth: view.frame.width - 48,
             text: worksheetDetail.content,
             answers: worksheetDetail.answer1
         )
-        // TODO: API 연결중 이까지
         reloadUserAnswers()
 
         if let newWorkSheetView = workSheetView {
@@ -700,9 +693,8 @@ class WorkSheetViewController: UIViewController {
 
     @objc func didTapSecondSheetButton() {
         print("SecondSheetButton")
-        // TODO: API 연결중
         guard let worksheetDetail = worksheetDetail else { return }
-        // TODO: API 연결중 이까지
+
         saveUserAnswers()
         isFirstSheetSelected = false
 
@@ -731,14 +723,12 @@ class WorkSheetViewController: UIViewController {
         secondSheetButton.removeFromSuperview()
         finishAddImage.removeFromSuperview()
 
-        // TODO: API 연결중
         workSheetView = WorkSheetView(
             frame: view.bounds,
             viewWidth: view.frame.width - 48,
             text: worksheetDetail.content,
             answers: worksheetDetail.answer2
         )
-        // TODO: API 연결중 이까지
         reloadUserAnswers()
 
         if let newWorkSheetView = workSheetView {

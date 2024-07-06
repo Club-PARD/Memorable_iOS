@@ -293,6 +293,7 @@ extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate
                         print("CATE: \(detail.category)")
                         print("isComplete: \(detail.isCompleteAllBlanks)")
                         print("isAddWorksheet: \(detail.isAddWorksheet)")
+                        print("isMakeTestSheet: \(detail.isMakeTestSheet)")
                     
                         let workSheetVC = WorkSheetViewController()
                         workSheetVC.worksheetDetail = detail
@@ -305,13 +306,12 @@ extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate
 //            testSheetVC.document = document
             navigateToViewController(testSheetVC)
         case "오답노트":
-            APIManager.shared.getData(to: "/api/wrongsheet/\(document.id)") { [weak self] (sheetDetail: WrongsheetDetail?, error: Error?) in
-                guard let self = self else { return }
-                
+            // TODO: API 검증해야함.
+            APIManager.shared.getData(to: "/api/wrongsheet/\(document.id)") { (sheetDetail: WrongsheetDetail?, error: Error?) in
                 DispatchQueue.main.async {
                     // 3. 받아온 데이터 처리
                     if let error = error {
-                        print("Error fetching data: \(error)")
+                        print("Error fetching data: \(error.localizedDescription)")
                         return
                     }
                     
@@ -325,9 +325,9 @@ extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate
                     print("GET: \(detail.category)")
                     print("GET: \(detail.questions)")
                     
-                    let wrongSheetVC = WrongSheetViewController()
-                    wrongSheetVC.wrongsheetDetail = detail
-                    self.navigateToViewController(wrongSheetVC)
+//                    let wrongSheetVC = WrongSheetViewController()
+//                    wrongSheetVC.wrongsheetDetail = detail
+//                    self.navigateToViewController(wrongSheetVC)
                 }
             }
         default:

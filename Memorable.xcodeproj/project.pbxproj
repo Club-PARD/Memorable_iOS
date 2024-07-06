@@ -140,10 +140,6 @@
 		DBEB96FB2C35770C00106866 /* Worksheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Worksheet.swift; sourceTree = "<group>"; };
 		DBEB96FD2C35774500106866 /* Testsheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Testsheet.swift; sourceTree = "<group>"; };
 		DBEB96FF2C35775900106866 /* Wrongsheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wrongsheet.swift; sourceTree = "<group>"; };
-		DD0659462C37AF77005B037D /* Memorable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Memorable.app; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/Memorable.app"; sourceTree = "<absolute>"; };
-		DD0659472C37AF77005B037D /* PDFShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; name = PDFShareExtension.appex; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/PDFShareExtension.appex"; sourceTree = "<absolute>"; };
-		DD0659482C37AF77005B037D /* MemorableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableTests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/Memorable.app/PlugIns/MemorableTests.xctest"; sourceTree = "<absolute>"; };
-		DD0659492C37AF77005B037D /* MemorableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableUITests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/MemorableUITests-Runner.app/PlugIns/MemorableUITests.xctest"; sourceTree = "<absolute>"; };
 		DD06594B2C381CF4005B037D /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		DD06594F2C3833E7005B037D /* EmptyResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyResponse.swift; sourceTree = "<group>"; };
 		DD1A05FE2C2B1B4900DE0CB8 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -158,6 +154,10 @@
 		DD4B40AE2C2BD38A00524757 /* WorkSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSheetViewController.swift; sourceTree = "<group>"; };
 		DD4B40B02C2BE30600524757 /* WorkSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSheetView.swift; sourceTree = "<group>"; };
 		DD4B40B22C2BE4AD00524757 /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
+		DD9494082C391BF90039B530 /* Memorable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Memorable.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD9494092C391BF90039B530 /* PDFShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PDFShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD94940A2C391BF90039B530 /* MemorableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MemorableTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD94940B2C391BF90039B530 /* MemorableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MemorableUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDAB24CD2C3144DA00AAEDB6 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		DDAB24D22C3144DA00AAEDB6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DDAB24DF2C3148A700AAEDB6 /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
@@ -335,6 +335,10 @@
 				DDAB24CC2C3144DA00AAEDB6 /* PDFShareExtension */,
 				DDAC4BEE2C2805AC006206EB /* MemorableTests */,
 				DDAC4BF82C2805AC006206EB /* MemorableUITests */,
+				DD9494082C391BF90039B530 /* Memorable.app */,
+				DD9494092C391BF90039B530 /* PDFShareExtension.appex */,
+				DD94940A2C391BF90039B530 /* MemorableTests.xctest */,
+				DD94940B2C391BF90039B530 /* MemorableUITests.xctest */,
 			);
 			sourceTree = "<group>";
 		};
@@ -481,7 +485,7 @@
 				DDAB24DC2C31466500AAEDB6 /* Then */,
 			);
 			productName = PDFShareExtension;
-			productReference = DD0659472C37AF77005B037D /* PDFShareExtension.appex */;
+			productReference = DD9494092C391BF90039B530 /* PDFShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		DDAC4BD12C2805AB006206EB /* Memorable */ = {
@@ -505,7 +509,7 @@
 				DD421DB22C33FABA00E4D320 /* Gifu */,
 			);
 			productName = Memorable;
-			productReference = DD0659462C37AF77005B037D /* Memorable.app */;
+			productReference = DD9494082C391BF90039B530 /* Memorable.app */;
 			productType = "com.apple.product-type.application";
 		};
 		DDAC4BEA2C2805AC006206EB /* MemorableTests */ = {
@@ -523,7 +527,7 @@
 			);
 			name = MemorableTests;
 			productName = MemorableTests;
-			productReference = DD0659482C37AF77005B037D /* MemorableTests.xctest */;
+			productReference = DD94940A2C391BF90039B530 /* MemorableTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		DDAC4BF42C2805AC006206EB /* MemorableUITests */ = {
@@ -541,7 +545,7 @@
 			);
 			name = MemorableUITests;
 			productName = MemorableUITests;
-			productReference = DD0659492C37AF77005B037D /* MemorableUITests.xctest */;
+			productReference = DD94940B2C391BF90039B530 /* MemorableUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -938,9 +942,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Memorable/Memorable.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4FCV7BL65G;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4FCV7BL65G;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Memorable/Resources/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
@@ -954,8 +960,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.pard.Memorable24;
+				PRODUCT_BUNDLE_IDENTIFIER = io.pard.memorable;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Memorable_iOS_Development;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -969,9 +977,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Memorable/Memorable.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4FCV7BL65G;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4FCV7BL65G;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Memorable/Resources/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
@@ -985,8 +995,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.pard.Memorable24;
+				PRODUCT_BUNDLE_IDENTIFIER = io.pard.memorable;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Memorable_iOS_Development;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
