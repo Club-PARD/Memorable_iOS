@@ -10,6 +10,7 @@ import Foundation
 enum APIError: Error {
     case invalidURL
     case networkError(Error)
+    case encodingError(Error)
     case decodingError(Error)
     case serverError(statusCode: Int, message: String)
 }
@@ -344,6 +345,96 @@ class APIManagere {
             do {
                 let testsheetDetail = try JSONDecoder().decode(TestsheetDetail.self, from: data)
                 completion(.success(testsheetDetail))
+            } catch {
+                completion(.failure(APIError.decodingError(error)))
+            }
+        }.resume()
+    }
+    
+    // 2-4. 나만의 시험지 채점시 / 재응시 하기 확인 클릭시 / 재추출시
+    func updateTestsheet(testsheetId: Int, isReExtracted: Bool, isCompleteAllBlanks: [Bool], userAnswers1: [String], userAnswers2: [String], completion: @escaping (Result<Void, Error>) -> Void) {
+        let urlString = "\(baseURL)/api/testsheet/\(testsheetId)"
+        guard let url = URL(string: urlString) else {
+            completion(.failure(APIError.invalidURL))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "PATCH"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let body: [String: Any] = [
+            "isReExtracted": isReExtracted,
+            "isCompleteAllBlanks": isCompleteAllBlanks,
+            "userAnswers1": userAnswers1,
+            "userAnswers2": userAnswers2
+        ]
+        
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        } catch {
+            completion(.failure(APIError.encodingError(error)))
+            return
+        }
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Network error: \(error)")
+                completion(.failure(APIError.networkError(error)))
+                return
+            }
+                
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("Invalid response")
+                completion(.failure(APIError.serverError(statusCode: 0, message: "Invalid response")))
+                return
+            }
+                
+            print("Server response status code: \(httpResponse.statusCode)")
+                
+            if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                print("Server response body: \(responseString)")
+            }
+            
+            completion(.success(()))
+        }.resume()
+    }
+    
+    // 3-2. 오답노트 들어갈 때
+    
+    // 3-3. 오답노트 내보내기  alert 확인 버튼 클릭했을 때
+    func createWrongSheet(questions: [[String: Any]], completion: @escaping (Result<WrongsheetDetail, Error>) -> Void) {
+        let urlString = "\(baseURL)/api/wrongsheet"
+        guard let url = URL(string: urlString) else {
+            completion(.failure(APIError.invalidURL))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: ["questions": questions])
+        } catch {
+            completion(.failure(APIError.encodingError(error)))
+            return
+        }
+        
+        URLSession.shared.dataTask(with: request) { data, _, error in
+            if let error = error {
+                completion(.failure(APIError.networkError(error)))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(APIError.serverError(statusCode: 0, message: "No data received")))
+                return
+            }
+            
+            do {
+                let wrongsheetDetail = try JSONDecoder().decode(WrongsheetDetail.self, from: data)
+                completion(.success(wrongsheetDetail))
             } catch {
                 completion(.failure(APIError.decodingError(error)))
             }

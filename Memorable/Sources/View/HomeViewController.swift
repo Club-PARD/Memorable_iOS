@@ -72,19 +72,45 @@ class HomeViewController: UIViewController {
     func fetchDocuments() {
         print("Fetching documents for user ID: \(userIdentifier)")
         
-        APIManagere.shared.getWorksheets(userId: userIdentifier) { [weak self] result in
+        let group = DispatchGroup()
+        var worksheets: [Document] = []
+        var testsheets: [Document] = []
+        var error: Error?
+        
+        group.enter()
+        APIManagere.shared.getWorksheets(userId: userIdentifier) { result in
             switch result {
-            case .success(let worksheets):
-                print("Successfully fetched \(worksheets.count) worksheets")
-                self?.documents = worksheets // Worksheet를 Document로 취급
-                DispatchQueue.main.async {
-                    print("Updating UI with \(worksheets.count) worksheets")
-                    self?.setupHeaderComponent()
-                    self?.setupLibraryViewComponent()
-                    self?.updateStarView()
-                }
-            case .failure(let error):
-                print("Error fetching worksheets: \(error.localizedDescription)")
+            case .success(let fetchedWorksheets):
+                worksheets = fetchedWorksheets
+            case .failure(let fetchError):
+                error = fetchError
+            }
+            group.leave()
+        }
+        
+        group.enter()
+        APIManagere.shared.getTestsheets(userId: userIdentifier) { result in
+            switch result {
+            case .success(let fetchedTestsheets):
+                testsheets = fetchedTestsheets
+                print("Successfully fetched \(fetchedTestsheets.count) testsheets")
+            case .failure(let fetchError):
+                error = fetchError
+                print("Error fetching testsheets: \(fetchError.localizedDescription)")
+            }
+            group.leave()
+        }
+        
+        group.notify(queue: .main) { [weak self] in
+            if let error = error {
+                print("Error fetching documents: \(error.localizedDescription)")
+                // 에러 처리
+            } else {
+                self?.documents = worksheets + testsheets
+                print("Successfully fetched \(self?.documents.count ?? 0) documents")
+                self?.setupHeaderComponent()
+                self?.setupLibraryViewComponent()
+                self?.updateStarView()
             }
         }
     }
@@ -206,16 +232,14 @@ class HomeViewController: UIViewController {
         }
         
         // TODO: API 연결중
-        // Worksheet 데이터만 사용
-        let worksheetDocuments = documents // 모든 문서가 Worksheet입니다
-        let testsheetDocuments: [Document] = [] // 빈 배열
-        let wrongsheetDocuments: [Document] = [] // 빈 배열
-        // TODO: API 연결중 이까지
+        let worksheetDocuments = self.documents.filter { $0.fileType == "빈칸학습지" }
+        let testsheetDocuments = self.documents.filter { $0.fileType == "나만의 시험지" }
+        let wrongsheetDocuments = self.documents.filter { $0.fileType == "오답노트" }
         
         // LibraryViewComponent에 데이터 설정
-        libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
-                                          testsheet: testsheetDocuments,
-                                          wrongsheet: wrongsheetDocuments)
+        self.libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
+                                                testsheet: testsheetDocuments,
+                                                wrongsheet: wrongsheetDocuments)
         
         // titleLabel 숨기기
         titleLabel.isHidden = true

@@ -10,7 +10,7 @@ import Then
 import UIKit
 
 struct TestSheetState {
-    var userAnswers: [String?]
+    var userAnswers: [String]
     var isSubmitted: Bool
     var score: Int?
 }
@@ -19,6 +19,10 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
     private let apiManager = APIManagere.shared
     var testsheetDetail: TestsheetDetail?
     
+    private var currentQuestions: [Question] {
+        return isFirstSheetSelected ? testsheetDetail?.questions1 ?? [] : testsheetDetail?.questions2 ?? []
+    }
+    
     var sharedName: String?
     var sharedCategory: String?
     var sharedText: String?
@@ -26,6 +30,7 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
     private let questionManager = QuestionManager()
     private var currentPage = 0
     private let questionsPerPage = 3
+    var incorrectQuestions: [Int] = []
     
     private var questionViews: [QuestionView] = []
     private var previousButton = UIButton()
@@ -152,12 +157,20 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         $0.isHidden = true
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        print("TestSheetViewController - viewWillAppear called")
+        loadTestsheet()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-//        loadTestsheet()
+        print("TestSheetViewController - viewDidLoad called")
+        print("testsheetDetail: \(String(describing: testsheetDetail))")
         navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor = MemorableColor.Gray5
         setupUI()
+        loadTestsheet()
         loadQuestions()
         updateUI()
         
@@ -168,13 +181,72 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
             print("File: \(fileName)\nCategory: \(category)\nExtracted Text: \(extractedText)")
             showToast("File: \(fileName)\nCategory: \(category)\nExtracted Text: \(extractedText)")
         }
+        
+        print("reExtracted: \(testsheetDetail!.reExtracted)")
+        print("isCompleteAllBlanks: \(testsheetDetail?.isCompleteAllBlanks ?? [true, false])")
     }
     
-//    private func loadTestsheet() {
-//        testsheetDetail = apiManager.getMockTestsheetDetail()
-//        setupTestsheetInfo()
-//        firstSheetState = TestSheetState(userAnswers: Array(repeating: nil, count: testsheetDetail?.questions1.count ?? 0), isSubmitted: false, score: nil)
-//    }
+    private func loadTestsheet() {
+        print("loadTestsheet called")
+        guard let testsheetDetail = testsheetDetail else {
+            print("testsheetDetail is nil")
+            return
+        }
+        
+        titleLabel.text = testsheetDetail.name
+        categoryLabel.text = testsheetDetail.category
+        
+        firstSheetState = TestSheetState(
+            userAnswers: testsheetDetail.questions1.map { $0.userAnswer },
+            isSubmitted: testsheetDetail.isCompleteAllBlanks[0],
+            score: nil
+        )
+        
+        if testsheetDetail.reExtracted {
+            secondSheetState = TestSheetState(
+                userAnswers: testsheetDetail.questions2.map { $0.userAnswer },
+                isSubmitted: testsheetDetail.isCompleteAllBlanks[1],
+                score: nil
+            )
+            print("Second sheet loaded. User answers: \(secondSheetState?.userAnswers ?? [])")
+            print("Second sheet submitted: \(secondSheetState?.isSubmitted ?? false)")
+        } else {
+            secondSheetState = nil
+        }
+        
+        print("First sheet loaded. User answers: \(firstSheetState?.userAnswers ?? [])")
+        print("First sheet submitted: \(firstSheetState?.isSubmitted ?? false)")
+        
+        if testsheetDetail.reExtracted {
+            print("Second sheet loaded. User answers: \(secondSheetState?.userAnswers ?? [])")
+            print("Second sheet submitted: \(secondSheetState?.isSubmitted ?? false)")
+        }
+        
+        isFirstSheetSelected = true
+        updateSheetSelection()
+        loadQuestions()
+        updateUI()
+    }
+    
+    private func restoreTestsheetState() {
+        guard let testsheetDetail = testsheetDetail else { return }
+        
+        // 첫 번째 시험지 상태 복원
+        firstSheetState = TestSheetState(
+            userAnswers: testsheetDetail.questions1.map { $0.userAnswer },
+            isSubmitted: testsheetDetail.isCompleteAllBlanks[0],
+            score: nil  // 점수는 서버에서 가져오거나 별도로 저장/복원해야 합니다
+        )
+        
+        // 두 번째 시험지 상태 복원 (재추출된 경우에만)
+        if testsheetDetail.reExtracted {
+            secondSheetState = TestSheetState(
+                userAnswers: testsheetDetail.questions2.map { $0.userAnswer },
+                isSubmitted: testsheetDetail.isCompleteAllBlanks[1],
+                score: nil
+            )
+        }
+    }
     
     private func setupTestsheetInfo() {
         guard let testsheetDetail = testsheetDetail else { return }
@@ -360,8 +432,8 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
             make.trailing.equalTo(containerView.snp.trailing).offset(-24)
         }
         
-        addTestSheetButton.isEnabled = !(testsheetDetail?.isReExtracted ?? false)
-        addTestSheetButton.setTitleColor(testsheetDetail?.isReExtracted ?? false ? MemorableColor.Gray2 : MemorableColor.Blue1, for: .normal)
+        addTestSheetButton.isEnabled = !(testsheetDetail!.reExtracted)
+        addTestSheetButton.setTitleColor(testsheetDetail!.reExtracted ? MemorableColor.Gray2 : MemorableColor.Blue1, for: .normal)
     }
     
     private func setupSheetToggle() {
@@ -392,62 +464,80 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
     
     private func updateUI() {
         let startIndex = currentPage * questionsPerPage
+        let currentState = isFirstSheetSelected ? firstSheetState : secondSheetState
+        let isSubmitted = currentState?.isSubmitted ?? false
+        
         for (index, questionView) in questionViews.enumerated() {
-            let questionIndex = startIndex + index
+            let questionIndex = currentPage * questionsPerPage + index
             if questionIndex < questionManager.questions.count {
                 let question = questionManager.questions[questionIndex]
-                let currentState = isFirstSheetSelected ? firstSheetState : secondSheetState
                 let userAnswer = currentState?.userAnswers[questionIndex]
+                
                 questionView.configure(with: question, questionNumberValue: questionIndex + 1, userAnswer: userAnswer)
-                questionView.isHidden = false
-                    
-                if currentState?.isSubmitted ?? false {
+                
+                if isSubmitted {
                     questionView.replaceTextFieldWithLabels()
                 } else {
-                    questionView.resetView()
+                    questionView.resetView(withUserAnswer: userAnswer)
                 }
             } else {
                 questionView.isHidden = true
             }
         }
         
-        let totalPages = (questionManager.questions.count + questionsPerPage - 1) / questionsPerPage
+        submitButton.isHidden = isSubmitted
+        retryButton.isHidden = !isSubmitted
+        sendWrongAnswersButton.isHidden = !isSubmitted
         
-        pagingLabel.text = "\(currentPage + 1)/\(totalPages)"
-        
-        previousButton.isHidden = currentPage == 0
-        
-        let isLastPage = currentPage == totalPages - 1
-        nextButton.isHidden = isLastPage
-        
-        let currentState = isFirstSheetSelected ? firstSheetState : secondSheetState
-        if let score = currentState?.score {
-            resultLabel.text = "\(score)/\(questionManager.questions.count)"
-            resultLabel.isHidden = false
-            scoreLabel.isHidden = false
+        if isSubmitted {
+            checkAnswersAndShowResult(forceUpdate: true)
         } else {
             resultLabel.isHidden = true
             scoreLabel.isHidden = true
         }
         
-        updateUIForSubmittedState()
+        let totalPages = (questionManager.questions.count + questionsPerPage - 1) / questionsPerPage
+        pagingLabel.text = "\(currentPage + 1)/\(totalPages)"
         
-        sendWrongAnswersButton.isHidden = !isLastPage || !(currentState?.isSubmitted ?? false)
-        retryButton.isHidden = !isLastPage || !(currentState?.isSubmitted ?? false)
+        previousButton.isHidden = currentPage == 0
+        nextButton.isHidden = currentPage == totalPages - 1
         
-        submitButton.isHidden = !isLastPage || (currentState?.isSubmitted ?? false)
+        let isLastPage = currentPage == (questionManager.questions.count - 1) / questionsPerPage
         
-        progressBarView?.removeFromSuperview()
+        submitButton.isHidden = currentState?.isSubmitted ?? false || !isLastPage
+        retryButton.isHidden = !(currentState?.isSubmitted ?? false) || !isLastPage
+        sendWrongAnswersButton.isHidden = !(currentState?.isSubmitted ?? false) || !isLastPage
         
-        let newProgressBarView = ProgressBarView(frame: .zero, totalPages: totalPages, currentPage: currentPage + 1)
-        view.addSubview(newProgressBarView)
-        newProgressBarView.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().offset(-49)
-            make.centerX.equalToSuperview()
+        addTestSheetButton.isEnabled = !(testsheetDetail!.reExtracted)
+        addTestSheetButton.setTitleColor(testsheetDetail!.reExtracted ? MemorableColor.Gray2 : MemorableColor.Blue1, for: .normal)
+        
+        sheetToggleStackView.isHidden = !(testsheetDetail!.reExtracted)
+        
+        updateSheetSelection()
+    }
+    
+    private func restoreUIState() {
+        guard let testsheetDetail = testsheetDetail else { return }
+        
+        for sheetIndex in 0...1 {
+            let isCompleted = testsheetDetail.isCompleteAllBlanks[sheetIndex]
+            let questions = sheetIndex == 0 ? testsheetDetail.questions1 : testsheetDetail.questions2
+            let state = TestSheetState(
+                userAnswers: questions.map { $0.userAnswer },
+                isSubmitted: isCompleted,
+                score: nil
+            )
+            
+            if sheetIndex == 0 {
+                firstSheetState = state
+            } else {
+                secondSheetState = state
+            }
         }
         
-        progressBarView = newProgressBarView
-        progressBarView?.updateCurrentPage(currentPage + 1)
+        isFirstSheetSelected = true
+        updateSheetSelection()
+        updateUI()
     }
     
     private func updateUIForSubmittedState() {
@@ -464,9 +554,9 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
             let questionIndex = startIndex + index
             if questionIndex < questionManager.questions.count {
                 if isFirstSheetSelected {
-                    firstSheetState?.userAnswers[questionIndex] = questionView.answerTextField.text
+                    firstSheetState?.userAnswers[questionIndex] = questionView.answerTextField.text ?? ""
                 } else {
-                    secondSheetState?.userAnswers[questionIndex] = questionView.answerTextField.text
+                    secondSheetState?.userAnswers[questionIndex] = questionView.answerTextField.text ?? ""
                 }
             }
         }
@@ -475,11 +565,20 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
     private func showSubmitAlert() {
         let alertController = UIAlertController(title: "시험지 제출", message: "시험지를 제출하시겠습니까?\n결과분석 페이지로 이동합니다.", preferredStyle: .alert)
         let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
+            if self.isFirstSheetSelected {
+                self.firstSheetState?.isSubmitted = true
+            } else {
+                self.secondSheetState?.isSubmitted = true
+            }
             self.saveCurrentAnswers()
+            self.updateTestsheetOnServer()
             self.replaceTextFieldsWithLabels()
             self.printAnswers()
             self.checkAnswersAndShowResult()
             self.moveToFirstPage()
+            
+            
+            self.updateUI()
         }
         let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
         
@@ -527,47 +626,41 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
-    private func checkAnswersAndShowResult() {
+    private func checkAnswersAndShowResult(forceUpdate: Bool = false) {
+        guard let testsheetDetail = testsheetDetail else { return }
+        
         var correctAnswers = 0
-        let totalQuestions = questionManager.questions.count
+        let currentQuestions = isFirstSheetSelected ? testsheetDetail.questions1 : testsheetDetail.questions2
         
-        let currentState = isFirstSheetSelected ? firstSheetState : secondSheetState
-        
-        for (index, question) in questionManager.questions.enumerated() {
+        for question in currentQuestions {
             let normalizedCorrectAnswer = question.answer.lowercased().replacingOccurrences(of: " ", with: "")
-            let normalizedUserAnswer = currentState?.userAnswers[index]?.lowercased().replacingOccurrences(of: " ", with: "")
+            let normalizedUserAnswer = question.userAnswer.lowercased().replacingOccurrences(of: " ", with: "")
             
             if normalizedCorrectAnswer == normalizedUserAnswer {
                 correctAnswers += 1
-            }
-            
-            if !isFirstSheetSelected && (testsheetDetail?.isReExtracted ?? false) {
-                showFinishImage()
             }
         }
         
         if isFirstSheetSelected {
             firstSheetState?.score = correctAnswers
-            firstSheetState?.isSubmitted = true
         } else {
             secondSheetState?.score = correctAnswers
-            secondSheetState?.isSubmitted = true
         }
         
-        resultLabel.text = "\(correctAnswers)/\(totalQuestions)"
+        resultLabel.text = "\(correctAnswers)/\(currentQuestions.count)"
         resultLabel.isHidden = false
         scoreLabel.isHidden = false
         
-        resultLabel.alpha = 0
-        UIView.animate(withDuration: 0.5) {
-            self.resultLabel.alpha = 1
+        if !forceUpdate {
+            resultLabel.alpha = 0
+            UIView.animate(withDuration: 0.5) {
+                self.resultLabel.alpha = 1
+            }
         }
         
         updateUIForSubmittedState()
         
-        printAnswers()
-        
-        if !isFirstSheetSelected && (testsheetDetail?.isReExtracted ?? false) {
+        if !isFirstSheetSelected && testsheetDetail.reExtracted {
             showFinishImage()
         }
     }
@@ -600,9 +693,6 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
     @objc private func submitAnswers() {
         showSubmitAlert()
         printAnswers()
-        if !isFirstSheetSelected && (testsheetDetail?.isReExtracted ?? false) {
-            showFinishImage()
-        }
     }
     
     @objc private func retryTest() {
@@ -612,24 +702,17 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
             guard let self = self else { return }
             
             if self.isFirstSheetSelected {
-                self.firstSheetState = TestSheetState(userAnswers: Array(repeating: nil, count: self.testsheetDetail?.questions1.count ?? 0), isSubmitted: false, score: nil)
+                self.firstSheetState?.isSubmitted = false
+                self.firstSheetState?.userAnswers = Array(repeating: "", count: self.testsheetDetail?.questions1.count ?? 0)
             } else {
-                self.secondSheetState = TestSheetState(userAnswers: Array(repeating: nil, count: self.testsheetDetail?.questions2.count ?? 0), isSubmitted: false, score: nil)
+                self.secondSheetState?.isSubmitted = false
+                self.secondSheetState?.userAnswers = Array(repeating: "", count: self.testsheetDetail?.questions2.count ?? 0)
             }
             
+            self.updateTestsheetOnServer()
             self.currentPage = 0
-            self.resultLabel.isHidden = true
+            self.loadQuestions() // 질문들을 다시 로드합니다.
             self.updateUI()
-            
-            for questionView in self.questionViews {
-                questionView.answerTextField.isHidden = false
-                questionView.answerTextField.text = ""
-                questionView.correctAnswerView.removeFromSuperview()
-                questionView.correctAnswerLabel.removeFromSuperview()
-                questionView.userAnswerLabel.removeFromSuperview()
-            }
-            
-            print("재시험 시작")
         }
         
         let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
@@ -640,8 +723,85 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         present(alertController, animated: true, completion: nil)
     }
     
+    private func updateTestsheetOnServer() {
+        print("updateTestsheetOnServer called")
+        guard let testsheetDetail = testsheetDetail else { return }
+
+        let reExtracted = testsheetDetail.reExtracted
+        let isCompleteAllBlanks = [firstSheetState?.isSubmitted ?? false, secondSheetState?.isSubmitted ?? false]
+        let userAnswers1 = firstSheetState?.userAnswers ?? []
+        let userAnswers2 = secondSheetState?.userAnswers ?? []
+        
+        print("Updating server - isReExtracted: \(reExtracted)")
+        print("Updating server - isCompleteAllBlanks: \(isCompleteAllBlanks)")
+        print("Updating server - userAnswers1: \(userAnswers1)")
+        print("Updating server - userAnswers2: \(userAnswers2)")
+
+        apiManager.updateTestsheet(
+            testsheetId: testsheetDetail.testsheetId,
+            isReExtracted: testsheetDetail.reExtracted,
+            isCompleteAllBlanks: isCompleteAllBlanks,
+            userAnswers1: userAnswers1,
+            userAnswers2: userAnswers2
+        ) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success:
+                    print("Testsheet updated successfully")
+                    self.updateUI()
+                case .failure(let error):
+                    print("Failed to update testsheet: \(error)")
+                    // 에러 처리 로직 추가
+                }
+            }
+        }
+    }
+    
     @objc private func sendWrongAnswers() {
-        print("오답노트 보내기")
+        showSendWrongAlert()
+    }
+
+    @objc private func showSendWrongAlert() {
+        let alertController = UIAlertController(title: "오답노트 보내기", message: "오답문제를 오답노트에 추가합니다\n오답노트 페이지로 이동하시겠습니까?", preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
+            for question in self.currentQuestions {
+                let normalizedCorrectAnswer = question.answer.lowercased().replacingOccurrences(of: " ", with: "")
+                let normalizedUserAnswer = question.userAnswer.lowercased().replacingOccurrences(of: " ", with: "")
+                
+                if normalizedCorrectAnswer != normalizedUserAnswer {
+                    self.incorrectQuestions.append(question.questionId)
+                }
+            }
+            
+            // Call API to create wrongsheet with self.incorrectQuestions
+            self.sendIncorrectQuestions()
+        }
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        
+        alertController.addAction(confirmAction)
+        alertController.addAction(cancelAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    private func sendIncorrectQuestions() {
+        let questions = self.incorrectQuestions.map { ["questionId": $0] }
+        
+        APIManagere.shared.createWrongSheet(questions: questions) { [weak self] result in
+            switch result {
+            case .success(let wrongsheetDetail):                self?.handleWrongsheetDetail(wrongsheetDetail)
+            case .failure(let error):
+                print("Failed to create wrongsheet: \(error)")
+            }
+        }
+    }
+    
+    private func handleWrongsheetDetail(_ wrongsheetDetail: WrongsheetDetail) {
+        DispatchQueue.main.async {
+            let wrongsheetVC = WrongSheetViewController()
+            wrongsheetVC.wrongsheetDetail = wrongsheetDetail
+            self.navigationController?.setViewControllers([HomeViewController(), wrongsheetVC], animated: true)
+        }
     }
     
     @objc private func remakeTest() {
@@ -677,16 +837,8 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         isFirstSheetSelected = (sender == firstSheetButton)
         updateSheetSelection()
         loadQuestions()
-        
-        if !isFirstSheetSelected && (testsheetDetail?.isReExtracted ?? false) {
-            if secondSheetState?.isSubmitted ?? false {
-                showFinishImage()
-            } else {
-                hideFinishImage()
-            }
-        } else {
-            hideFinishImage()
-        }
+        updateUI()
+        print("Sheet selection changed. Is first sheet selected: \(isFirstSheetSelected)")
     }
     
     @objc private func addTestSheetButtonTapped() {
@@ -698,9 +850,11 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
     private func updateSheetSelection() {
         firstSheetButton.backgroundColor = isFirstSheetSelected ? MemorableColor.Yellow1 : MemorableColor.Gray2
         secondSheetButton.backgroundColor = isFirstSheetSelected ? MemorableColor.Gray2 : MemorableColor.Yellow1
-        
+
         firstSheetButton.setTitleColor(isFirstSheetSelected ? MemorableColor.Black : MemorableColor.Gray1, for: .normal)
         secondSheetButton.setTitleColor(isFirstSheetSelected ? MemorableColor.Gray1 : MemorableColor.Black, for: .normal)
+
+//        loadQuestions()
     }
     
     private func showReExtractAlert() {
@@ -715,8 +869,12 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
     }
     
     private func reExtractQuestions() {
-        testsheetDetail?.isReExtracted = true
-        secondSheetState = TestSheetState(userAnswers: Array(repeating: nil, count: testsheetDetail?.questions2.count ?? 0), isSubmitted: false, score: nil)
+        testsheetDetail!.reExtracted = true
+        secondSheetState = TestSheetState(
+            userAnswers: Array(repeating: "", count: testsheetDetail?.questions2.count ?? 0),
+            isSubmitted: false,
+            score: nil
+        )
         
         sheetToggleStackView.isHidden = false
         addTestSheetButton.isEnabled = false
@@ -727,6 +885,9 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         
         resetSecondSheetUI()
         showFinishImage()
+        
+        // 서버에 업데이트 요청
+        updateTestsheetOnServer()
     }
     
     private func showFinishImage() {
@@ -766,16 +927,10 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
     }
     
     private func loadQuestions() {
-        guard let testSheetDetail = testsheetDetail else { return }
-        questionManager.questions = isFirstSheetSelected ? testSheetDetail.questions1 : testSheetDetail.questions2
+        guard let testsheetDetail = testsheetDetail else { return }
+        questionManager.questions = isFirstSheetSelected ? testsheetDetail.questions1 : testsheetDetail.questions2
         currentPage = 0
-        
-        if isFirstSheetSelected {
-            // 첫 번째 시험지의 경우 기존 상태 유지
-            updateUI()
-        } else {
-            // 두 번째 시험지의 경우 UI 리셋
-            resetSecondSheetUI()
-        }
+        print("Questions loaded. Count: \(questionManager.questions.count)")
+        updateUI()
     }
 }
