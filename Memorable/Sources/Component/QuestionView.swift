@@ -184,13 +184,25 @@ class QuestionView: UIView {
         userAnswerLabel.text = "사용자가 입력한 답: \(answerTextField.text ?? "")"
     }
     
-    func resetView() {
-        print("resetView")
+    func resetView(withUserAnswer userAnswer: String? = nil) {
         answerTextField.isHidden = false
         answerLengthLabel.isHidden = false
         correctAnswerView.removeFromSuperview()
         correctAnswerLabel.removeFromSuperview()
         userAnswerLabel.removeFromSuperview()
+        
+        // 사용자 답변 복원
+        answerTextField.text = userAnswer
+        
+        // 텍스트 필드 상태 초기화
+        answerTextField.backgroundColor = MemorableColor.Gray5
+        answerTextField.attributedPlaceholder = NSAttributedString(
+            string: "답안을 입력하세요...",
+            attributes: [
+                .foregroundColor: MemorableColor.Gray3 ?? .lightGray,
+                .font: MemorableFont.Body1()
+            ]
+        )
     }
     
     func setupTextFieldCallbacks() {

@@ -26,9 +26,7 @@ class WrongSheetView: UIView {
         $0.showsVerticalScrollIndicator = true
     }
 
-    private var questions: [String] = []
-
-    private var answers: [String] = []
+    private var QnA: [Question] = []
 
     private var wrongSheetContent = UIView()
 
@@ -36,10 +34,9 @@ class WrongSheetView: UIView {
 
     // MARK: - Initialization
 
-    init(frame: CGRect, questions: [String], answers: [String]) {
+    init(frame: CGRect, QnA: [Question]) {
         super.init(frame: frame)
-        self.questions = questions
-        self.answers = answers
+        self.QnA = QnA
 
         self.createWrongSheetContent()
 
@@ -55,15 +52,15 @@ class WrongSheetView: UIView {
     // MARK: - Content Methods
 
     func createWrongSheetContent() {
-        let questionLength = self.questions.count
+        let questionLength = self.QnA.count
         var previousView: UIView?
 
         for idx in 0 ..< questionLength {
             let wrongQuestionView = WrongQuestionView(
                 frame: CGRect.zero,
                 idx: idx + 1,
-                question: self.questions[idx],
-                answer: self.answers[idx]
+                question: self.QnA[idx].question,
+                answer: self.QnA[idx].answer
             )
             self.wrongQuestionViews.append(wrongQuestionView)
 
