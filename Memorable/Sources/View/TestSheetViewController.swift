@@ -23,10 +23,6 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         return isFirstSheetSelected ? testsheetDetail?.questions1 ?? [] : testsheetDetail?.questions2 ?? []
     }
     
-    var sharedName: String?
-    var sharedCategory: String?
-    var sharedText: String?
-    
     private let questionManager = QuestionManager()
     private var currentPage = 0
     private let questionsPerPage = 3
@@ -176,11 +172,6 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
-        
-        if let fileName = sharedName, let category = sharedCategory, let extractedText = sharedText {
-            print("File: \(fileName)\nCategory: \(category)\nExtracted Text: \(extractedText)")
-            showToast("File: \(fileName)\nCategory: \(category)\nExtracted Text: \(extractedText)")
-        }
         
         print("reExtracted: \(testsheetDetail!.reExtracted)")
         print("isCompleteAllBlanks: \(testsheetDetail?.isCompleteAllBlanks ?? [true, false])")

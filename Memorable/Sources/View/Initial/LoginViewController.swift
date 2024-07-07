@@ -10,7 +10,13 @@ import SnapKit
 import Then
 import UIKit
 
+protocol LoginViewControllerDelegate: AnyObject {
+    func loginDidComplete()
+}
+
 class LoginViewController: UIViewController {
+    weak var delegate: LoginViewControllerDelegate?
+    
     let logoImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
         $0.image = UIImage(named: "login_applogo")
@@ -91,6 +97,7 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
             case .success:
                 print("User successfully posted")
                 self.dismiss(animated: true)
+                self.delegate?.loginDidComplete()
                 self.navigationController?.setViewControllers([OnboardingViewController()], animated: true)
             case .failure(let error):
                 print("Error posting user: \(error)")
@@ -134,6 +141,7 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
                     print("GET: \(user.email)")
                     
                     removeActivityIndicator()
+                    self.delegate?.loginDidComplete()
                     self.navigationController?.setViewControllers([HomeViewController()], animated: true)
                 }
             }

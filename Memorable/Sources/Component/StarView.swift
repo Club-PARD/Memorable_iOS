@@ -192,8 +192,11 @@ class StarView: UIView {
 
 extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellDelegate {
     func didTapBookmark<T: Document>(for document: T) {
-        delegate?.didUpdateBookmark(for: document)
+        if let index = allDocuments.firstIndex(where: { $0.id == document.id }) {
+            allDocuments[index] = document
+        }
         tableView.reloadData()
+        delegate?.didUpdateBookmark(for: document)
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

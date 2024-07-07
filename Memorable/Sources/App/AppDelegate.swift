@@ -10,9 +10,17 @@ import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    func application(_ application: UIApplication, handleOpen url: URL) -> Bool {
-        print("AppDelegate: handleOpen called with \(url)")
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        print("AppDelegate: open URL called with \(url)")
+
         // URL 처리 로직
+        if url.scheme == "memorable" && url.host == "worksheet" {
+            // SceneDelegate의 handleURL 메서드 호출
+            if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+                sceneDelegate.handleURL(url)
+            }
+        }
+
         return true
     }
 

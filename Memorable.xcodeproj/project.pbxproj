@@ -20,6 +20,7 @@
 		DB3CEC972C31E16100F8211C /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC962C31E16100F8211C /* GradientView.swift */; };
 		DB6247602C35C38D00592773 /* InquiryViewcontroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB62475F2C35C38D00592773 /* InquiryViewcontroller.swift */; };
 		DB6247782C39D50100592773 /* EditActionSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6247772C39D50100592773 /* EditActionSheetView.swift */; };
+		DB6247822C3A8DA700592773 /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = DB62477E2C3A8A1500592773 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		DBD820492C2A804700A9B1C3 /* TabViewComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD820482C2A804700A9B1C3 /* TabViewComponent.swift */; };
 		DBD8204D2C2ADF5C00A9B1C3 /* HeaderComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD8204C2C2ADF5C00A9B1C3 /* HeaderComponent.swift */; };
 		DBD8204F2C2BE31800A9B1C3 /* LibraryViewComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD8204E2C2BE31800A9B1C3 /* LibraryViewComponent.swift */; };
@@ -90,6 +91,13 @@
 			remoteGlobalIDString = DDDC34392C39789E00158120;
 			remoteInfo = ShareExtension;
 		};
+		DB6247832C3A8DA700592773 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DDAC4BCA2C2805AB006206EB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DDDC34392C39789E00158120;
+			remoteInfo = ShareExtension;
+		};
 		DDAC4BEC2C2805AC006206EB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DDAC4BCA2C2805AB006206EB /* Project object */;
@@ -120,6 +128,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				DB6247822C3A8DA700592773 /* ShareExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -140,6 +149,10 @@
 		DB3CEC962C31E16100F8211C /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		DB62475F2C35C38D00592773 /* InquiryViewcontroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InquiryViewcontroller.swift; sourceTree = "<group>"; };
 		DB6247772C39D50100592773 /* EditActionSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditActionSheetView.swift; sourceTree = "<group>"; };
+		DB62477D2C3A8A1500592773 /* Memorable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Memorable.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DB62477E2C3A8A1500592773 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		DB62477F2C3A8A1500592773 /* MemorableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MemorableTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DB6247802C3A8A1500592773 /* MemorableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MemorableUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBD820482C2A804700A9B1C3 /* TabViewComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabViewComponent.swift; sourceTree = "<group>"; };
 		DBD8204C2C2ADF5C00A9B1C3 /* HeaderComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderComponent.swift; sourceTree = "<group>"; };
 		DBD8204E2C2BE31800A9B1C3 /* LibraryViewComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewComponent.swift; sourceTree = "<group>"; };
@@ -198,10 +211,6 @@
 		DDDC34412C39789E00158120 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DDDC34492C3978C600158120 /* Memorable.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; name = Memorable.app; path = "../../../../../Library/Developer/Xcode/DerivedData/Memorable-hfhwjghueeozvndteehyvnwxbeik/Build/Products/Debug-iphonesimulator/Memorable.app"; sourceTree = "<group>"; };
 		DDDC344A2C397AFE00158120 /* ShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShareExtension.entitlements; sourceTree = "<group>"; };
-		DDDC344B2C397C8200158120 /* Memorable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Memorable.app; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/Memorable.app"; sourceTree = "<absolute>"; };
-		DDDC344C2C397C8200158120 /* MemorableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableTests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/Memorable.app/PlugIns/MemorableTests.xctest"; sourceTree = "<absolute>"; };
-		DDDC344D2C397C8200158120 /* MemorableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MemorableUITests.xctest; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/MemorableUITests-Runner.app/PlugIns/MemorableUITests.xctest"; sourceTree = "<absolute>"; };
-		DDDC344F2C397C8200158120 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; name = ShareExtension.appex; path = "/Users/kimhyeongi/Documents/Project/Swift-Project/Memorable_iOS/build/Debug-iphoneos/ShareExtension.appex"; sourceTree = "<absolute>"; };
 		DDF67E852C32F9D900F37BFC /* WrongSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongSheetViewController.swift; sourceTree = "<group>"; };
 		DDF67E872C32FB3800F37BFC /* WrongSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongSheetView.swift; sourceTree = "<group>"; };
 		DDF67E892C330F3400F37BFC /* WrongQuestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrongQuestionView.swift; sourceTree = "<group>"; };
@@ -244,6 +253,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DB6247812C3A8DA700592773 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		DD06594A2C381CE6005B037D /* Common */ = {
 			isa = PBXGroup;
 			children = (
@@ -266,7 +282,6 @@
 				DD421DB42C33FB9000E4D320 /* SplashViewController.swift */,
 				DDAC4BD92C2805AB006206EB /* LoginViewController.swift */,
 				DD421DC32C3585DF00E4D320 /* OnboardingViewController.swift */,
-				DB6247772C39D50100592773 /* EditActionSheetView.swift */,
 			);
 			path = Initial;
 			sourceTree = "<group>";
@@ -338,6 +353,11 @@
 				DDDC343B2C39789E00158120 /* ShareExtension */,
 				DDAC4BEE2C2805AC006206EB /* MemorableTests */,
 				DDAC4BF82C2805AC006206EB /* MemorableUITests */,
+				DB62477D2C3A8A1500592773 /* Memorable.app */,
+				DB62477E2C3A8A1500592773 /* ShareExtension.appex */,
+				DB62477F2C3A8A1500592773 /* MemorableTests.xctest */,
+				DB6247802C3A8A1500592773 /* MemorableUITests.xctest */,
+				DB6247812C3A8DA700592773 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -380,6 +400,7 @@
 				DDB3E3842C2FE16200AF9182 /* TestLoginViewController.swift */,
 				DB3CEC8A2C30457A00F8211C /* TestSheetViewController.swift */,
 				DB62475F2C35C38D00592773 /* InquiryViewcontroller.swift */,
+				DB6247772C39D50100592773 /* EditActionSheetView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -492,6 +513,7 @@
 			dependencies = (
 				DDDC34432C39789E00158120 /* PBXTargetDependency */,
 				DB62477C2C3A808D00592773 /* PBXTargetDependency */,
+				DB6247842C3A8DA700592773 /* PBXTargetDependency */,
 			);
 			name = Memorable;
 			packageProductDependencies = (
@@ -500,7 +522,7 @@
 				DD421DB22C33FABA00E4D320 /* Gifu */,
 			);
 			productName = Memorable;
-			productReference = DDDC344B2C397C8200158120 /* Memorable.app */;
+			productReference = DB62477D2C3A8A1500592773 /* Memorable.app */;
 			productType = "com.apple.product-type.application";
 		};
 		DDAC4BEA2C2805AC006206EB /* MemorableTests */ = {
@@ -518,7 +540,7 @@
 			);
 			name = MemorableTests;
 			productName = MemorableTests;
-			productReference = DDDC344C2C397C8200158120 /* MemorableTests.xctest */;
+			productReference = DB62477F2C3A8A1500592773 /* MemorableTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		DDAC4BF42C2805AC006206EB /* MemorableUITests */ = {
@@ -536,7 +558,7 @@
 			);
 			name = MemorableUITests;
 			productName = MemorableUITests;
-			productReference = DDDC344D2C397C8200158120 /* MemorableUITests.xctest */;
+			productReference = DB6247802C3A8A1500592773 /* MemorableUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 		DDDC34392C39789E00158120 /* ShareExtension */ = {
@@ -557,7 +579,7 @@
 				DDDC34522C397D5400158120 /* SnapKit */,
 			);
 			productName = ShareExtension;
-			productReference = DDDC344F2C397C8200158120 /* ShareExtension.appex */;
+			productReference = DB62477E2C3A8A1500592773 /* ShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -749,6 +771,11 @@
 			target = DDDC34392C39789E00158120 /* ShareExtension */;
 			targetProxy = DB62477B2C3A808D00592773 /* PBXContainerItemProxy */;
 		};
+		DB6247842C3A8DA700592773 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DDDC34392C39789E00158120 /* ShareExtension */;
+			targetProxy = DB6247832C3A8DA700592773 /* PBXContainerItemProxy */;
+		};
 		DDAC4BED2C2805AC006206EB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = DDAC4BD12C2805AB006206EB /* Memorable */;
@@ -937,6 +964,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = io.pard.memorable;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1088,6 +1116,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4FCV7BL65G;
+				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -1099,6 +1128,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = io.pard.memorable.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1122,6 +1152,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4FCV7BL65G;
+				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
