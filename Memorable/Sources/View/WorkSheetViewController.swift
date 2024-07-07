@@ -11,6 +11,9 @@ import UIKit
 
 class WorkSheetViewController: UIViewController {
     var worksheetDetail: WorksheetDetail?
+    var sharedName: String?
+    var sharedCategory: String?
+    var sharedText: String?
 
     private let logoImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
