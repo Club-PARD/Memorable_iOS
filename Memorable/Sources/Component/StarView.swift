@@ -137,9 +137,9 @@ class StarView: UIView {
     }
     
     func setDocuments(documents: [Document]) {
-        allDocuments = documents.filter { $0.isBookmarked }.sorted(by: { $0.createdDate > $1.createdDate })
-        filteredDocuments = allDocuments
-        tableView.reloadData()
+        self.allDocuments = documents.filter { $0.isBookmarked }.sorted(by: { $0.createdDate > $1.createdDate })
+        self.filteredDocuments = self.allDocuments
+        self.tableView.reloadData()
     }
     
     @objc private func filterButtonTapped(_ sender: UIButton) {
@@ -192,8 +192,8 @@ class StarView: UIView {
 
 extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellDelegate {
     func didTapBookmark<T: Document>(for document: T) {
-        if let index = allDocuments.firstIndex(where: { $0.id == document.id }) {
-            allDocuments[index] = document
+        if let index = filteredDocuments.firstIndex(where: { $0.id == document.id }) {
+            filteredDocuments[index] = document
         }
         tableView.reloadData()
         delegate?.didUpdateBookmark(for: document)
@@ -205,6 +205,7 @@ extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellD
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "RecentsheetCell", for: indexPath) as! RecentsheetCell
+        cell.delegate = self
         let document = filteredDocuments[indexPath.row]
         cell.configure(with: document)
         return cell
