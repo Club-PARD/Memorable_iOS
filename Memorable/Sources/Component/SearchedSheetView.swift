@@ -8,8 +8,12 @@
 import UIKit
 import SnapKit
 
-class SearchedSheetView: UIView {
+protocol SearchedSheetViewDelegate: AnyObject {
+    func didUpdateBookmark(for document: Document)
+}
 
+class SearchedSheetView: UIView {
+    weak var delegate:SearchedSheetViewDelegate?
     private let tableView: UITableView
     private let filterButtonsView = UIStackView()
     private let allFilterButton = UIButton(type: .system)
@@ -180,7 +184,7 @@ class SearchedSheetView: UIView {
     }
 }
 
-extension SearchedSheetView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellDelegate {
+extension SearchedSheetView: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return filteredDocuments.count
     }
@@ -238,24 +242,45 @@ extension SearchedSheetView: UITableViewDataSource, UITableViewDelegate, Recents
                 }
             }
         case "오답노트":
-            let wrongSheetVC = WrongSheetViewController()
-            navigateToViewController(wrongSheetVC)
-            break
+            APIManager.shared.getData(to: "/api/wrongsheet/\(document.id)") { (sheetDetail: WrongsheetDetail?, error: Error?) in
+                DispatchQueue.main.async {
+                    // 3. 받아온 데이터 처리
+                    if let error = error {
+                        print("Error fetching data: \(error.localizedDescription)")
+                        return
+                    }
+                                        
+                    guard let detail = sheetDetail else {
+                        print("No data received")
+                        return
+                    }
+                                        
+                    // wrong sheet detail
+                    print("GET: \(detail.name)")
+                    print("GET: \(detail.category)")
+                    print("GET: \(detail.questions)")
+                    
+                    let wrongSheetVC = WrongSheetViewController()
+                    wrongSheetVC.wrongsheetDetail = detail
+                    self.navigateToViewController(wrongSheetVC)
+                }
+            }
         default:
             print("Unknown file type")
         }
     }
-    
-    func didTapBookmark(for document: Document) {
-        // 테이블 뷰 리로드
-        // recentTableView.reloadData()
-    }
-    
+
     private func navigateToViewController(_ viewController: UIViewController) {
         if let navigationController = self.window?.rootViewController as? UINavigationController {
             navigationController.pushViewController(viewController, animated: true)
         } else if let presentingViewController = self.window?.rootViewController {
             presentingViewController.present(viewController, animated: true, completion: nil)
         }
+    }
+}
+
+extension SearchedSheetView: RecentsheetCellDelegate {
+    func didTapBookmark<T: Document>(for document: T) {
+        delegate?.didUpdateBookmark(for: document)
     }
 }

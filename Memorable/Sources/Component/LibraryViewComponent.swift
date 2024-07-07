@@ -550,9 +550,9 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "RecentsheetCell", for: indexPath) as! RecentsheetCell
+        cell.delegate = self
         let document = currentDocuments[indexPath.row]
         cell.configure(with: document)
-        cell.delegate = self
         return cell
     }
     
@@ -629,9 +629,9 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
                     print("GET: \(detail.category)")
                     print("GET: \(detail.questions)")
                     
-//                    let wrongSheetVC = WrongSheetViewController()
-//                    wrongSheetVC.wrongsheetDetail = detail
-//                    self.navigateToViewController(wrongSheetVC)
+                    let wrongSheetVC = WrongSheetViewController()
+                    wrongSheetVC.wrongsheetDetail = detail
+                    self.navigateToViewController(wrongSheetVC)
                 }
             }
         default:
@@ -649,27 +649,11 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
         }
     }
     
-    func didTapBookmark(for document: Document) {
-        delegate?.didUpdateBookmark(for: document)
+    func didTapBookmark<T: Document>(for document: T) {
         if let index = currentDocuments.firstIndex(where: { $0.id == document.id }) {
             currentDocuments[index] = document
         }
-        
-        // Update the corresponding document in the appropriate array
-        if let worksheet = document as? Worksheet {
-            if let index = worksheetDocuments.firstIndex(where: { $0.id == worksheet.id }) {
-                worksheetDocuments[index] = worksheet
-            }
-        } else if let testsheet = document as? Testsheet {
-            if let index = testsheetDocuments.firstIndex(where: { $0.id == testsheet.id }) {
-                testsheetDocuments[index] = testsheet
-            }
-        } else if let wrongsheet = document as? Wrongsheet {
-            if let index = wrongsheetDocuments.firstIndex(where: { $0.id == wrongsheet.id }) {
-                wrongsheetDocuments[index] = wrongsheet
-            }
-        }
-        
         recentTableView.reloadData()
+        delegate?.didUpdateBookmark(for: document)
     }
 }

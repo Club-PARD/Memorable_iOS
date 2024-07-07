@@ -69,21 +69,21 @@ class HomeViewController: UIViewController {
         view.insertSubview(gradientView, belowSubview: maskView)
     }
     
-    func fetchDocuments() {
+    func fetchDocuments(completion: (() -> Void)? = nil) {
         print("Fetching documents for user ID: \(userIdentifier)")
         
         let group = DispatchGroup()
         var worksheets: [Document] = []
         var testsheets: [Document] = []
-        var error: Error?
+        var wrongsheets: [Document] = []
         
         group.enter()
         APIManagere.shared.getWorksheets(userId: userIdentifier) { result in
             switch result {
             case .success(let fetchedWorksheets):
                 worksheets = fetchedWorksheets
-            case .failure(let fetchError):
-                error = fetchError
+            case .failure(let error):
+                print("Error fetching worksheets: \(error)")
             }
             group.leave()
         }
@@ -93,27 +93,48 @@ class HomeViewController: UIViewController {
             switch result {
             case .success(let fetchedTestsheets):
                 testsheets = fetchedTestsheets
-                print("Successfully fetched \(fetchedTestsheets.count) testsheets")
-            case .failure(let fetchError):
-                error = fetchError
-                print("Error fetching testsheets: \(fetchError.localizedDescription)")
+            case .failure(let error):
+                print("Error fetching testsheets: \(error)")
+            }
+            group.leave()
+        }
+        
+        group.enter()
+        APIManagere.shared.getWrongsheets(userId: userIdentifier) { result in
+            switch result {
+            case .success(let fetchedWrongsheets):
+                wrongsheets = fetchedWrongsheets
+            case .failure(let error):
+                print("Error fetching wrongsheets: \(error)")
             }
             group.leave()
         }
         
         group.notify(queue: .main) { [weak self] in
-            if let error = error {
-                print("Error fetching documents: \(error.localizedDescription)")
-                // 에러 처리
-            } else {
-                self?.documents = worksheets + testsheets
-                print("Successfully fetched \(self?.documents.count ?? 0) documents")
-                self?.setupHeaderComponent()
-                self?.setupLibraryViewComponent()
-                self?.updateStarView()
-            }
+            self?.documents = worksheets + testsheets + wrongsheets
+            print("Fetched documents: Worksheets (\(worksheets.count)), Testsheets (\(testsheets.count)), Wrongsheets (\(wrongsheets.count))")
+            self?.setupHeaderComponent()
+            self?.setupLibraryViewComponent()
+            self?.updateStarView()
+            self?.updateSharedCategories() // 여기에 추가
         }
+        
+        updateSharedCategories()
     }
+    
+    private func updateSharedCategories() {
+        let categories = getExistingCategories()
+        let userDefaults = UserDefaults(suiteName: "group.io.pard.Memorable24")
+        userDefaults?.set(categories, forKey: "ExistingCategories")
+        userDefaults?.synchronize()
+    }
+    
+    func getExistingCategories() -> [String] {
+            // 모든 문서의 카테고리를 가져와 중복을 제거하고 정렬합니다.
+            let allCategories = documents.map { $0.category }
+            let uniqueCategories = Array(Set(allCategories))
+            return uniqueCategories.sorted()
+        }
     
     func setUI() {
         // header
@@ -172,11 +193,15 @@ class HomeViewController: UIViewController {
         tabBar.configure(withItems: tabItems)
         
         // 초기화면
-        libraryViewComponent.delegate = self // delegate 설정
         containerView.addSubview(libraryViewComponent)
         libraryViewComponent.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        
+        libraryViewComponent.delegate = self
+        starView.delegate = self
+        worksheetListViewComponent.delegate = self
+        searchedSheetView.delegate = self
     }
     
     func setupViews() {
@@ -272,10 +297,6 @@ class HomeViewController: UIViewController {
             //            make.centerY.equalTo(self.view)
             make.height.equalTo(504)
         }
-    }
-    
-    func updateStarView() {
-        starView.setDocuments(documents: documents)
     }
     
     private func showView(config viewId: String) {
@@ -381,6 +402,7 @@ extension HomeViewController: HeaderComponentDelegate {
                     workSheetVC.worksheetDetail = worksheetDetail
                     self?.navigationController?.pushViewController(workSheetVC, animated: true)
                     self?.refreshDocumentsAfterCreation()
+                    self?.updateSharedCategories() // 여기에 추가
                 case .failure(let error):
                     print("Error creating worksheet: \(error)")
                     self?.showErrorAlert(message: "학습지 생성에 실패했습니다.")
@@ -400,9 +422,103 @@ extension HomeViewController: HeaderComponentDelegate {
     }
 }
 
-extension HomeViewController: LibraryViewComponentDelegate {
+extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, WorksheetListViewComponentDelegate, SearchedSheetViewDelegate {
+    func didDeleteDocuments(for document: any Document) {
+        print("Deleting document: \(document.id)")
+        
+        // Delete document based on type
+        switch document {
+        case let worksheet as Worksheet:
+            APIManagere.shared.deleteWorksheet(worksheetId: worksheet.id) { [weak self] result in
+                self?.handleDeleteResult(result, for: document)
+            }
+        case let testsheet as Testsheet:
+            APIManagere.shared.deleteTestsheet(testsheetId: testsheet.id) { [weak self] result in
+                self?.handleDeleteResult(result, for: document)
+            }
+        case let wrongsheet as Wrongsheet:
+            APIManagere.shared.deleteWrongsheet(wrongsheetId: wrongsheet.id) { [weak self] result in
+                self?.handleDeleteResult(result, for: document)
+            }
+        default:
+            print("Unknown document type")
+        }
+    }
+    
+    private func handleDeleteResult(_ result: Result<APIManagere.EmptyResponse, Error>, for document: Document) {
+        DispatchQueue.main.async { [weak self] in
+            switch result {
+            case .success(let updatedDocument):
+                print("Document deletion successful: \(document.id)")
+                // Fetch documents to update the UI
+                self?.fetchAllDocuments {
+                    self?.updateDocument(updatedDocument as! Document)
+                    self?.setupDefaultView()
+                }
+            case .failure(let error):
+                print("Document deletion failed: \(error)")
+                // Handle error (e.g., show an alert to the user)
+                self?.showDeleteErrorAlert(message: "문서 삭제에 실패했습니다.")
+            }
+        }
+    }
+    
+    private func showDeleteErrorAlert(message: String) {
+        let alert = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+    
     func didUpdateBookmark(for document: Document) {
-        updateDocumentBookmarkStatus(document)
+        print("북마크 업데이트 시작: \(document.id)")
+        var updatedDocument = document
+        updatedDocument.isBookmarked.toggle()
+        
+        // API 호출
+        switch updatedDocument {
+        case let worksheet as Worksheet:
+            APIManagere.shared.toggleWorksheetBookmark(worksheetId: worksheet.id) { [weak self] result in
+                self?.handleBookmarkToggleResult(result, for: updatedDocument)
+            }
+        case let testsheet as Testsheet:
+            APIManagere.shared.toggleTestsheetBookmark(testsheetId: testsheet.id) { [weak self] result in
+                self?.handleBookmarkToggleResult(result, for: updatedDocument)
+            }
+        case let wrongsheet as Wrongsheet:
+            APIManagere.shared.toggleWrongsheetBookmark(wrongsheetId: wrongsheet.id) { [weak self] result in
+                self?.handleBookmarkToggleResult(result, for: updatedDocument)
+            }
+        default:
+            print("Unknown document type")
+        }
+        // 즉시 UI 업데이트
+        updateDocument(updatedDocument)
+    }
+    
+    private func handleBookmarkToggleResult<T: Document>(_ result: Result<T, Error>, for document: Document) {
+        DispatchQueue.main.async { [weak self] in
+            switch result {
+            case .success(let updatedDocument):
+                print("북마크 토글 성공: \(type(of: updatedDocument))")
+                // Fetch documents
+                self?.fetchAllDocuments {
+                    // Update UI after fetching documents
+                    self?.updateDocument(updatedDocument)
+                    self?.starView.reloadTable() // starView 테이블 리로드
+                }
+            case .failure(let error):
+                print("북마크 토글 실패: \(error)")
+                // 에러 처리 (예: 사용자에게 알림 표시)
+                // 실패 시 원래 상태로 되돌리기
+                var revertedDocument = document
+                revertedDocument.isBookmarked.toggle()
+                self?.updateDocument(revertedDocument)
+                self?.starView.reloadTable() // starView 테이블 리로드
+            }
+        }
+    }
+    
+    private func fetchAllDocuments(completion: @escaping () -> Void) {
         fetchDocuments()
     }
     
@@ -467,14 +583,42 @@ extension HomeViewController: LibraryViewComponentDelegate {
 }
 
 extension HomeViewController {
-    func updateDocumentBookmarkStatus(_ document: Document) {
-        if let index = documents.firstIndex(where: { $0.id == document.id }) {
-            documents[index] = document
+    func updateDocument(_ updatedDocument: Document) {
+        print("문서 업데이트 중: \(updatedDocument.id), isBookmarked: \(updatedDocument.isBookmarked)")
+        if let index = documents.firstIndex(where: { $0.id == updatedDocument.id }) {
+            documents[index] = updatedDocument
         }
         
-        setupHeaderComponent()
-        setupLibraryViewComponent()
+        // 각 뷰 업데이트
+        updateLibraryView()
         updateStarView()
+        updateWorksheetListView()
+        updateSearchedSheetView()
+        setupHeaderComponent()
+    }
+    
+    private func updateLibraryView() {
+        print("Updating LibraryView")
+        let worksheetDocuments = self.documents.filter { $0.fileType == "빈칸학습지" }
+        let testsheetDocuments = self.documents.filter { $0.fileType == "나만의 시험지" }
+        let wrongsheetDocuments = self.documents.filter { $0.fileType == "오답노트" }
+        
+        self.libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
+                                               testsheet: testsheetDocuments,
+                                               wrongsheet: wrongsheetDocuments)
+    }
+    
+    private func updateStarView() {
+        starView.setDocuments(documents: documents)
+        starView.reloadTable()
+    }
+    
+    private func updateWorksheetListView() {
+        worksheetListViewComponent.setWorksheets(documents)
+    }
+    
+    private func updateSearchedSheetView() {
+        searchedSheetView.setDocuments(documents: documents)
     }
 }
 
@@ -489,3 +633,5 @@ extension UIViewController {
         view.endEditing(true)
     }
 }
+
+
