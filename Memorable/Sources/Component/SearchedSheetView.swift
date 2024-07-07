@@ -14,7 +14,7 @@ protocol SearchedSheetViewDelegate: AnyObject {
 
 class SearchedSheetView: UIView {
     weak var delegate:SearchedSheetViewDelegate?
-    private let tableView: UITableView
+    let tableView: UITableView
     private let filterButtonsView = UIStackView()
     private let allFilterButton = UIButton(type: .system)
     private let worksheetFilterButton = UIButton(type: .system)
@@ -281,6 +281,10 @@ extension SearchedSheetView: UITableViewDataSource, UITableViewDelegate {
 
 extension SearchedSheetView: RecentsheetCellDelegate {
     func didTapBookmark<T: Document>(for document: T) {
+        if let index = allDocuments.firstIndex(where: { $0.id == document.id }) {
+            allDocuments[index] = document
+        }
+        tableView.reloadData()
         delegate?.didUpdateBookmark(for: document)
     }
 }

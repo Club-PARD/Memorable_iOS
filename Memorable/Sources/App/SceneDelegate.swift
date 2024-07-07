@@ -9,6 +9,7 @@ import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+    var pendingURL: URL?
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
@@ -27,7 +28,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // Handle incoming URL if the app was opened with one
         if let urlContext = connectionOptions.urlContexts.first {
-            handleURL(urlContext.url)
+            pendingURL = urlContext.url
         }
     }
     
@@ -42,23 +43,56 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
         let components = URLComponents(url: url, resolvingAgainstBaseURL: true)
-        let sheetName = components?.queryItems?.first(where: { $0.name == "name" })?.value?.removingPercentEncoding
-        let sheetCategory = components?.queryItems?.first(where: { $0.name == "category" })?.value?.removingPercentEncoding
-        let sheetText = components?.queryItems?.first(where: { $0.name == "text" })?.value?.removingPercentEncoding
+        let sheetName = components?.queryItems?.first(where: { $0.name == "name" })?.value?.removingPercentEncoding ?? ""
+        let sheetCategory = components?.queryItems?.first(where: { $0.name == "category" })?.value?.removingPercentEncoding ?? ""
+        let sheetText = components?.queryItems?.first(where: { $0.name == "text" })?.value?.removingPercentEncoding ?? ""
         
-        // Instantiate and configure TestSheetViewController with the received data
-        let testSheetViewController = TestSheetViewController()
-        testSheetViewController.sharedName = sheetName
-        testSheetViewController.sharedCategory = sheetCategory
-        testSheetViewController.sharedText = sheetText
-        
-        // Navigate to TestSheetViewController
-        if let navigationController = window?.rootViewController as? UINavigationController {
-            navigationController.pushViewController(testSheetViewController, animated: true)
+        if isLoggedIn() {
+            createAndNavigateToWorksheet(name: sheetName, category: sheetCategory, content: sheetText)
         } else {
-            let navigationController = UINavigationController(rootViewController: testSheetViewController)
-            window?.rootViewController = navigationController
-            window?.makeKeyAndVisible()
+            pendingURL = url
+            navigateToLogin()
+        }
+    }
+    
+    func isLoggedIn() -> Bool {
+        return UserDefaults.standard.string(forKey: SignInManager.userIdentifierKey) != nil
+    }
+    
+    func navigateToLogin() {
+        let loginVC = LoginViewController()
+        loginVC.delegate = self
+        if let navigationController = window?.rootViewController as? UINavigationController {
+            navigationController.pushViewController(loginVC, animated: true)
+        }
+    }
+    
+    func createAndNavigateToWorksheet(name: String, category: String, content: String) {
+        guard let userIdentifier = UserDefaults.standard.string(forKey: SignInManager.userIdentifierKey) else {
+            print("User identifier not found")
+            return
+        }
+        
+        APIManagere.shared.createWorksheet(userId: userIdentifier, name: name, category: category, content: content) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let worksheetDetail):
+                    print("Successfully created worksheet: \(worksheetDetail)")
+                    let workSheetVC = WorkSheetViewController()
+                    workSheetVC.worksheetDetail = worksheetDetail
+                    if let navigationController = self?.window?.rootViewController as? UINavigationController {
+                        navigationController.pushViewController(workSheetVC, animated: true)
+                        
+                        // 워크시트 생성 후 문서 목록 업데이트
+                        if let homeVC = navigationController.viewControllers.first as? HomeViewController {
+                            homeVC.fetchDocuments()
+                        }
+                    }
+                case .failure(let error):
+                    print("Error creating worksheet: \(error)")
+                    // 에러 처리 로직 추가
+                }
+            }
         }
     }
     
@@ -88,5 +122,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Called as the scene transitions from the foreground to the background.
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
+    }
+}
+
+extension SceneDelegate: LoginViewControllerDelegate {
+    func loginDidComplete() {
+        if let url = pendingURL {
+            handleURL(url)
+            pendingURL = nil
+        } else {
+            navigateToHome()
+        }
+    }
+    
+    func navigateToHome() {
+        let homeVC = HomeViewController()
+        if let navigationController = window?.rootViewController as? UINavigationController {
+            navigationController.setViewControllers([homeVC], animated: true)
+        }
     }
 }
