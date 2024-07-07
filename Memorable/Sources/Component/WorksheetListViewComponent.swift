@@ -8,7 +8,15 @@
 import SnapKit
 import UIKit
 
+protocol WorksheetListViewComponentDelegate: AnyObject {
+    func didUpdateBookmark(for document: Document)
+    func didDeleteDocuments(for document: Document)
+}
+
 class WorksheetListViewComponent: UIView {
+    private var selectedDocuments: [Document] = []
+    private var actionSheetView: EditActionSheetView?
+    weak var delegate: WorksheetListViewComponentDelegate?
     private let worksheetTableView: UITableView
     private let filterScrollView: UIScrollView
     private let filterStackView: UIStackView
@@ -23,7 +31,6 @@ class WorksheetListViewComponent: UIView {
     private var isEditingMode: Bool = false {
         didSet {
             worksheetTableView.setEditing(isEditingMode, animated: true)
-            updateEditingUI()
         }
     }
     
@@ -127,116 +134,6 @@ class WorksheetListViewComponent: UIView {
         isEditingMode.toggle()
     }
     
-    private func updateEditingUI() {
-        if let viewController = findViewController() as? UIViewController {
-            viewController.navigationItem.rightBarButtonItem = isEditingMode ? doneButton : editButton
-        }
-        
-        if isEditingMode {
-            let deleteButton = UIBarButtonItem(title: "삭제", style: .plain, target: self, action: #selector(deleteSelectedItems))
-            let editButton = UIBarButtonItem(title: "수정", style: .plain, target: self, action: #selector(editSelectedItem))
-            if let viewController = findViewController() as? UIViewController {
-                viewController.navigationItem.leftBarButtonItems = [deleteButton, editButton]
-            }
-        } else {
-            if let viewController = findViewController() as? UIViewController {
-                viewController.navigationItem.leftBarButtonItems = nil
-            }
-        }
-    }
-    
-    @objc private func deleteSelectedItems() {
-        guard let selectedIndexPaths = worksheetTableView.indexPathsForSelectedRows, !selectedIndexPaths.isEmpty else {
-            return
-        }
-        
-        let alertController = UIAlertController(title: nil, message: "선택한 항목을 삭제하시겠습니까?", preferredStyle: .alert)
-        
-        let deleteAction = UIAlertAction(title: "삭제", style: .destructive) { [weak self] _ in
-            guard let self = self else { return }
-            
-            let itemsToDelete = selectedIndexPaths.map { self.filteredWorksheets[$0.row] }
-            
-            // TODO: 서버에 삭제 요청
-            // let documentIds = itemsToDelete.map { $0.id }
-            // APIManager.shared.deleteDocuments(documentIds: documentIds) { result in
-            //     DispatchQueue.main.async {
-            //         switch result {
-            //         case .success:
-            //             self.filteredWorksheets = self.filteredWorksheets.filter { !itemsToDelete.contains($0) }
-            //             self.worksheetTableView.deleteRows(at: selectedIndexPaths, with: .automatic)
-            //         case .failure(let error):
-            //             print("Error deleting documents: \(error)")
-            //             // 에러 처리 (예: 사용자에게 알림 표시)
-            //         }
-            //     }
-            // }
-            
-            // 임시로 로컬에서만 삭제
-//            self.filteredWorksheets = self.filteredWorksheets.filter { !itemsToDelete.contains($0) }
-//            self.worksheetTableView.deleteRows(at: selectedIndexPaths, with: .automatic)
-        }
-        
-        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
-        
-        alertController.addAction(deleteAction)
-        alertController.addAction(cancelAction)
-        
-        if let viewController = findViewController() {
-            viewController.present(alertController, animated: true, completion: nil)
-        }
-    }
-    
-    @objc private func editSelectedItem() {
-        guard let selectedIndexPaths = worksheetTableView.indexPathsForSelectedRows, selectedIndexPaths.count == 1,
-              let indexPath = selectedIndexPaths.first
-        else {
-            // 하나의 항목만 선택되었을 때 수정 가능
-            return
-        }
-        
-        let document = filteredWorksheets[indexPath.row]
-        
-        let alertController = UIAlertController(title: "파일 이름 수정", message: nil, preferredStyle: .alert)
-        alertController.addTextField { textField in
-            textField.text = document.name
-        }
-        
-        let saveAction = UIAlertAction(title: "저장", style: .default) { [weak self] _ in
-            guard let self = self,
-                  let newTitle = alertController.textFields?.first?.text,
-                  !newTitle.isEmpty else { return }
-            
-            // 로컬에서 이름 변경
-//            document.name = newTitle
-            
-            // TODO: 서버에 이름 변경 요청
-            // APIManager.shared.updateDocumentTitle(documentId: document.id, newTitle: newTitle) { result in
-            //     DispatchQueue.main.async {
-            //         switch result {
-            //         case .success:
-            //             self.worksheetTableView.reloadRows(at: [indexPath], with: .automatic)
-            //         case .failure(let error):
-            //             print("Error updating document title: \(error)")
-            //             // 에러 처리 (예: 사용자에게 알림 표시)
-            //         }
-            //     }
-            // }
-            
-            // 임시로 로컬에서만 변경
-            self.worksheetTableView.reloadRows(at: [indexPath], with: .automatic)
-        }
-        
-        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
-        
-        alertController.addAction(saveAction)
-        alertController.addAction(cancelAction)
-        
-        if let viewController = findViewController() {
-            viewController.present(alertController, animated: true, completion: nil)
-        }
-    }
-    
     func setWorksheets(_ documents: [Document]) {
         worksheets = documents
         filteredWorksheets = documents
@@ -316,11 +213,11 @@ class WorksheetListViewComponent: UIView {
         settingButton.tintColor = MemorableColor.Gray1
         
         let editAction = UIAction(title: "수정하기", image: UIImage(systemName: "pencil")) { _ in
-            self.toggleEditingMode()
+            self.showActionSheet(title: "수정하기")
         }
         
         let deleteAction = UIAction(title: "삭제하기", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-            self.toggleEditingMode()
+            self.showActionSheet(title: "삭제하기")
         }
         
         let menu = UIMenu(title: "", children: [editAction, deleteAction])
@@ -328,9 +225,73 @@ class WorksheetListViewComponent: UIView {
         settingButton.menu = menu
         settingButton.showsMenuAsPrimaryAction = true
     }
+    
+    private func showActionSheet(title: String) {
+        guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else { return }
+        
+        actionSheetView = EditActionSheetView(title: title)
+        window.addSubview(actionSheetView!)
+        
+        actionSheetView?.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(window.snp.bottom)
+            make.height.equalTo(100)
+        }
+        
+        actionSheetView?.transform = CGAffineTransform(translationX: 0, y: 59)
+        
+        actionSheetView?.onCancel = { [weak self] in
+            self?.hideActionSheet()
+        }
+        
+        actionSheetView?.onConfirm = { [weak self] in
+            if title == "삭제하기" {
+                self?.deleteSelectedDocuments()
+            }
+        }
+        
+        UIView.animate(withDuration: 0.3) {
+            self.actionSheetView?.transform = .identity
+        }
+        
+        // 액션 시트를 표시하면서 동시에 편집 모드 활성화
+        self.toggleEditingMode()
+    }
+    
+    private func hideActionSheet() {
+        UIView.animate(withDuration: 0.3, animations: {
+            self.actionSheetView?.transform = CGAffineTransform(translationX: 0, y: 59)
+            
+        }) { _ in
+            self.actionSheetView?.removeFromSuperview()
+            self.actionSheetView = nil
+        }
+    }
+    
+    private func deleteSelectedDocuments() {
+        guard let selectedRows = worksheetTableView.indexPathsForSelectedRows else { return }
+        
+        for indexPath in selectedRows {
+            if indexPath.row < filteredWorksheets.count {
+                let documentToDelete = filteredWorksheets[indexPath.row]
+                delegate?.didDeleteDocuments(for: documentToDelete)
+            }
+        }
+        
+        // 삭제 후 선택 해제 및 편집 모드 종료
+        worksheetTableView.reloadData()
+        isEditingMode = false
+        hideActionSheet()
+    }
 }
 
 extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate, RecentsheetCellDelegate {
+    
+    func didTapBookmark<T: Document>(for document: T) {
+//        delegate?.didUpdateBookmarks(for: document)
+        worksheetTableView.reloadData()
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return filteredWorksheets.count
     }
@@ -344,7 +305,7 @@ extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate
         
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if isEditingMode {
-            updateEditingUI()
+            // 서버 연결
         } else {
             tableView.deselectRow(at: indexPath, animated: true)
             let document = worksheets[indexPath.row]
@@ -412,10 +373,10 @@ extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate
                         print("GET: \(detail.name)")
                         print("GET: \(detail.category)")
                         print("GET: \(detail.questions)")
-                                            
-                        //                    let wrongSheetVC = WrongSheetViewController()
-                        //                    wrongSheetVC.wrongsheetDetail = detail
-                        //                    self.navigateToViewController(wrongSheetVC)
+                        
+                        let wrongSheetVC = WrongSheetViewController()
+                        wrongSheetVC.wrongsheetDetail = detail
+                        self.navigateToViewController(wrongSheetVC)
                     }
                 }
             default:
@@ -430,11 +391,6 @@ extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate
         } else if let presentingViewController = window?.rootViewController {
             presentingViewController.present(viewController, animated: true, completion: nil)
         }
-    }
-    
-    func didTapBookmark(for document: Document) {
-        // 테이블 뷰 리로드
-        // recentTableView.reloadData()
     }
 }
 
