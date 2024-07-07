@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 
 protocol RecentsheetCellDelegate: AnyObject {
-    func didTapBookmark(for document: Document)
+    func didTapBookmark<T: Document>(for document: T)
 }
 
 class RecentsheetCell: UITableViewCell {
@@ -131,29 +131,72 @@ class RecentsheetCell: UITableViewCell {
     }
     
     @objc private func bookmarkTapped() {
-        guard var document = document else { return }
+        guard let document = document else { return }
+        let originalBookmarkState = document.isBookmarked
         
-        if let worksheet = document as? Worksheet {
+        // 즉시 UI 업데이트
+        updateBookmarkButton(isBookmarked: !originalBookmarkState)
+        
+        switch document {
+        case let worksheet as Worksheet:
             APIManagere.shared.toggleWorksheetBookmark(worksheetId: worksheet.id) { [weak self] result in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success(let updatedWorksheet):
-                        document = updatedWorksheet
-                        self?.document = updatedWorksheet
-                        self?.updateBookmarkButton()
-                        self?.delegate?.didTapBookmark(for: updatedWorksheet)
-                    case .failure(let error):
-                        print("Error toggling bookmark: \(error)")
-                        // Handle error (e.g., show an alert to the user)
-                    }
-                }
+                self?.handleBookmarkToggleResult(result, originalState: originalBookmarkState)
             }
-        } else {
-            // Handle other document types if necessary
-            document.isBookmarked.toggle()
-            self.document = document
-            updateBookmarkButton()
-            delegate?.didTapBookmark(for: document)
+        case let testsheet as Testsheet:
+            APIManagere.shared.toggleTestsheetBookmark(testsheetId: testsheet.id) { [weak self] result in
+                self?.handleBookmarkToggleResult(result, originalState: originalBookmarkState)
+            }
+        case let wrongsheet as Wrongsheet:
+            APIManagere.shared.toggleWrongsheetBookmark(wrongsheetId: wrongsheet.id) { [weak self] result in
+                self?.handleBookmarkToggleResult(result, originalState: originalBookmarkState)
+            }
+        default:
+            print("Unknown document type")
+        }
+        
+        delegate?.didTapBookmark(for: document)
+    }
+    
+    private func handleBookmarkToggleResult<T: Document>(_ result: Result<T, Error>, originalState: Bool) {
+        DispatchQueue.main.async { [weak self] in
+            switch result {
+            case .success(let updatedDocument):
+                self?.document = updatedDocument
+                self?.updateBookmarkButton(isBookmarked: updatedDocument.isBookmarked)
+            case .failure(let error):
+                print("Error toggling bookmark: \(error)")
+                // Revert UI to original state
+                self?.updateBookmarkButton(isBookmarked: originalState)
+            }
+            
+            // Optionally, trigger a refresh of the document list
+            NotificationCenter.default.post(name: .documentListShouldRefresh, object: nil)
         }
     }
+    
+    private func updateBookmarkButton(isBookmarked: Bool) {
+            guard let document = document else { return }
+            
+            let bookmarkImageName: String
+            if isBookmarked {
+                switch document.fileType {
+                case "빈칸학습지":
+                    bookmarkImageName = "bookmark-blue"
+                case "나만의 시험지":
+                    bookmarkImageName = "bookmark-yellow"
+                case "오답노트":
+                    bookmarkImageName = "bookmark-gray-v2"
+                default:
+                    bookmarkImageName = "bookmark-empty"
+                }
+            } else {
+                bookmarkImageName = "bookmark-empty"
+            }
+            
+            bookmarkButton.setImage(UIImage(named: bookmarkImageName), for: .normal)
+        }
+}
+
+extension Notification.Name {
+    static let documentListShouldRefresh = Notification.Name("documentListShouldRefresh")
 }
