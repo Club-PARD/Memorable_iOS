@@ -8,7 +8,12 @@
 import SnapKit
 import UIKit
 
+protocol StarViewDelegate: AnyObject {
+    func didUpdateBookmark(for document: Document)
+}
+
 class StarView: UIView {
+    weak var delegate: StarViewDelegate?
     private let tableView: UITableView
     private let filterButtonsView = UIStackView()
     private let allFilterButton = UIButton(type: .system)
@@ -179,9 +184,18 @@ class StarView: UIView {
             make.height.equalTo(20)
         }
     }
+    
+    func reloadTable() {
+        tableView.reloadData()
+    }
 }
 
 extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellDelegate {
+    func didTapBookmark<T: Document>(for document: T) {
+        delegate?.didUpdateBookmark(for: document)
+        tableView.reloadData()
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return filteredDocuments.count
     }
@@ -190,7 +204,6 @@ extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellD
         let cell = tableView.dequeueReusableCell(withIdentifier: "RecentsheetCell", for: indexPath) as! RecentsheetCell
         let document = filteredDocuments[indexPath.row]
         cell.configure(with: document)
-        cell.delegate = self
         return cell
     }
     
@@ -268,9 +281,9 @@ extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellD
                     print("GET: \(detail.category)")
                     print("GET: \(detail.questions)")
                     
-//                    let wrongSheetVC = WrongSheetViewController()
-//                    wrongSheetVC.wrongsheetDetail = detail
-//                    self.navigateToViewController(wrongSheetVC)
+                    let wrongSheetVC = WrongSheetViewController()
+                    wrongSheetVC.wrongsheetDetail = detail
+                    self.navigateToViewController(wrongSheetVC)
                 }
             }
         default:
@@ -283,28 +296,6 @@ extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellD
             navigationController.pushViewController(viewController, animated: true)
         } else if let presentingViewController = window?.rootViewController {
             presentingViewController.present(viewController, animated: true, completion: nil)
-        }
-    }
-    
-    func didTapBookmark(for document: Document) {
-        if let worksheet = document as? Worksheet {
-            APIManagere.shared.toggleWorksheetBookmark(worksheetId: worksheet.id) { [weak self] result in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success(let updatedWorksheet):
-                        if let index = self?.allDocuments.firstIndex(where: { $0.id == updatedWorksheet.id }) {
-                            self?.allDocuments[index] = updatedWorksheet
-                        }
-                        if let index = self?.filteredDocuments.firstIndex(where: { $0.id == updatedWorksheet.id }) {
-                            self?.filteredDocuments[index] = updatedWorksheet
-                        }
-                        self?.tableView.reloadData()
-                    case .failure(let error):
-                        print("Error toggling bookmark: \(error)")
-                        // 에러 처리 (예: 사용자에게 알림 표시)
-                    }
-                }
-            }
         }
     }
 }
