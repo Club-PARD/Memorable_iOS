@@ -65,7 +65,7 @@ class RecentsheetCell: UITableViewCell {
         
         bookmarkButton.addTarget(self, action: #selector(bookmarkTapped), for: .touchUpInside)
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -82,7 +82,7 @@ class RecentsheetCell: UITableViewCell {
         categoryLabel.layer.masksToBounds = true
         categoryLabel.layer.borderColor = MemorableColor.Blue2?.cgColor
         categoryLabel.layer.borderWidth = 1
-
+        
         titleLabel.text = document.name
         titleLabel.font = MemorableFont.Body1()
         titleLabel.textColor = MemorableColor.Black
@@ -137,66 +137,28 @@ class RecentsheetCell: UITableViewCell {
         // 즉시 UI 업데이트
         updateBookmarkButton(isBookmarked: !originalBookmarkState)
         
-        switch document {
-        case let worksheet as Worksheet:
-            APIManagere.shared.toggleWorksheetBookmark(worksheetId: worksheet.id) { [weak self] result in
-                self?.handleBookmarkToggleResult(result, originalState: originalBookmarkState)
-            }
-        case let testsheet as Testsheet:
-            APIManagere.shared.toggleTestsheetBookmark(testsheetId: testsheet.id) { [weak self] result in
-                self?.handleBookmarkToggleResult(result, originalState: originalBookmarkState)
-            }
-        case let wrongsheet as Wrongsheet:
-            APIManagere.shared.toggleWrongsheetBookmark(wrongsheetId: wrongsheet.id) { [weak self] result in
-                self?.handleBookmarkToggleResult(result, originalState: originalBookmarkState)
-            }
-        default:
-            print("Unknown document type")
-        }
-        
         delegate?.didTapBookmark(for: document)
     }
     
-    private func handleBookmarkToggleResult<T: Document>(_ result: Result<T, Error>, originalState: Bool) {
-        DispatchQueue.main.async { [weak self] in
-            switch result {
-            case .success(let updatedDocument):
-                self?.document = updatedDocument
-                self?.updateBookmarkButton(isBookmarked: updatedDocument.isBookmarked)
-            case .failure(let error):
-                print("Error toggling bookmark: \(error)")
-                // Revert UI to original state
-                self?.updateBookmarkButton(isBookmarked: originalState)
-            }
-            
-            // Optionally, trigger a refresh of the document list
-            NotificationCenter.default.post(name: .documentListShouldRefresh, object: nil)
-        }
-    }
-    
     private func updateBookmarkButton(isBookmarked: Bool) {
-            guard let document = document else { return }
-            
-            let bookmarkImageName: String
-            if isBookmarked {
-                switch document.fileType {
-                case "빈칸학습지":
-                    bookmarkImageName = "bookmark-blue"
-                case "나만의 시험지":
-                    bookmarkImageName = "bookmark-yellow"
-                case "오답노트":
-                    bookmarkImageName = "bookmark-gray-v2"
-                default:
-                    bookmarkImageName = "bookmark-empty"
-                }
-            } else {
+        guard let document = document else { return }
+        
+        let bookmarkImageName: String
+        if isBookmarked {
+            switch document.fileType {
+            case "빈칸학습지":
+                bookmarkImageName = "bookmark-blue"
+            case "나만의 시험지":
+                bookmarkImageName = "bookmark-yellow"
+            case "오답노트":
+                bookmarkImageName = "bookmark-gray-v2"
+            default:
                 bookmarkImageName = "bookmark-empty"
             }
-            
-            bookmarkButton.setImage(UIImage(named: bookmarkImageName), for: .normal)
+        } else {
+            bookmarkImageName = "bookmark-empty"
         }
-}
-
-extension Notification.Name {
-    static let documentListShouldRefresh = Notification.Name("documentListShouldRefresh")
+        
+        bookmarkButton.setImage(UIImage(named: bookmarkImageName), for: .normal)
+    }
 }
