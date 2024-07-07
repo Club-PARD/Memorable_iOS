@@ -253,6 +253,9 @@ class HomeViewController: UIViewController {
         }
         
         libraryViewComponent.delegate = self
+        starView.delegate = self
+        worksheetListViewComponent.delegate = self
+        searchedSheetView.delegate = self
         
         // 초기 뷰 설정
         showView(config: "home")
@@ -289,6 +292,10 @@ class HomeViewController: UIViewController {
         }
         
         libraryViewComponent.delegate = self
+        starView.delegate = self
+        worksheetListViewComponent.delegate = self
+        searchedSheetView.delegate = self
+        
         containerView.addSubview(libraryViewComponent)
         libraryViewComponent.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -527,14 +534,14 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
             print("Unknown document type")
         }
     }
-    
+
     private func handleBookmarkToggleResult<T: Document>(_ result: Result<T, Error>, for document: Document) {
         DispatchQueue.main.async { [weak self] in
             switch result {
             case .success(let updatedDocument):
                 print("북마크 토글 성공: \(type(of: updatedDocument))")
-                // Fetch documents
-                self?.fetchDocuments()
+                // 문서 업데이트 및 모든 관련 뷰 갱신
+                self?.updateDocument(updatedDocument)
             case .failure(let error):
                 print("북마크 토글 실패: \(error)")
                 // 에러 처리 (예: 사용자에게 알림 표시)
@@ -542,7 +549,6 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
                 var revertedDocument = document
                 revertedDocument.isBookmarked.toggle()
                 self?.updateDocument(revertedDocument)
-                self?.starView.reloadTable() // starView 테이블 리로드
             }
         }
     }
@@ -638,8 +644,8 @@ extension HomeViewController {
     }
     
     private func updateStarView() {
-        starView.setDocuments(documents: documents)
-        starView.reloadTable()
+        self.starView.setDocuments(documents: documents)
+        self.starView.reloadTable()
     }
     
     private func updateWorksheetListView() {
