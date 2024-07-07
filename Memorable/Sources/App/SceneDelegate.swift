@@ -9,6 +9,7 @@ import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+    var pendingURL: URL?
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
@@ -19,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let navigationVC = UINavigationController(rootViewController: initialVC)
         
         if #available(iOS 13.0, *) {
-            self.window?.overrideUserInterfaceStyle = .light // 라이트모드만 지원하기
+            self.window?.overrideUserInterfaceStyle = .light
         }
         
         window?.rootViewController = navigationVC
@@ -27,7 +28,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // Handle incoming URL if the app was opened with one
         if let urlContext = connectionOptions.urlContexts.first {
-            handleURL(urlContext.url)
+            pendingURL = urlContext.url
         }
     }
     
@@ -46,47 +47,55 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let sheetCategory = components?.queryItems?.first(where: { $0.name == "category" })?.value?.removingPercentEncoding
         let sheetText = components?.queryItems?.first(where: { $0.name == "text" })?.value?.removingPercentEncoding
         
-        // Instantiate and configure TestSheetViewController with the received data
-        let testSheetViewController = TestSheetViewController()
-        testSheetViewController.sharedName = sheetName
-        testSheetViewController.sharedCategory = sheetCategory
-        testSheetViewController.sharedText = sheetText
-        
-        // Navigate to TestSheetViewController
-        if let navigationController = window?.rootViewController as? UINavigationController {
-            navigationController.pushViewController(testSheetViewController, animated: true)
+        if isLoggedIn() {
+            navigateToWorksheet(name: sheetName, category: sheetCategory, text: sheetText)
         } else {
-            let navigationController = UINavigationController(rootViewController: testSheetViewController)
-            window?.rootViewController = navigationController
-            window?.makeKeyAndVisible()
+            pendingURL = url
+            navigateToLogin()
         }
     }
     
-    func sceneDidDisconnect(_ scene: UIScene) {
-        // Called as the scene is being released by the system.
-        // This occurs shortly after the scene enters the background, or when its session is discarded.
-        // Release any resources associated with this scene that can be re-created the next time the scene connects.
-        // The scene may re-connect later, as its session was not necessarily discarded (see `application:didDiscardSceneSessions` instead).
+    func isLoggedIn() -> Bool {
+        // 로그인 상태 확인 로직 구현
+        // 예: UserDefaults나 KeyChain에서 토큰 확인
+        return false // 임시로 false 반환
     }
     
-    func sceneDidBecomeActive(_ scene: UIScene) {
-        // Called when the scene has moved from an inactive state to an active state.
-        // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+    func navigateToLogin() {
+        let loginVC = LoginViewController()
+        loginVC.delegate = self
+        if let navigationController = window?.rootViewController as? UINavigationController {
+            navigationController.pushViewController(loginVC, animated: true)
+        }
     }
-
-    func sceneWillResignActive(_ scene: UIScene) {
-        // Called when the scene will move from an active state to an inactive state.
-        // This may occur due to temporary interruptions (ex. an incoming phone call).
+    
+    func navigateToWorksheet(name: String?, category: String?, text: String?) {
+        let worksheetVC = WorkSheetViewController()
+        worksheetVC.sharedName = name
+        worksheetVC.sharedCategory = category
+        worksheetVC.sharedText = text
+        
+        if let navigationController = window?.rootViewController as? UINavigationController {
+            navigationController.pushViewController(worksheetVC, animated: true)
+        }
     }
+}
 
-    func sceneWillEnterForeground(_ scene: UIScene) {
-        // Called as the scene transitions from the background to the foreground.
-        // Use this method to undo the changes made on entering the background.
+extension SceneDelegate: LoginViewControllerDelegate {
+    func loginDidComplete() {
+        if let url = pendingURL {
+            handleURL(url)
+            pendingURL = nil
+        } else {
+            // 일반적인 로그인 후 홈 화면으로 이동
+            navigateToHome()
+        }
     }
-
-    func sceneDidEnterBackground(_ scene: UIScene) {
-        // Called as the scene transitions from the foreground to the background.
-        // Use this method to save data, release shared resources, and store enough scene-specific state information
-        // to restore the scene back to its current state.
+    
+    func navigateToHome() {
+        let homeVC = HomeViewController()
+        if let navigationController = window?.rootViewController as? UINavigationController {
+            navigationController.setViewControllers([homeVC], animated: true)
+        }
     }
 }
