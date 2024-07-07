@@ -36,8 +36,8 @@ class WorkSheetViewController: UIViewController {
         $0.isHidden = true
     }
 
-    private let finishImage2 = FloatingImage(frame: CGRect(x: 0, y: 0, width: 260, height: 36)).then {
-        $0.image = UIImage(named: "finish_add")
+    private let finishImage2 = FloatingImage(frame: CGRect(x: 0, y: 0, width: 200, height: 36)).then {
+        $0.image = UIImage(named: "finish_make")
         $0.contentMode = .scaleAspectFit
         $0.isHidden = true
     }

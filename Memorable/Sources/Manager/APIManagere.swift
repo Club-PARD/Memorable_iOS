@@ -402,7 +402,6 @@ class APIManagere {
         }
     }
     
-    
     // 3-1. 홈화면 들어왔을 떄(Wrongsheet)
     func getWrongsheets(userId: String, completion: @escaping (Result<[Wrongsheet], Error>) -> Void) {
         let urlString = "\(baseURL)/api/wrongsheet/user/\(userId)"
@@ -532,7 +531,7 @@ class APIManagere {
         request.httpMethod = "PATCH"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        URLSession.shared.dataTask(with: request) { data, _, error in
             if let error = error {
                 completion(.failure(APIError.networkError(error)))
                 return
@@ -588,14 +587,15 @@ class APIManagere {
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
         
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        URLSession.shared.dataTask(with: request) { _, response, error in
             if let error = error {
                 completion(.failure(APIError.networkError(error)))
                 return
             }
             
             guard let httpResponse = response as? HTTPURLResponse,
-                  (200...299).contains(httpResponse.statusCode) else {
+                  (200...299).contains(httpResponse.statusCode)
+            else {
                 completion(.failure(APIError.serverError(statusCode: (response as? HTTPURLResponse)?.statusCode ?? 0, message: "Invalid response")))
                 return
             }
