@@ -38,7 +38,6 @@ class LoginViewController: UIViewController {
     func addSubViews() {
         view.addSubview(logoImageView)
         view.addSubview(appleLoginButton)
-        view.addSubview(activityIndicator)
     }
     
     func setupConstraints() {
@@ -52,10 +51,6 @@ class LoginViewController: UIViewController {
             make.width.equalTo(375)
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview().offset(150)
-        }
-        activityIndicator.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.centerY.equalToSuperview()
         }
     }
     
@@ -95,57 +90,50 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
             switch result {
             case .success:
                 print("User successfully posted")
+                self.dismiss(animated: true)
+                self.navigationController?.setViewControllers([OnboardingViewController()], animated: true)
             case .failure(let error):
                 print("Error posting user: \(error)")
             }
         }
-        
-        dismiss(animated: true)
-        navigationController?.setViewControllers([OnboardingViewController()], animated: true)
     }
     
     private func signInWithExistingAccount(credential: ASAuthorizationAppleIDCredential) {
         print("Signing in with existing account with user: \(credential.user)")
+        setupActivityIndicator(view: view)
         
         dismiss(animated: true) { [weak self] in
             guard let self = self else { return }
-            
-            activityIndicator.startAnimating()
     
-            APIManager.shared.getData(to: "/api/users/\(credential.user)") { [weak self] (info: User?, error: Error?) in
-                guard let self = self else { return }
+            APIManager.shared.getData(to: "/api/users/\(credential.user)") { (info: User?, error: Error?) in
                 
                 DispatchQueue.main.async {
                     // 3. 받아온 데이터 처리
                     if let error = error {
                         print("Error fetching data: \(error)")
+                        removeActivityIndicator()
+                        self.signOut()
                         return
                     }
                     
-                    guard let info = info else {
+                    guard let user = info else {
                         print("No data received")
+                        removeActivityIndicator()
+                        self.signOut()
                         return
                     }
-                    
-                    // 사용자 데이터 사용
-                    let user = User(
-                        identifier: info.identifier,
-                        givenName: info.givenName,
-                        familyName: info.familyName,
-                        email: info.email
-                    )
                     
                     if let encodeData = try? JSONEncoder().encode(user) {
                         UserDefaults.standard.set(encodeData, forKey: "userInfo")
                         print("👥 User Info Saved")
                     }
                     
-                    print("GET: \(info.identifier)")
-                    print("GET: \(info.givenName)")
-                    print("GET: \(info.familyName)")
-                    print("GET: \(info.email)")
+                    print("GET: \(user.identifier)")
+                    print("GET: \(user.givenName)")
+                    print("GET: \(user.familyName)")
+                    print("GET: \(user.email)")
                     
-                    activityIndicator.stopAnimating()
+                    removeActivityIndicator()
                     self.navigationController?.setViewControllers([HomeViewController()], animated: true)
                 }
             }
@@ -228,6 +216,13 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
         let okAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
         alertController.addAction(okAction)
         present(alertController, animated: true, completion: nil)
+    }
+    
+    func signOut() {
+        print("❎ Signed Out")
+
+        UserDefaults.standard.removeObject(forKey: SignInManager.userIdentifierKey)
+        navigationController?.setViewControllers([LoginViewController()], animated: false)
     }
 }
     

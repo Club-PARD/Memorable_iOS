@@ -8,5 +8,7 @@
 import Foundation
 
 enum AuthState {
-    case undefined, signedOut, signedIn
+    case undefined
+    case signedOut
+    case signedIn(_: String)
 }

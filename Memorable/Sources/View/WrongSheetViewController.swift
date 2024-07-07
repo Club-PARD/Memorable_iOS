@@ -97,6 +97,10 @@ class WrongSheetViewController: UIViewController {
             frame: CGRect.zero,
             QnA: detail.questions
         )
+
+        categoryTitleLabel.text = detail.name
+        fileNameLabel.text = detail.category
+
         loadUserAnswers()
 
         setupButtons()
