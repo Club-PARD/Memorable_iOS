@@ -17,7 +17,7 @@ enum APIError: Error {
 
 class APIManagere {
     static let shared = APIManagere()
-    private let baseURL = "http://172.30.1.65:8080"
+    private let baseURL = "http://172.30.1.77:8080"
     
     struct EmptyResponse: Codable {}
     
@@ -201,33 +201,18 @@ class APIManagere {
     // 1-5. 즐겨찾기 토글 기능
     func toggleWorksheetBookmark(worksheetId: Int, completion: @escaping (Result<Worksheet, Error>) -> Void) {
         let urlString = "\(baseURL)/api/worksheet/\(worksheetId)"
-        guard let url = URL(string: urlString) else {
-            completion(.failure(NSError(domain: "Invalid URL", code: 0, userInfo: nil)))
-            return
+        toggleBookmark(urlString: urlString) { result in
+            switch result {
+            case .success(let document):
+                if let worksheet = document as? Worksheet {
+                    completion(.success(worksheet))
+                } else {
+                    completion(.failure(APIError.decodingError(NSError(domain: "Unexpected document type", code: 0, userInfo: nil))))
+                }
+            case .failure(let error):
+                completion(.failure(error))
+            }
         }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "PATCH"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        URLSession.shared.dataTask(with: request) { data, _, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            
-            guard let data = data else {
-                completion(.failure(NSError(domain: "No data received", code: 0, userInfo: nil)))
-                return
-            }
-            
-            do {
-                let worksheet = try JSONDecoder().decode(Worksheet.self, from: data)
-                completion(.success(worksheet))
-            } catch {
-                completion(.failure(error))
-            }
-        }.resume()
     }
     
     // 1-6. 빈칸학습지 마지막 이용 시간 서버에 Patch
@@ -400,6 +385,85 @@ class APIManagere {
         }.resume()
     }
     
+    // 2-5 테스트 sheet 북마크
+    func toggleTestsheetBookmark(testsheetId: Int, completion: @escaping (Result<Testsheet, Error>) -> Void) {
+        let urlString = "\(baseURL)/api/testsheet/bookmark/\(testsheetId)"
+        toggleBookmark(urlString: urlString) { result in
+            switch result {
+            case .success(let document):
+                if let testsheet = document as? Testsheet {
+                    completion(.success(testsheet))
+                } else {
+                    completion(.failure(APIError.decodingError(NSError(domain: "Unexpected document type", code: 0, userInfo: nil))))
+                }
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    
+    // 3-1. 홈화면 들어왔을 떄(Wrongsheet)
+    func getWrongsheets(userId: String, completion: @escaping (Result<[Wrongsheet], Error>) -> Void) {
+        let urlString = "\(baseURL)/api/wrongsheet/user/\(userId)"
+        print("Requesting wrongsheets from: \(urlString)")
+        
+        guard let url = URL(string: urlString) else {
+            print("Invalid URL: \(urlString)")
+            completion(.failure(APIError.invalidURL))
+            return
+        }
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
+                print("Network error: \(error.localizedDescription)")
+                completion(.failure(APIError.networkError(error)))
+                return
+            }
+            
+            if let httpResponse = response as? HTTPURLResponse {
+                print("HTTP Status Code: \(httpResponse.statusCode)")
+                
+                guard (200...299).contains(httpResponse.statusCode) else {
+                    print("Server error with status code: \(httpResponse.statusCode)")
+                    completion(.failure(APIError.serverError(statusCode: httpResponse.statusCode, message: "Server error")))
+                    return
+                }
+            }
+            
+            guard let data = data else {
+                print("No data received")
+                completion(.failure(APIError.serverError(statusCode: 0, message: "No data received")))
+                return
+            }
+            
+            print("Received data: \(String(data: data, encoding: .utf8) ?? "Unable to convert data to string")")
+            
+            do {
+                let wrongsheets = try JSONDecoder().decode([Wrongsheet].self, from: data)
+                print("Successfully decoded \(wrongsheets.count) wrongsheets")
+                completion(.success(wrongsheets))
+            } catch {
+                print("Decoding error: \(error)")
+                if let decodingError = error as? DecodingError {
+                    switch decodingError {
+                    case .keyNotFound(let key, let context):
+                        print("Key '\(key)' not found: \(context.debugDescription)")
+                    case .valueNotFound(let value, let context):
+                        print("Value '\(value)' not found: \(context.debugDescription)")
+                    case .typeMismatch(let type, let context):
+                        print("Type '\(type)' mismatch: \(context.debugDescription)")
+                    case .dataCorrupted(let context):
+                        print("Data corrupted: \(context.debugDescription)")
+                    @unknown default:
+                        print("Unknown decoding error")
+                    }
+                }
+                completion(.failure(APIError.decodingError(error)))
+            }
+        }.resume()
+    }
+    
     // 3-2. 오답노트 들어갈 때
     
     // 3-3. 오답노트 내보내기  alert 확인 버튼 클릭했을 때
@@ -438,6 +502,105 @@ class APIManagere {
             } catch {
                 completion(.failure(APIError.decodingError(error)))
             }
+        }.resume()
+    }
+    
+    // 3-4 오답노트 북마크
+    func toggleWrongsheetBookmark(wrongsheetId: Int, completion: @escaping (Result<Wrongsheet, Error>) -> Void) {
+        let urlString = "\(baseURL)/api/wrongsheet/\(wrongsheetId)"
+        toggleBookmark(urlString: urlString) { result in
+            switch result {
+            case .success(let document):
+                if let wrongsheet = document as? Wrongsheet {
+                    completion(.success(wrongsheet))
+                } else {
+                    completion(.failure(APIError.decodingError(NSError(domain: "Unexpected document type", code: 0, userInfo: nil))))
+                }
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    private func toggleBookmark(urlString: String, completion: @escaping (Result<Document, Error>) -> Void) {
+        guard let url = URL(string: urlString) else {
+            completion(.failure(APIError.invalidURL))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "PATCH"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(APIError.networkError(error)))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(APIError.serverError(statusCode: 0, message: "No data received")))
+                return
+            }
+            
+            do {
+                let decoder = JSONDecoder()
+                if let worksheet = try? decoder.decode(Worksheet.self, from: data) {
+                    print("북마크 토글 성공: Worksheet")
+                    completion(.success(worksheet))
+                } else if let testsheet = try? decoder.decode(Testsheet.self, from: data) {
+                    print("북마크 토글 성공: Testsheet")
+                    completion(.success(testsheet))
+                } else if let wrongsheet = try? decoder.decode(Wrongsheet.self, from: data) {
+                    print("북마크 토글 성공: Wrongsheet")
+                    completion(.success(wrongsheet))
+                } else {
+                    throw APIError.decodingError(NSError(domain: "Unable to decode document", code: 0, userInfo: nil))
+                }
+            } catch {
+                completion(.failure(APIError.decodingError(error)))
+            }
+        }.resume()
+    }
+    
+    // delete
+    func deleteWorksheet(worksheetId: Int, completion: @escaping (Result<EmptyResponse, Error>) -> Void) {
+        let urlString = "\(baseURL)/api/worksheet/\(worksheetId)"
+        deleteDocument(urlString: urlString, completion: completion)
+    }
+    
+    func deleteTestsheet(testsheetId: Int, completion: @escaping (Result<EmptyResponse, Error>) -> Void) {
+        let urlString = "\(baseURL)/api/testsheet/\(testsheetId)"
+        deleteDocument(urlString: urlString, completion: completion)
+    }
+    
+    func deleteWrongsheet(wrongsheetId: Int, completion: @escaping (Result<EmptyResponse, Error>) -> Void) {
+        let urlString = "\(baseURL)/api/wrongsheet/\(wrongsheetId)"
+        deleteDocument(urlString: urlString, completion: completion)
+    }
+    
+    private func deleteDocument(urlString: String, completion: @escaping (Result<EmptyResponse, Error>) -> Void) {
+        guard let url = URL(string: urlString) else {
+            completion(.failure(APIError.invalidURL))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(APIError.networkError(error)))
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse,
+                  (200...299).contains(httpResponse.statusCode) else {
+                completion(.failure(APIError.serverError(statusCode: (response as? HTTPURLResponse)?.statusCode ?? 0, message: "Invalid response")))
+                return
+            }
+            
+            completion(.success(EmptyResponse()))
         }.resume()
     }
 }
