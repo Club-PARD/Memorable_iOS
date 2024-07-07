@@ -135,8 +135,8 @@ class WorksheetListViewComponent: UIView {
     }
     
     func setWorksheets(_ documents: [Document]) {
-        worksheets = documents
-        filteredWorksheets = documents
+        worksheets = documents.sorted(by: { $0.createdDate > $1.createdDate })
+        filteredWorksheets = documents.sorted(by: { $0.createdDate > $1.createdDate })
         categories = Set(documents.map { $0.category })
         setupFilterButtons()
         setupSettingButton()
@@ -308,6 +308,7 @@ extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate
         let cell = tableView.dequeueReusableCell(withIdentifier: "WorksheetTableViewCell", for: indexPath) as! RecentsheetCell
         let document = filteredWorksheets[indexPath.row]
         cell.configure(with: document)
+        cell.delegate = self
         return cell
     }
         
