@@ -32,6 +32,7 @@
 		DD06594C2C381CF4005B037D /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD06594B2C381CF4005B037D /* Common.swift */; };
 		DD0659502C3833E7005B037D /* EmptyResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD06594F2C3833E7005B037D /* EmptyResponse.swift */; };
 		DD1A05FF2C2B1B4900DE0CB8 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1A05FE2C2B1B4900DE0CB8 /* User.swift */; };
+		DD2A24462C3A7FD00033F228 /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = DDDC344F2C397C8200158120 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		DD2F8B8E2C3089C8003F077D /* FloatingImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2F8B8D2C3089C8003F077D /* FloatingImage.swift */; };
 		DD421DB32C33FABA00E4D320 /* Gifu in Frameworks */ = {isa = PBXBuildFile; productRef = DD421DB22C33FABA00E4D320 /* Gifu */; };
 		DD421DB52C33FB9000E4D320 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD421DB42C33FB9000E4D320 /* SplashViewController.swift */; };
@@ -82,6 +83,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		DD2A24472C3A7FD00033F228 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DDAC4BCA2C2805AB006206EB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DDDC34392C39789E00158120;
+			remoteInfo = ShareExtension;
+		};
 		DDAC4BEC2C2805AC006206EB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DDAC4BCA2C2805AB006206EB /* Project object */;
@@ -112,6 +120,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				DD2A24462C3A7FD00033F228 /* ShareExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -243,6 +252,13 @@
 			path = Common;
 			sourceTree = "<group>";
 		};
+		DD2A24452C3A7FD00033F228 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		DD2F8B8C2C3089A5003F077D /* Widget */ = {
 			isa = PBXGroup;
 			children = (
@@ -332,6 +348,7 @@
 				DDDC344F2C397C8200158120 /* ShareExtension.appex */,
 				DDDC344C2C397C8200158120 /* MemorableTests.xctest */,
 				DDDC344D2C397C8200158120 /* MemorableUITests.xctest */,
+				DD2A24452C3A7FD00033F228 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -485,6 +502,7 @@
 			);
 			dependencies = (
 				DDDC34432C39789E00158120 /* PBXTargetDependency */,
+				DD2A24482C3A7FD00033F228 /* PBXTargetDependency */,
 			);
 			name = Memorable;
 			packageProductDependencies = (
@@ -736,6 +754,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		DD2A24482C3A7FD00033F228 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DDDC34392C39789E00158120 /* ShareExtension */;
+			targetProxy = DD2A24472C3A7FD00033F228 /* PBXContainerItemProxy */;
+		};
 		DDAC4BED2C2805AC006206EB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = DDAC4BD12C2805AB006206EB /* Memorable */;

@@ -35,7 +35,7 @@ enum SignInManager {
                 switch credentialState {
                 case .authorized:
                     print("✅ Credential State: .authorized")
-                    completion(.signedIn)
+                    completion(.signedIn(userIdentifier))
                 case .revoked:
                     print("Credential State: .revoked")
                     completion(.undefined)
