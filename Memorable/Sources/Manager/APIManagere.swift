@@ -17,7 +17,7 @@ enum APIError: Error {
 
 class APIManagere {
     static let shared = APIManagere()
-    private let baseURL = "http://172.30.1.65:8080"
+    private let baseURL = "http://172.30.1.77:8080"
     
     struct EmptyResponse: Codable {}
     
