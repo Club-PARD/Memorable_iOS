@@ -20,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let navigationVC = UINavigationController(rootViewController: initialVC)
         
         if #available(iOS 13.0, *) {
-            self.window?.overrideUserInterfaceStyle = .light
+            self.window?.overrideUserInterfaceStyle = .light // 라이트모드만 지원하기
         }
         
         window?.rootViewController = navigationVC
@@ -43,12 +43,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
         let components = URLComponents(url: url, resolvingAgainstBaseURL: true)
-        let sheetName = components?.queryItems?.first(where: { $0.name == "name" })?.value?.removingPercentEncoding
-        let sheetCategory = components?.queryItems?.first(where: { $0.name == "category" })?.value?.removingPercentEncoding
-        let sheetText = components?.queryItems?.first(where: { $0.name == "text" })?.value?.removingPercentEncoding
+        let sheetName = components?.queryItems?.first(where: { $0.name == "name" })?.value?.removingPercentEncoding ?? ""
+        let sheetCategory = components?.queryItems?.first(where: { $0.name == "category" })?.value?.removingPercentEncoding ?? ""
+        let sheetText = components?.queryItems?.first(where: { $0.name == "text" })?.value?.removingPercentEncoding ?? ""
         
         if isLoggedIn() {
-            navigateToWorksheet(name: sheetName, category: sheetCategory, text: sheetText)
+            createAndNavigateToWorksheet(name: sheetName, category: sheetCategory, content: sheetText)
         } else {
             pendingURL = url
             navigateToLogin()
@@ -56,9 +56,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func isLoggedIn() -> Bool {
-        // 로그인 상태 확인 로직 구현
-        // 예: UserDefaults나 KeyChain에서 토큰 확인
-        return false // 임시로 false 반환
+        return UserDefaults.standard.string(forKey: SignInManager.userIdentifierKey) != nil
     }
     
     func navigateToLogin() {
@@ -69,15 +67,61 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
     
-    func navigateToWorksheet(name: String?, category: String?, text: String?) {
-        let worksheetVC = WorkSheetViewController()
-        worksheetVC.sharedName = name
-        worksheetVC.sharedCategory = category
-        worksheetVC.sharedText = text
-        
-        if let navigationController = window?.rootViewController as? UINavigationController {
-            navigationController.pushViewController(worksheetVC, animated: true)
+    func createAndNavigateToWorksheet(name: String, category: String, content: String) {
+        guard let userIdentifier = UserDefaults.standard.string(forKey: SignInManager.userIdentifierKey) else {
+            print("User identifier not found")
+            return
         }
+        
+        APIManagere.shared.createWorksheet(userId: userIdentifier, name: name, category: category, content: content) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let worksheetDetail):
+                    print("Successfully created worksheet: \(worksheetDetail)")
+                    let workSheetVC = WorkSheetViewController()
+                    workSheetVC.worksheetDetail = worksheetDetail
+                    if let navigationController = self?.window?.rootViewController as? UINavigationController {
+                        navigationController.pushViewController(workSheetVC, animated: true)
+                        
+                        // 워크시트 생성 후 문서 목록 업데이트
+                        if let homeVC = navigationController.viewControllers.first as? HomeViewController {
+                            homeVC.fetchDocuments()
+                        }
+                    }
+                case .failure(let error):
+                    print("Error creating worksheet: \(error)")
+                    // 에러 처리 로직 추가
+                }
+            }
+        }
+    }
+    
+    func sceneDidDisconnect(_ scene: UIScene) {
+        // Called as the scene is being released by the system.
+        // This occurs shortly after the scene enters the background, or when its session is discarded.
+        // Release any resources associated with this scene that can be re-created the next time the scene connects.
+        // The scene may re-connect later, as its session was not necessarily discarded (see `application:didDiscardSceneSessions` instead).
+    }
+    
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        // Called when the scene has moved from an inactive state to an active state.
+        // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+    }
+
+    func sceneWillResignActive(_ scene: UIScene) {
+        // Called when the scene will move from an active state to an inactive state.
+        // This may occur due to temporary interruptions (ex. an incoming phone call).
+    }
+
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        // Called as the scene transitions from the background to the foreground.
+        // Use this method to undo the changes made on entering the background.
+    }
+
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        // Called as the scene transitions from the foreground to the background.
+        // Use this method to save data, release shared resources, and store enough scene-specific state information
+        // to restore the scene back to its current state.
     }
 }
 
@@ -87,7 +131,6 @@ extension SceneDelegate: LoginViewControllerDelegate {
             handleURL(url)
             pendingURL = nil
         } else {
-            // 일반적인 로그인 후 홈 화면으로 이동
             navigateToHome()
         }
     }

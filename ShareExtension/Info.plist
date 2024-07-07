@@ -17,7 +17,7 @@
 				<key>NSExtensionActivationSupportsMovieWithMaxCount</key>
 				<integer>0</integer>
 				<key>NSExtensionActivationSupportsText</key>
-				<false/>
+				<true/>
 				<key>NSExtensionActivationSupportsWebPageWithMaxCount</key>
 				<integer>0</integer>
 				<key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
