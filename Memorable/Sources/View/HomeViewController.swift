@@ -130,11 +130,11 @@ class HomeViewController: UIViewController {
     }
     
     func getExistingCategories() -> [String] {
-            // 모든 문서의 카테고리를 가져와 중복을 제거하고 정렬합니다.
-            let allCategories = documents.map { $0.category }
-            let uniqueCategories = Array(Set(allCategories))
-            return uniqueCategories.sorted()
-        }
+        // 모든 문서의 카테고리를 가져와 중복을 제거하고 정렬합니다.
+        let allCategories = documents.map { $0.category }
+        let uniqueCategories = Array(Set(allCategories))
+        return uniqueCategories.sorted()
+    }
     
     func setUI() {
         // header
@@ -257,14 +257,14 @@ class HomeViewController: UIViewController {
         }
         
         // TODO: API 연결중
-        let worksheetDocuments = self.documents.filter { $0.fileType == "빈칸학습지" }
-        let testsheetDocuments = self.documents.filter { $0.fileType == "나만의 시험지" }
-        let wrongsheetDocuments = self.documents.filter { $0.fileType == "오답노트" }
+        let worksheetDocuments = documents.filter { $0.fileType == "빈칸학습지" }
+        let testsheetDocuments = documents.filter { $0.fileType == "나만의 시험지" }
+        let wrongsheetDocuments = documents.filter { $0.fileType == "오답노트" }
         
         // LibraryViewComponent에 데이터 설정
-        self.libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
-                                                testsheet: testsheetDocuments,
-                                                wrongsheet: wrongsheetDocuments)
+        libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
+                                          testsheet: testsheetDocuments,
+                                          wrongsheet: wrongsheetDocuments)
         
         // titleLabel 숨기기
         titleLabel.isHidden = true
@@ -393,11 +393,13 @@ extension HomeViewController: HeaderComponentDelegate {
     }
     
     func didCreateWorksheet(name: String, category: String, content: String) {
+        setupActivityIndicator(view: view)
         APIManagere.shared.createWorksheet(userId: userIdentifier, name: name, category: category, content: content) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let worksheetDetail):
                     print("Successfully created worksheet: \(worksheetDetail)")
+                    removeActivityIndicator()
                     let workSheetVC = WorkSheetViewController()
                     workSheetVC.worksheetDetail = worksheetDetail
                     self?.navigationController?.pushViewController(workSheetVC, animated: true)
@@ -405,6 +407,7 @@ extension HomeViewController: HeaderComponentDelegate {
                     self?.updateSharedCategories() // 여기에 추가
                 case .failure(let error):
                     print("Error creating worksheet: \(error)")
+                    removeActivityIndicator()
                     self?.showErrorAlert(message: "학습지 생성에 실패했습니다.")
                 }
             }
@@ -599,13 +602,13 @@ extension HomeViewController {
     
     private func updateLibraryView() {
         print("Updating LibraryView")
-        let worksheetDocuments = self.documents.filter { $0.fileType == "빈칸학습지" }
-        let testsheetDocuments = self.documents.filter { $0.fileType == "나만의 시험지" }
-        let wrongsheetDocuments = self.documents.filter { $0.fileType == "오답노트" }
+        let worksheetDocuments = documents.filter { $0.fileType == "빈칸학습지" }
+        let testsheetDocuments = documents.filter { $0.fileType == "나만의 시험지" }
+        let wrongsheetDocuments = documents.filter { $0.fileType == "오답노트" }
         
-        self.libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
-                                               testsheet: testsheetDocuments,
-                                               wrongsheet: wrongsheetDocuments)
+        libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
+                                          testsheet: testsheetDocuments,
+                                          wrongsheet: wrongsheetDocuments)
     }
     
     private func updateStarView() {
@@ -633,5 +636,3 @@ extension UIViewController {
         view.endEditing(true)
     }
 }
-
-

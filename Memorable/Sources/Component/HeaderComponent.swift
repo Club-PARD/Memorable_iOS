@@ -501,7 +501,7 @@ class HeaderComponent: UIView {
         if UIDevice.current.userInterfaceIdiom == .pad {
             if let popoverController = alertController.popoverPresentationController {
                 popoverController.sourceView = self
-                popoverController.sourceRect = CGRect(x: self.bounds.midX, y: self.bounds.midY, width: 0, height: 0)
+                popoverController.sourceRect = CGRect(x: bounds.midX, y: bounds.midY, width: 0, height: 0)
                 popoverController.permittedArrowDirections = []
             }
         }
@@ -635,7 +635,7 @@ class HeaderComponent: UIView {
         
         let toastWidth: CGFloat = 250
         let toastHeight: CGFloat = 35
-        toastLabel.frame = CGRect(x: window.frame.size.width/2 - toastWidth/2,
+        toastLabel.frame = CGRect(x: window.frame.size.width / 2 - toastWidth / 2,
                                   y: window.frame.size.height - 100,
                                   width: toastWidth, height: toastHeight)
         
