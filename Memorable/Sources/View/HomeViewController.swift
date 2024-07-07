@@ -35,6 +35,11 @@ class HomeViewController: UIViewController {
     
     let attendanceRecord: [Bool] = [true, true, true, false, false, true, false, true, false, false, false, false, false, false]
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        fetchDocuments()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(true, animated: false)
@@ -113,13 +118,45 @@ class HomeViewController: UIViewController {
         group.notify(queue: .main) { [weak self] in
             self?.documents = worksheets + testsheets + wrongsheets
             print("Fetched documents: Worksheets (\(worksheets.count)), Testsheets (\(testsheets.count)), Wrongsheets (\(wrongsheets.count))")
-            self?.setupHeaderComponent()
-            self?.setupLibraryViewComponent()
-            self?.updateStarView()
+            self?.setupDocuments()
             self?.updateSharedCategories() // 여기에 추가
         }
         
         updateSharedCategories()
+    }
+    
+    private func setupDocuments() {
+        setupHeaderComponentDocuments()
+        setupLibraryViewComponentDocuments()
+        updateStarViewDocuments()
+        updateWorksheetListViewDocuments()
+        updateSearchedSheetViewDocuments()
+    }
+
+    private func setupHeaderComponentDocuments() {
+        headerComponent.setDocuments(documents: documents)
+    }
+
+    private func setupLibraryViewComponentDocuments() {
+        let worksheetDocuments = self.documents.filter { $0.fileType == "빈칸학습지" }
+        let testsheetDocuments = self.documents.filter { $0.fileType == "나만의 시험지" }
+        let wrongsheetDocuments = self.documents.filter { $0.fileType == "오답노트" }
+        
+        self.libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
+                                               testsheet: testsheetDocuments,
+                                               wrongsheet: wrongsheetDocuments)
+    }
+
+    private func updateStarViewDocuments() {
+        starView.setDocuments(documents: documents)
+    }
+
+    private func updateWorksheetListViewDocuments() {
+        worksheetListViewComponent.setWorksheets(documents)
+    }
+
+    private func updateSearchedSheetViewDocuments() {
+        searchedSheetView.setDocuments(documents: documents)
     }
     
     private func updateSharedCategories() {
@@ -194,6 +231,7 @@ class HomeViewController: UIViewController {
         
         // 초기화면
         containerView.addSubview(libraryViewComponent)
+        setupLibraryViewComponent()
         libraryViewComponent.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
@@ -454,12 +492,9 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
             case .success(let updatedDocument):
                 print("Document deletion successful: \(document.id)")
                 // Fetch documents to update the UI
-                self?.fetchAllDocuments {
-                    self?.updateDocument(updatedDocument as! Document)
-                    self?.setupDefaultView()
-                }
-            case .failure(let error):
-                print("Document deletion failed: \(error)")
+                self?.fetchDocuments()
+                self?.setupDefaultView()
+            case .failure(_):
                 // Handle error (e.g., show an alert to the user)
                 self?.showDeleteErrorAlert(message: "문서 삭제에 실패했습니다.")
             }
@@ -494,8 +529,6 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
         default:
             print("Unknown document type")
         }
-        // 즉시 UI 업데이트
-        updateDocument(updatedDocument)
     }
     
     private func handleBookmarkToggleResult<T: Document>(_ result: Result<T, Error>, for document: Document) {
@@ -504,11 +537,7 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
             case .success(let updatedDocument):
                 print("북마크 토글 성공: \(type(of: updatedDocument))")
                 // Fetch documents
-                self?.fetchAllDocuments {
-                    // Update UI after fetching documents
-                    self?.updateDocument(updatedDocument)
-                    self?.starView.reloadTable() // starView 테이블 리로드
-                }
+                self?.fetchDocuments()
             case .failure(let error):
                 print("북마크 토글 실패: \(error)")
                 // 에러 처리 (예: 사용자에게 알림 표시)

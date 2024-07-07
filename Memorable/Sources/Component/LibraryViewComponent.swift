@@ -42,7 +42,7 @@ class LibraryViewComponent: UIView {
     private let worksheetFilterButton = UIButton(type: .system)
     private let testsheetFilterButton = UIButton(type: .system)
     private let wrongsheetFilterButton = UIButton(type: .system)
-    private lazy var recentTableView: UITableView = {
+    lazy var recentTableView: UITableView = {
         let tableView = UITableView()
         tableView.register(RecentsheetCell.self, forCellReuseIdentifier: "RecentsheetCell")
         tableView.separatorStyle = .none

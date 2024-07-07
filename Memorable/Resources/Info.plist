@@ -48,6 +48,7 @@
     <string>이 앱은 로컬 네트워크를 사용하여 서버와 통신합니다.</string>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>external-accessory</string>
 		<string>fetch</string>
 	</array>
 	<key>UIFileSharingEnabled</key>

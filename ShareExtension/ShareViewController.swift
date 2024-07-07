@@ -16,12 +16,12 @@ class ShareViewController: UIViewController {
         super.viewDidLoad()
         handleSharedItems()
     }
-    
+
     private func getExistingCategories() -> [String] {
         let userDefaults = UserDefaults(suiteName: "group.io.pard.Memorable24")
         return userDefaults?.stringArray(forKey: "ExistingCategories") ?? []
     }
-    
+
     func handleSharedItems() {
         guard let extensionItems = extensionContext?.inputItems as? [NSExtensionItem] else {
             return
@@ -189,36 +189,36 @@ class ShareViewController: UIViewController {
 
         present(nameAlertController, animated: true, completion: nil)
     }
-    
+
     func showCategoryAlert(sheetName: String, extractedText: String) {
         let existingCategories = getExistingCategories()
         let categoryAlertController = UIAlertController(title: "카테고리 설정하기", message: "학습지의 카테고리를 설정해 주세요", preferredStyle: .alert)
-        
+
         for category in existingCategories {
             let action = UIAlertAction(title: category, style: .default) { [weak self] _ in
                 self?.openMemorableApp(with: sheetName, category: category, extractedText: extractedText)
             }
             categoryAlertController.addAction(action)
         }
-        
+
         categoryAlertController.addTextField { textField in
             textField.placeholder = "새 카테고리"
             textField.autocorrectionType = .no
             textField.spellCheckingType = .no
         }
-        
+
         let categoryConfirmAction = UIAlertAction(title: "새 카테고리 추가", style: .default) { [weak self] _ in
             guard let category = categoryAlertController.textFields?.first?.text, !category.isEmpty else { return }
             self?.openMemorableApp(with: sheetName, category: category, extractedText: extractedText)
         }
-        
+
         let categoryCancelAction = UIAlertAction(title: "취소", style: .cancel) { [weak self] _ in
             self?.showNameAlert(fileName: sheetName, extractedText: extractedText)
         }
-        
+
         categoryAlertController.addAction(categoryConfirmAction)
         categoryAlertController.addAction(categoryCancelAction)
-        
+
         present(categoryAlertController, animated: true, completion: nil)
     }
 
@@ -242,24 +242,31 @@ class ShareViewController: UIViewController {
 
         guard let url = components.url else {
             print("Invalid URL")
+            extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
             return
         }
 
-        // Complete the Share Extension request
-        extensionContext?.completeRequest(returningItems: nil, completionHandler: nil) 
-
-        // Open the URL
-        openURL(url)
+        // 먼저 extensionContext를 완료합니다.
+        extensionContext?.completeRequest(returningItems: nil, completionHandler: { [weak self] _ in
+            // 그 다음 URL을 엽니다.
+            print("Generated URL: \(url)")
+            self?.openURL(url)
+        })
     }
 
     @objc func openURL(_ url: URL) {
+        print("Generated URL: \(url)")
+        let selector = sel_registerName("openURL:")
         var responder: UIResponder? = self
         while responder != nil {
             if let application = responder as? UIApplication {
-                _ = application.perform(#selector(openURL(_:)), with: url)
-                return
+                application.perform(selector, with: url)
+                break
             }
             responder = responder?.next
         }
+
+        // URL을 열지 못한 경우를 대비해 extensionContext를 여기서 완료합니다.
+        extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
     }
 }
