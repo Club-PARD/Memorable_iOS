@@ -239,27 +239,34 @@ class ShareViewController: UIViewController {
             URLQueryItem(name: "category", value: category),
             URLQueryItem(name: "text", value: extractedText)
         ]
-
+        
         guard let url = components.url else {
             print("Invalid URL")
+            self.extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
             return
         }
-
-        // Complete the Share Extension request
-        extensionContext?.completeRequest(returningItems: nil, completionHandler: nil) 
-
-        // Open the URL
-        openURL(url)
+        
+        // 먼저 extensionContext를 완료합니다.
+        self.extensionContext?.completeRequest(returningItems: nil, completionHandler: { [weak self] _ in
+            // 그 다음 URL을 엽니다.
+            print("Generated URL: \(url)")
+            self?.openURL(url)
+        })
     }
 
     @objc func openURL(_ url: URL) {
+        print("Generated URL: \(url)")
+        let selector = sel_registerName("openURL:")
         var responder: UIResponder? = self
         while responder != nil {
             if let application = responder as? UIApplication {
-                _ = application.perform(#selector(openURL(_:)), with: url)
-                return
+                application.perform(selector, with: url)
+                break
             }
             responder = responder?.next
         }
+        
+        // URL을 열지 못한 경우를 대비해 extensionContext를 여기서 완료합니다.
+        self.extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
     }
 }

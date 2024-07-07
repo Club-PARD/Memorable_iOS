@@ -17,7 +17,7 @@ class WorksheetListViewComponent: UIView {
     private var selectedDocuments: [Document] = []
     private var actionSheetView: EditActionSheetView?
     weak var delegate: WorksheetListViewComponentDelegate?
-    private let worksheetTableView: UITableView
+    let worksheetTableView: UITableView
     private let filterScrollView: UIScrollView
     private let filterStackView: UIStackView
     private let settingButton: UIButton
@@ -275,6 +275,11 @@ class WorksheetListViewComponent: UIView {
             if indexPath.row < filteredWorksheets.count {
                 let documentToDelete = filteredWorksheets[indexPath.row]
                 delegate?.didDeleteDocuments(for: documentToDelete)
+                
+                filteredWorksheets.remove(at: indexPath.row)
+                if let index = worksheets.firstIndex(where: { $0.id == documentToDelete.id }) {
+                    worksheets.remove(at: index)
+                }
             }
         }
         
@@ -288,8 +293,11 @@ class WorksheetListViewComponent: UIView {
 extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate, RecentsheetCellDelegate {
     
     func didTapBookmark<T: Document>(for document: T) {
-//        delegate?.didUpdateBookmarks(for: document)
+        if let index = worksheets.firstIndex(where: { $0.id == document.id }) {
+            worksheets[index] = document
+        }
         worksheetTableView.reloadData()
+        delegate?.didUpdateBookmark(for: document)
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
