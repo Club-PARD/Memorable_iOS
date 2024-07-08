@@ -138,13 +138,13 @@ class HomeViewController: UIViewController {
     }
 
     private func setupLibraryViewComponentDocuments() {
-        let worksheetDocuments = self.documents.filter { $0.fileType == "빈칸학습지" }
-        let testsheetDocuments = self.documents.filter { $0.fileType == "나만의 시험지" }
-        let wrongsheetDocuments = self.documents.filter { $0.fileType == "오답노트" }
+        let worksheetDocuments = documents.filter { $0.fileType == "빈칸학습지" }
+        let testsheetDocuments = documents.filter { $0.fileType == "나만의 시험지" }
+        let wrongsheetDocuments = documents.filter { $0.fileType == "오답노트" }
         
-        self.libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
-                                               testsheet: testsheetDocuments,
-                                               wrongsheet: wrongsheetDocuments)
+        libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
+                                          testsheet: testsheetDocuments,
+                                          wrongsheet: wrongsheetDocuments)
     }
 
     private func updateStarViewDocuments() {
@@ -446,7 +446,7 @@ extension HomeViewController: HeaderComponentDelegate {
                     print("Successfully created worksheet: \(worksheetDetail)")
                     removeActivityIndicator()
                     let workSheetVC = WorkSheetViewController()
-                    workSheetVC.worksheetDetail = worksheetDetail
+                    WorkSheetManager.shared.worksheetDetail = worksheetDetail
                     self?.navigationController?.pushViewController(workSheetVC, animated: true)
                     self?.refreshDocumentsAfterCreation()
                     self?.updateSharedCategories() // 여기에 추가
@@ -501,7 +501,7 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
                 // Fetch documents to update the UI
                 self?.fetchDocuments()
                 self?.setupDefaultView()
-            case .failure(_):
+            case .failure:
                 // Handle error (e.g., show an alert to the user)
                 self?.showDeleteErrorAlert(message: "문서 삭제에 실패했습니다.")
             }
@@ -603,7 +603,7 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
                 switch result {
                 case .success(let worksheetDetail):
                     let workSheetVC = WorkSheetViewController()
-                    workSheetVC.worksheetDetail = worksheetDetail
+                    WorkSheetManager.shared.worksheetDetail = worksheetDetail
                     self?.navigationController?.pushViewController(workSheetVC, animated: true)
                 case .failure(let error):
                     print("Error fetching most recent worksheet: \(error)")
@@ -647,8 +647,8 @@ extension HomeViewController {
     }
     
     private func updateStarView() {
-        self.starView.setDocuments(documents: documents)
-        self.starView.reloadTable()
+        starView.setDocuments(documents: documents)
+        starView.reloadTable()
     }
     
     private func updateWorksheetListView() {

@@ -180,6 +180,7 @@ class WorkSheetView: UIView {
                 $0.rightView = paddingView
                 $0.rightViewMode = .always
             }
+
             self.userAnswers.append(textField)
 
             let textFieldWidth = textField.intrinsicContentSize.width

@@ -137,9 +137,9 @@ class StarView: UIView {
     }
     
     func setDocuments(documents: [Document]) {
-        self.allDocuments = documents.filter { $0.isBookmarked }.sorted(by: { $0.createdDate > $1.createdDate })
-        self.filteredDocuments = self.allDocuments
-        self.tableView.reloadData()
+        allDocuments = documents.filter { $0.isBookmarked }.sorted(by: { $0.createdDate > $1.createdDate })
+        filteredDocuments = allDocuments
+        tableView.reloadData()
     }
     
     @objc private func filterButtonTapped(_ sender: UIButton) {
@@ -245,7 +245,7 @@ extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellD
                         print("isMakeTestSheet: \(detail.isMakeTestSheet)")
 
                         let workSheetVC = WorkSheetViewController()
-                        workSheetVC.worksheetDetail = detail
+                        WorkSheetManager.shared.worksheetDetail = detail
                         self.navigateToViewController(workSheetVC)
                     }
                 }

@@ -1,5 +1,5 @@
 //
-//  StudySheetViewController.swift
+//  WorkSheetViewController.swift
 //  Memorable
 //
 //  Created by 김현기 on 6/26/24.
@@ -10,8 +10,6 @@ import Then
 import UIKit
 
 class WorkSheetViewController: UIViewController {
-    var worksheetDetail: WorksheetDetail?
-
     private let logoImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
         $0.image = UIImage(named: "applogo-v2")
@@ -58,8 +56,6 @@ class WorkSheetViewController: UIViewController {
         $0.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         $0.textColor = .gray
     }
-
-    private var isFirstSheetSelected: Bool = true
 
     private let firstSheetButton = UIButton().then {
         $0.setTitle("1", for: .normal)
@@ -115,8 +111,6 @@ class WorkSheetViewController: UIViewController {
         $0.clipsToBounds = true
     }
 
-    private var isShowingAnswer = false
-
     private let showAnswerButton = UIButton().then {
         $0.setTitle("키워드 보기", for: .normal)
         $0.setTitle("키워드 가리기", for: .selected)
@@ -136,16 +130,11 @@ class WorkSheetViewController: UIViewController {
         $0.clipsToBounds = true
     }
 
-    private var userAnswer: [String] = []
-    private var answerLength: Int = 0
-
-    private var correctCount: Int = 0
-
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .gray5
 
-        updateRecentDate()
+        WorkSheetManager.shared.isFirstSheetSelected = true
 
         setupUI()
         setupButtons()
@@ -153,26 +142,8 @@ class WorkSheetViewController: UIViewController {
         setupConstraints()
     }
 
-    private func updateRecentDate() {
-        guard let worksheetDetail = worksheetDetail else {
-            print("WorkSheetViewController: WorksheetDetail is missing")
-            return
-        }
-
-        APIManagere.shared.updateWorksheetRecentDate(worksheetId: worksheetDetail.worksheetId) { result in
-
-            switch result {
-            case .success:
-                print("Recent date updated successfully")
-            case .failure(let error):
-                print("Failed to update recent date: \(error)")
-                // 필요한 경우 에러 처리
-            }
-        }
-    }
-
     private func setupUI() {
-        guard let detail = worksheetDetail else { return }
+        guard let detail = WorkSheetManager.shared.worksheetDetail else { return }
 
         titleLabel.text = detail.name
         categoryLabel.text = detail.category
@@ -184,7 +155,7 @@ class WorkSheetViewController: UIViewController {
             answers: detail.answer1
         )
 
-        reloadUserAnswers()
+        WorkSheetManager.shared.reloadUserAnswers(worksheet: workSheetView)
 
         if detail.isCompleteAllBlanks {
             finishImage.isHidden = false
@@ -241,10 +212,19 @@ class WorkSheetViewController: UIViewController {
     }
 
     @objc func didTapShowAnswerButton() {
-        isShowingAnswer.toggle()
-        showAnswerButton.isSelected = isShowingAnswer
-        if isShowingAnswer {
-            showAnswer()
+        WorkSheetManager.shared.isShowingAnswer.toggle()
+        showAnswerButton.isSelected = WorkSheetManager.shared.isShowingAnswer
+        if WorkSheetManager.shared.isShowingAnswer {
+            WorkSheetManager.shared.showAnswer(worksheet: workSheetView) { isCorrectAll in
+                if isCorrectAll {
+                    DispatchQueue.main.async {
+                        self.finishImage.isHidden = false
+                        self.doneButton.setTitleColor(MemorableColor.White, for: .normal)
+                        self.doneButton.backgroundColor = MemorableColor.Blue2
+                        self.doneButton.isEnabled = true
+                    }
+                }
+            }
 
             resetButton.isHidden = true
 
@@ -257,9 +237,11 @@ class WorkSheetViewController: UIViewController {
             config.cornerStyle = .large
 
             showAnswerButton.configuration = config
+
+            view.endEditing(true)
         }
         else {
-            hideAnswer()
+            WorkSheetManager.shared.hideAnswer(worksheet: workSheetView)
 
             resetButton.isHidden = false
 
@@ -275,149 +257,6 @@ class WorkSheetViewController: UIViewController {
         }
     }
 
-    @objc func showAnswer() {
-        print("SHOW ANSWER")
-        correctCount = 0
-
-        guard let worksheet = workSheetView as? WorkSheetView else {
-            print("WorkSheetView를 찾을 수 없습니다.")
-            return
-        }
-
-        guard let detail = worksheetDetail else {
-            print("WorkSheetDetail을 찾을 수 없습니다.")
-            return
-        }
-
-        if isFirstSheetSelected {
-            userAnswer = worksheet.userAnswers.map { $0.text ?? "" }
-            answerLength = worksheet.userAnswers.count
-
-            print("✅ 실제 답안: \(detail.answer1)")
-            print("☑️ 유저 답안: \(userAnswer)")
-
-            DispatchQueue.main.async {
-                for idx in 0 ..< self.answerLength {
-                    let textField = worksheet.userAnswers[idx]
-
-                    // 값을 안 쓴 부분
-                    if self.userAnswer[idx].replacingOccurrences(of: " ", with: "")
-                        .isEmpty
-                    {
-                        textField.textColor = .lightGray
-                        textField.text = detail.answer1[idx]
-                    }
-                    // 값이 동일
-                    else if detail.answer1[idx].replacingOccurrences(of: " ", with: "")
-                        == self.userAnswer[idx].replacingOccurrences(of: " ", with: "")
-                    {
-                        self.correctCount += 1
-                        textField.textColor = .blue
-                    }
-                    // 나머지 (= 틀림)
-                    else {
-                        textField.textColor = .red
-                        textField.text = detail.answer1[idx]
-                    }
-
-                    textField.isEnabled = false
-                    textField.setNeedsDisplay()
-                }
-
-                if self.correctCount == self.answerLength {
-                    self.correctAll()
-                }
-
-                worksheet.layoutIfNeeded()
-            }
-        }
-        else {
-            userAnswer = worksheet.userAnswers.map { $0.text ?? "" }
-            answerLength = worksheet.userAnswers.count
-
-            print("✅ 실제 답안: \(detail.answer2)")
-            print("☑️ 유저 답안: \(userAnswer)")
-
-            DispatchQueue.main.async {
-                for idx in 0 ..< self.answerLength {
-                    let textField = worksheet.userAnswers[idx]
-
-                    // 값을 안 쓴 부분
-                    if self.userAnswer[idx].replacingOccurrences(of: " ", with: "")
-                        .isEmpty
-                    {
-                        textField.textColor = .lightGray
-                        textField.text = detail.answer2[idx]
-                    }
-                    // 값이 동일
-                    else if detail.answer2[idx].replacingOccurrences(of: " ", with: "")
-                        == self.userAnswer[idx].replacingOccurrences(of: " ", with: "")
-                    {
-                        self.correctCount += 1
-                        textField.textColor = .blue
-                    }
-                    // 나머지 (= 틀림)
-                    else {
-                        textField.textColor = .red
-                        textField.text = detail.answer2[idx]
-                    }
-
-                    textField.isEnabled = false
-                    textField.setNeedsDisplay()
-                }
-
-                if self.correctCount == self.answerLength {
-                    self.correctAll()
-                }
-
-                worksheet.layoutIfNeeded()
-            }
-        }
-    }
-
-    func hideAnswer() {
-        print("HIDE ANSWER")
-
-        guard let worksheet = workSheetView as? WorkSheetView else {
-            print("WorkSheetView를 찾을 수 없습니다.")
-            return
-        }
-
-        DispatchQueue.main.async {
-            for idx in 0 ..< self.answerLength {
-                worksheet.userAnswers[idx].text = self.userAnswer[idx]
-                worksheet.userAnswers[idx].textColor = .black
-                worksheet.userAnswers[idx].isEnabled = true
-                worksheet.userAnswers[idx].setNeedsDisplay()
-            }
-
-            worksheet.layoutIfNeeded()
-        }
-    }
-
-    func correctAll() {
-        print("CORRECT ALL")
-        guard let detail = worksheetDetail else {
-            print("detail 없음")
-            return
-        }
-
-        finishImage.isHidden = false
-        doneButton.setTitleColor(MemorableColor.White, for: .normal)
-        doneButton.backgroundColor = MemorableColor.Blue2
-        doneButton.isEnabled = true
-
-        // DONE
-        APIManager.shared.updateData(to: "/api/worksheet/done/\(detail.worksheetId)", body: detail) { result in
-            switch result {
-            case .success:
-                print("isCompleteAllBlanks Update 성공")
-            case .failure(let error):
-                print("Update 실패: \(error.localizedDescription)")
-            }
-        }
-    }
-
     @objc func didTapDoneButton() {
         print("DONE")
         let alert = UIAlertController(title: "시험지 받기", message: "시험지가 자동으로 생성되고\n생성된 시험지로 이동합니다.", preferredStyle: .alert)
@@ -428,7 +267,7 @@ class WorkSheetViewController: UIViewController {
 
         let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
             print("PRESS CONFIRM")
-            guard let detail = self.worksheetDetail else {
+            guard let detail = WorkSheetManager.shared.worksheetDetail else {
                 print("detail 없음")
                 return
             }
@@ -466,62 +305,9 @@ class WorkSheetViewController: UIViewController {
     @objc func didTapBackButton() {
         print("GO BACK")
 
-        saveUserAnswers()
+        WorkSheetManager.shared.saveUserAnswers(worksheet: workSheetView)
 
         navigationController?.popViewController(animated: true)
-    }
-
-    private func saveUserAnswers() {
-        guard let worksheet = workSheetView as? WorkSheetView else {
-            print("WorkSheetView를 찾을 수 없습니다.")
-            return
-        }
-        guard let detail = worksheetDetail else {
-            print("Detail을 찾을 수 없습니다.")
-            return
-        }
-
-        answerLength = worksheet.userAnswers.count
-
-        if isShowingAnswer {
-            for idx in 0 ..< answerLength {
-                worksheet.userAnswers[idx].text = userAnswer[idx]
-            }
-        }
-        userAnswer = worksheet.userAnswers.map { $0.text ?? "" }
-
-        if isFirstSheetSelected {
-            UserDefaults.standard.set(userAnswer, forKey: "\(detail.worksheetId)-1")
-        }
-        else {
-            UserDefaults.standard.set(userAnswer, forKey: "\(detail.worksheetId)-2")
-        }
-    }
-
-    private func reloadUserAnswers() {
-        guard let worksheet = workSheetView as? WorkSheetView else {
-            print("WorkSheetView를 찾을 수 없습니다.")
-            return
-        }
-        guard let detail = worksheetDetail else { return }
-
-        if isFirstSheetSelected {
-            let prevUserAnswers: [String] = UserDefaults.standard.array(forKey: "\(detail.worksheetId)-1") as? [String] ?? []
-            if !prevUserAnswers.isEmpty {
-                for (index, field) in worksheet.userAnswers.enumerated() {
-                    field.text = prevUserAnswers[index]
-                }
-            }
-        }
-        else {
-            let prevUserAnswers: [String] = UserDefaults.standard.array(forKey: "\(detail.worksheetId)-2") as? [String] ?? []
-            if !prevUserAnswers.isEmpty {
-                for (index, field) in worksheet.userAnswers.enumerated() {
-                    field.text = prevUserAnswers[index]
-                }
-            }
-        }
-        worksheet.layoutIfNeeded()
     }
 
     func finishAddWorksheet() {
@@ -530,7 +316,7 @@ class WorkSheetViewController: UIViewController {
         secondSheetButton.isHidden = false
         secondSheetButton.isEnabled = true
 
-        if isFirstSheetSelected {
+        if WorkSheetManager.shared.isFirstSheetSelected {
             firstSheetButton.backgroundColor = MemorableColor.Yellow1
             secondSheetButton.backgroundColor = MemorableColor.Gray2
         }
@@ -558,7 +344,7 @@ class WorkSheetViewController: UIViewController {
 
         let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
             print("PRESS CONFIRM")
-            guard let detail = self.worksheetDetail else {
+            guard let detail = WorkSheetManager.shared.worksheetDetail else {
                 print("detail이 없습니다.")
                 return
             }
@@ -573,10 +359,10 @@ class WorkSheetViewController: UIViewController {
                 }
             }
 
-            self.saveUserAnswers()
+            WorkSheetManager.shared.saveUserAnswers(worksheet: self.workSheetView)
 
-            self.isShowingAnswer = false
-            self.showAnswerButton.isSelected = self.isShowingAnswer
+            WorkSheetManager.shared.isShowingAnswer = false
+            self.showAnswerButton.isSelected = WorkSheetManager.shared.isShowingAnswer
             self.resetButton.isHidden = false
             self.showAnswerButton.setTitle("키워드 보기", for: .normal)
             self.showAnswerButton.setTitle("키워드 가리기", for: .selected)
@@ -589,7 +375,7 @@ class WorkSheetViewController: UIViewController {
             config.cornerStyle = .large
             self.showAnswerButton.configuration = config
 
-            self.isFirstSheetSelected.toggle()
+            WorkSheetManager.shared.isFirstSheetSelected.toggle()
             self.finishAddWorksheet()
 
             self.workSheetView?.removeFromSuperview()
@@ -647,16 +433,16 @@ class WorkSheetViewController: UIViewController {
 
     @objc func didTapFirstSheetButton() {
         print("FirstSheetButton")
-        guard let worksheetDetail = worksheetDetail else { return }
+        guard let worksheetDetail = WorkSheetManager.shared.worksheetDetail else { return }
 
         hideWorkItem?.cancel()
         finishAddImage.isHidden = true
 
-        saveUserAnswers()
-        isFirstSheetSelected = true
+        WorkSheetManager.shared.saveUserAnswers(worksheet: workSheetView)
+        WorkSheetManager.shared.isFirstSheetSelected = true
 
-        isShowingAnswer = false
-        showAnswerButton.isSelected = isShowingAnswer
+        WorkSheetManager.shared.isShowingAnswer = false
+        showAnswerButton.isSelected = WorkSheetManager.shared.isShowingAnswer
         showAnswerButton.setTitle("키워드 보기", for: .normal)
         showAnswerButton.setTitle("키워드 가리기", for: .selected)
         resetButton.isHidden = false
@@ -685,7 +471,8 @@ class WorkSheetViewController: UIViewController {
             text: worksheetDetail.content,
             answers: worksheetDetail.answer1
         )
-        reloadUserAnswers()
+
+        WorkSheetManager.shared.reloadUserAnswers(worksheet: workSheetView)
 
         if let newWorkSheetView = workSheetView {
             view.addSubview(newWorkSheetView)
@@ -724,13 +511,13 @@ class WorkSheetViewController: UIViewController {
 
     @objc func didTapSecondSheetButton() {
         print("SecondSheetButton")
-        guard let worksheetDetail = worksheetDetail else { return }
+        guard let worksheetDetail = WorkSheetManager.shared.worksheetDetail else { return }
 
-        saveUserAnswers()
-        isFirstSheetSelected = false
+        WorkSheetManager.shared.saveUserAnswers(worksheet: workSheetView)
+        WorkSheetManager.shared.isFirstSheetSelected = false
 
-        isShowingAnswer = false
-        showAnswerButton.isSelected = isShowingAnswer
+        WorkSheetManager.shared.isShowingAnswer = false
+        showAnswerButton.isSelected = WorkSheetManager.shared.isShowingAnswer
         showAnswerButton.setTitle("키워드 보기", for: .normal)
         showAnswerButton.setTitle("키워드 가리기", for: .selected)
         resetButton.isHidden = false
@@ -760,7 +547,8 @@ class WorkSheetViewController: UIViewController {
             text: worksheetDetail.content,
             answers: worksheetDetail.answer2
         )
-        reloadUserAnswers()
+
+        WorkSheetManager.shared.reloadUserAnswers(worksheet: workSheetView)
 
         if let newWorkSheetView = workSheetView {
             view.addSubview(newWorkSheetView)
@@ -825,7 +613,7 @@ class WorkSheetViewController: UIViewController {
         resetButton.addTarget(self, action: #selector(didTapResetButton), for: .touchUpInside)
         showAnswerButton.addTarget(self, action: #selector(didTapShowAnswerButton), for: .touchUpInside)
 
-        if isFirstSheetSelected {
+        if WorkSheetManager.shared.isFirstSheetSelected {
             firstSheetButton.backgroundColor = MemorableColor.Yellow1
             secondSheetButton.backgroundColor = MemorableColor.Gray2
         }

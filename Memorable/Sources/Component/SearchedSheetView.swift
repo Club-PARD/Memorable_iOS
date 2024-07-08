@@ -5,15 +5,15 @@
 //  Created by Minhyeok Kim on 6/30/24.
 //
 
-import UIKit
 import SnapKit
+import UIKit
 
 protocol SearchedSheetViewDelegate: AnyObject {
     func didUpdateBookmark(for document: Document)
 }
 
 class SearchedSheetView: UIView {
-    weak var delegate:SearchedSheetViewDelegate?
+    weak var delegate: SearchedSheetViewDelegate?
     let tableView: UITableView
     private let filterButtonsView = UIStackView()
     private let allFilterButton = UIButton(type: .system)
@@ -33,14 +33,15 @@ class SearchedSheetView: UIView {
         setupConstraints()
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     private func setupView() {
-        self.backgroundColor = MemorableColor.White
-        self.layer.cornerRadius = 40
-        self.layer.masksToBounds = true
+        backgroundColor = MemorableColor.White
+        layer.cornerRadius = 40
+        layer.masksToBounds = true
         
         tableView.register(RecentsheetCell.self, forCellReuseIdentifier: "RecentsheetCell")
         tableView.separatorStyle = .none
@@ -119,7 +120,6 @@ class SearchedSheetView: UIView {
     }
     
     private func setupConstraints() {
-        
         filterButtonsView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(12)
             make.leading.equalToSuperview().offset(16)
@@ -159,7 +159,7 @@ class SearchedSheetView: UIView {
     }
     
     private func updateButtonState(_ selectedButton: UIButton, isSelected: Bool) {
-        [allFilterButton, worksheetFilterButton, testsheetFilterButton, wrongsheetFilterButton].forEach { button in
+        for button in [allFilterButton, worksheetFilterButton, testsheetFilterButton, wrongsheetFilterButton] {
             var config = button.configuration
             if button == selectedButton && isSelected {
                 config?.baseForegroundColor = MemorableColor.White
@@ -203,7 +203,6 @@ extension SearchedSheetView: UITableViewDataSource, UITableViewDelegate {
     
     // 라우팅
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         tableView.deselectRow(at: indexPath, animated: true)
         
         let document = filteredDocuments[indexPath.row]
@@ -217,7 +216,7 @@ extension SearchedSheetView: UITableViewDataSource, UITableViewDelegate {
                         switch result {
                         case .success(let worksheetDetail):
                             let workSheetVC = WorkSheetViewController()
-                            workSheetVC.worksheetDetail = worksheetDetail
+                            WorkSheetManager.shared.worksheetDetail = worksheetDetail
                             self.navigateToViewController(workSheetVC)
                         case .failure(let error):
                             print("Error fetching worksheet detail: \(error)")
@@ -271,9 +270,9 @@ extension SearchedSheetView: UITableViewDataSource, UITableViewDelegate {
     }
 
     private func navigateToViewController(_ viewController: UIViewController) {
-        if let navigationController = self.window?.rootViewController as? UINavigationController {
+        if let navigationController = window?.rootViewController as? UINavigationController {
             navigationController.pushViewController(viewController, animated: true)
-        } else if let presentingViewController = self.window?.rootViewController {
+        } else if let presentingViewController = window?.rootViewController {
             presentingViewController.present(viewController, animated: true, completion: nil)
         }
     }

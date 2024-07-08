@@ -589,7 +589,7 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
                         print("isMakeTestSheet: \(detail.isMakeTestSheet)")
                     
                         let workSheetVC = WorkSheetViewController()
-                        workSheetVC.worksheetDetail = detail
+                        WorkSheetManager.shared.worksheetDetail = detail
                         self.navigateToViewController(workSheetVC)
                     }
                 }
