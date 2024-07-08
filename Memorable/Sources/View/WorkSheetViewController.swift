@@ -271,11 +271,14 @@ class WorkSheetViewController: UIViewController {
                 print("detail 없음")
                 return
             }
+            setupActivityIndicator(view: self.view)
+
             APIManager.shared.updateData(to: "/api/worksheet/make/\(detail.worksheetId)", body: detail) { result in
                 switch result {
                 case .success:
                     print("isMakeTestSheet Update 성공")
                 case .failure(let error):
+                    removeActivityIndicator()
                     print("Update 실패: \(error.localizedDescription)")
                 }
             }
@@ -287,9 +290,13 @@ class WorkSheetViewController: UIViewController {
                         print("Testsheet successfully posted")
                         let testSheetVC = TestSheetViewController()
                         testSheetVC.testsheetDetail = testSheetDetail
+
+                        removeActivityIndicator()
+
                         self.navigationController?.setViewControllers([HomeViewController(), testSheetVC], animated: true)
 
                     case .failure(let error):
+                        removeActivityIndicator()
                         print("Error posting testsheet: \(error.localizedDescription)")
                     }
                 }
