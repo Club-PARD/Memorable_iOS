@@ -9,7 +9,12 @@ import SnapKit
 import Then
 import UIKit
 
+protocol MypageViewDelegate: AnyObject {
+    func mypageView(_ view: MypageView, didRequestToOpenURL url: URL)
+}
+
 class MypageView: UIView {
+    weak var delegate: MypageViewDelegate?
     private let scrollView: UIScrollView
     private let contentView: UIView
     
@@ -705,14 +710,76 @@ class MypageView: UIView {
     }
     
     // purchaseButtonTapped 메서드 수정
+//    @objc private func purchaseButtonTapped() {
+//        guard let selectedButton = selectedMembershipButton else { return }
+//        _ = ["Standard", "Pro", "Premium"][selectedButton.tag]
+//        
+//        if purchaseButton.title(for: .normal) == "결제 관리하기" {
+//            showToast(message: "추후 결제 및 관리는 다음 버전 출시 시 사용가능합니다.")
+//        } else {
+//            showToast(message: "다음 버전 출시 시 멤버십 플랜이 업데이트 됩니다.")
+//        }
+//    }
     @objc private func purchaseButtonTapped() {
         guard let selectedButton = selectedMembershipButton else { return }
-        _ = ["Standard", "Pro", "Premium"][selectedButton.tag]
+        let membershipType: MembershipType
+        
+        switch selectedButton.tag {
+        case 0:
+            membershipType = .standard
+        case 1:
+            membershipType = .pro
+        case 2:
+            membershipType = .premium
+        default:
+            return
+        }
         
         if purchaseButton.title(for: .normal) == "결제 관리하기" {
-            showToast(message: "추후 결제 및 관리는 다음 버전 출시 시 사용가능합니다.")
+            let now = Date()
+            let calendar = Calendar.current
+
+            let currentYear = calendar.component(.year, from: now)
+            let currentMonth = calendar.component(.month, from: now)
+            let currentDay = calendar.component(.day, from: now)
+
+            var nextBillingMonth = currentMonth
+            var nextBillingYear = currentYear
+
+            if currentDay > 10 {
+                nextBillingMonth += 1
+                if nextBillingMonth > 12 {
+                    nextBillingMonth = 1
+                    nextBillingYear += 1
+                }
+            }
+
+            let message = "다음 자동 결제일은 \(nextBillingMonth)월 10일 입니다."
+            showToast(message: message)
         } else {
-            showToast(message: "다음 버전 출시 시 멤버십 플랜이 업데이트 됩니다.")
+            KakaoPAYManager.shared.prepareKakaoPayment(for: membershipType) { [weak self] success, message in
+                guard let self = self else { return }
+                DispatchQueue.main.async {
+                    if success, let responseData = message?.data(using: .utf8) {
+                        do {
+                            if let jsonResult = try JSONSerialization.jsonObject(with: responseData, options: []) as? [String: Any] {
+                                if let webURL = jsonResult["next_redirect_pc_url"] as? String ?? jsonResult["next_redirect_mobile_url"] as? String,
+                                   let url = URL(string: webURL) {
+                                    self.delegate?.mypageView(self, didRequestToOpenURL: url)
+                                } else {
+                                    self.showToast(message: "결제 페이지 URL을 찾을 수 없습니다.")
+                                }
+                            } else {
+                                self.showToast(message: "결제 정보를 처리하는 데 실패했습니다.")
+                            }
+                        } catch {
+                            self.showToast(message: "결제 정보를 처리하는 데 실패했습니다: \(error.localizedDescription)")
+                        }
+                    } else {
+                        self.showToast(message: "결제 준비 중 오류가 발생했습니다: \(message ?? "")")
+                    }
+                }
+            }
         }
     }
     

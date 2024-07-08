@@ -40,7 +40,7 @@ class QuestionView: UIView {
         textField.layer.masksToBounds = true
         textField.borderStyle = .none
         textField.backgroundColor = MemorableColor.Gray5
-        textField.textAlignment = .left // 왼쪽 정렬로 변경
+        textField.textAlignment = .left
         textField.textColor = MemorableColor.Black
         textField.font = MemorableFont.Body1()
         textField.attributedPlaceholder = NSAttributedString(
@@ -50,13 +50,19 @@ class QuestionView: UIView {
                 .font: MemorableFont.Body1()
             ]
         )
+        
+        // 내부 leading padding 설정
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 26, height: textField.frame.height))
+        textField.leftView = paddingView
+        textField.leftViewMode = .always
+        
         return textField
     }()
     
     let correctAnswerView: UIView = {
         let correctAnswerView = UIView()
         correctAnswerView.backgroundColor = MemorableColor.Gray5
-        correctAnswerView.layer.cornerRadius = 19
+        correctAnswerView.layer.cornerRadius = 25
         correctAnswerView.layer.masksToBounds = true
         return correctAnswerView
     }()
@@ -66,6 +72,11 @@ class QuestionView: UIView {
         correctAnswerLabel.font = MemorableFont.BodyCaption()
         correctAnswerLabel.textColor = MemorableColor.Blue1
         return correctAnswerLabel
+    }()
+    
+    let infoIcon: UIImageView = {
+        let infoIcon = UIImageView(image: UIImage(named: "info-circle"))
+        return infoIcon
     }()
     
     let userAnswerLabel: UILabel = {
@@ -99,6 +110,7 @@ class QuestionView: UIView {
         questionNumberView.addSubview(questionNumber)
         addSubview(questionLabel)
         addSubview(answerTextField)
+        addSubview(infoIcon)
         addSubview(answerLengthLabel)
         
         questionNumberView.snp.makeConstraints{ make in
@@ -116,9 +128,15 @@ class QuestionView: UIView {
             make.centerY.equalTo(questionNumberView)
         }
         
+        infoIcon.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(24)
+            make.bottom.equalToSuperview().offset(-2)
+            make.width.height.equalTo(16)
+        }
+        
         answerLengthLabel.snp.makeConstraints { make in
-            make.bottom.equalToSuperview()
-            make.leading.equalToSuperview()
+            make.centerY.equalTo(infoIcon)
+            make.leading.equalTo(infoIcon.snp.trailing).offset(2)
         }
         
         answerTextField.snp.makeConstraints { make in
@@ -129,31 +147,34 @@ class QuestionView: UIView {
         }
     }
     
-    func configure(with question: Question, questionNumberValue: Int, userAnswer: String?) {
+    func configure(with question: Question, questionNumberValue: Int, userAnswer: String?, isCorrect: Bool?) {
         questionNumber.text = "\(questionNumberValue)"
         questionLabel.text = question.question
-        answerTextField.text = userAnswer ?? question.userAnswer ?? ""
+        answerTextField.text = userAnswer ?? question.userAnswer
         
         correctAnswerLabel.text = question.answer
-        userAnswerLabel.text = "사용자가 입력한 답: \(userAnswer ?? question.userAnswer ?? "")"
+        userAnswerLabel.text = "사용자가 입력한 답: \(userAnswer ?? question.userAnswer)"
         
         answerLengthLabel.text = "\(question.answer.count)글자로 입력해주세요"
         
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 26, height: answerTextField.frame.height))
-        answerTextField.leftView = paddingView
-        answerTextField.leftViewMode = .always
-        
-        // 답변 비교 및 색상 설정
-        let normalizedCorrectAnswer = question.answer.lowercased().replacingOccurrences(of: " ", with: "")
-        let normalizedUserAnswer = (userAnswer ?? question.userAnswer ?? "").lowercased().replacingOccurrences(of: " ", with: "")
-        
-        if normalizedCorrectAnswer == normalizedUserAnswer {
-            correctAnswerLabel.textColor = MemorableColor.Blue1
+        if let isCorrect = isCorrect {
+            if isCorrect {
+                correctAnswerLabel.textColor = MemorableColor.Blue1
+            } else {
+                correctAnswerLabel.textColor = MemorableColor.Red
+            }
         } else {
-            correctAnswerLabel.textColor = MemorableColor.Red
+            correctAnswerLabel.textColor = MemorableColor.Blue1
+        }
+        
+        // 제출 상태에 따라 UI 업데이트
+        if isCorrect != nil {
+            replaceTextFieldWithLabels()
+        } else {
+            resetView(withUserAnswer: userAnswer ?? question.userAnswer)
         }
     }
-
+    
     func replaceTextFieldWithLabels() {
         if answerTextField.isHidden {
             return
@@ -176,8 +197,8 @@ class QuestionView: UIView {
         
         addSubview(userAnswerLabel)
         userAnswerLabel.snp.makeConstraints { make in
-            make.leading.equalTo(correctAnswerView.snp.leading)
-            make.bottom.equalToSuperview()
+            make.centerY.equalTo(infoIcon)
+            make.leading.equalTo(infoIcon.snp.trailing).offset(2)
         }
         
         // 사용자 답변 업데이트

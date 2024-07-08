@@ -16,6 +16,7 @@ class SearchedSheetView: UIView {
     weak var delegate:SearchedSheetViewDelegate?
     let tableView: UITableView
     private let filterButtonsView = UIStackView()
+    private var currentFilterButton = UIButton() // MARK: 즐겨찾기 수정
     private let allFilterButton = UIButton(type: .system)
     private let worksheetFilterButton = UIButton(type: .system)
     private let testsheetFilterButton = UIButton(type: .system)
@@ -28,7 +29,7 @@ class SearchedSheetView: UIView {
         tableView = UITableView()
         
         super.init(frame: frame)
-        
+        currentFilterButton = allFilterButton // MARK: 즐겨찾기 수정
         setupView()
         setupConstraints()
     }
@@ -138,12 +139,19 @@ class SearchedSheetView: UIView {
         allDocuments = documents.sorted(by: { $0.createdDate > $1.createdDate })
         filteredDocuments = allDocuments
         tableView.reloadData()
+        
+        updateButtonState(currentFilterButton, isSelected: true)
+        updateCurrentDocuments()
     }
 
     @objc private func filterButtonTapped(_ sender: UIButton) {
         updateButtonState(sender, isSelected: true)
-        
-        switch sender {
+        currentFilterButton = sender
+        updateCurrentDocuments()
+    }
+    
+    private func updateCurrentDocuments() {
+        switch currentFilterButton {
         case allFilterButton:
             filteredDocuments = allDocuments
         case worksheetFilterButton:
@@ -285,6 +293,8 @@ extension SearchedSheetView: RecentsheetCellDelegate {
             allDocuments[index] = document
         }
         tableView.reloadData()
+        // 현재 필터를 적용하여 currentDocuments 업데이트
+        updateCurrentDocuments()
         delegate?.didUpdateBookmark(for: document)
     }
 }
