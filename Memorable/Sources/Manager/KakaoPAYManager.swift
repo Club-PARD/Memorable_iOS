@@ -24,7 +24,7 @@ class KakaoPAYManager {
         request.httpMethod = "POST"
         
         // 실제 시크릿 키로 대체하세요
-        let secretKey = APIKey.KakaoPAYSecretKey
+        let secretKey = Bundle.main.object(forInfoDictionaryKey: "KakaoPAY_API_KEY") as? String ?? ""
         request.addValue("SECRET_KEY \(secretKey)", forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         

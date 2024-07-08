@@ -1,0 +1,11 @@
+//
+//  APIKeys.xcconfig
+//  Memorable
+//
+//  Created by Minhyeok Kim on 7/8/24.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+KakaoPAY_API_KEY = DEV36EE316E1A224B0AACE91ED474AD60F08C04E
