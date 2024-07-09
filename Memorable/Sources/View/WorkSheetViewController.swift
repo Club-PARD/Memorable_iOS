@@ -229,7 +229,9 @@ class WorkSheetViewController: UIViewController {
                 }
             }
 
-            resetButton.isHidden = true
+            var resetButtonConfig = UIButton.Configuration.filled()
+            resetButtonConfig.baseForegroundColor = MemorableColor.Gray1
+            resetButton.configuration = resetButtonConfig
 
             var config = UIButton.Configuration.filled()
             config.image = UIImage(systemName: "eye.slash")
@@ -246,7 +248,9 @@ class WorkSheetViewController: UIViewController {
         else {
             WorkSheetManager.shared.hideAnswer(worksheet: workSheetView)
 
-            resetButton.isHidden = false
+            var resetButtonConfig = UIButton.Configuration.filled()
+            resetButtonConfig.baseForegroundColor = MemorableColor.White
+            resetButton.configuration = resetButtonConfig
 
             var config = UIButton.Configuration.filled()
             config.image = UIImage(systemName: "eye")
@@ -373,7 +377,6 @@ class WorkSheetViewController: UIViewController {
 
             WorkSheetManager.shared.isShowingAnswer = false
             self.showAnswerButton.isSelected = WorkSheetManager.shared.isShowingAnswer
-            self.resetButton.isHidden = false
             self.showAnswerButton.setTitle("키워드 보기", for: .normal)
             self.showAnswerButton.setTitle("키워드 가리기", for: .selected)
             var config = UIButton.Configuration.filled()
@@ -455,7 +458,6 @@ class WorkSheetViewController: UIViewController {
         showAnswerButton.isSelected = WorkSheetManager.shared.isShowingAnswer
         showAnswerButton.setTitle("키워드 보기", for: .normal)
         showAnswerButton.setTitle("키워드 가리기", for: .selected)
-        resetButton.isHidden = false
 
         var config = UIButton.Configuration.filled()
         config.image = UIImage(systemName: "eye")
@@ -530,7 +532,6 @@ class WorkSheetViewController: UIViewController {
         showAnswerButton.isSelected = WorkSheetManager.shared.isShowingAnswer
         showAnswerButton.setTitle("키워드 보기", for: .normal)
         showAnswerButton.setTitle("키워드 가리기", for: .selected)
-        resetButton.isHidden = false
 
         var config = UIButton.Configuration.filled()
         config.image = UIImage(systemName: "eye")

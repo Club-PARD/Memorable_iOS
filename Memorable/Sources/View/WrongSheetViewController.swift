@@ -212,7 +212,9 @@ class WrongSheetViewController: UIViewController {
         if isShowingAnswer {
             showAnswer()
 
-            resetButton.isHidden = true
+            var resetButtonConfig = UIButton.Configuration.filled()
+            resetButtonConfig.baseForegroundColor = MemorableColor.Gray1
+            resetButton.configuration = resetButtonConfig
 
             var config = UIButton.Configuration.filled()
             config.image = UIImage(systemName: "eye.slash")
@@ -227,7 +229,9 @@ class WrongSheetViewController: UIViewController {
         else {
             hideAnswer()
 
-            resetButton.isHidden = false
+            var resetButtonConfig = UIButton.Configuration.filled()
+            resetButtonConfig.baseForegroundColor = MemorableColor.White
+            resetButton.configuration = resetButtonConfig
 
             var config = UIButton.Configuration.filled()
             config.image = UIImage(systemName: "eye")
