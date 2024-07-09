@@ -5,17 +5,18 @@
 //  Created by Minhyeok Kim on 6/30/24.
 //
 
-import SnapKit
 import UIKit
+import SnapKit
 
 protocol SearchedSheetViewDelegate: AnyObject {
     func didUpdateBookmark(for document: Document)
 }
 
 class SearchedSheetView: UIView {
-    weak var delegate: SearchedSheetViewDelegate?
+    weak var delegate:SearchedSheetViewDelegate?
     let tableView: UITableView
     private let filterButtonsView = UIStackView()
+    private var currentFilterButton = UIButton() // MARK: 즐겨찾기 수정
     private let allFilterButton = UIButton(type: .system)
     private let worksheetFilterButton = UIButton(type: .system)
     private let testsheetFilterButton = UIButton(type: .system)
@@ -28,7 +29,7 @@ class SearchedSheetView: UIView {
         tableView = UITableView()
         
         super.init(frame: frame)
-        
+        currentFilterButton = allFilterButton // MARK: 즐겨찾기 수정
         setupView()
         setupConstraints()
     }
@@ -39,9 +40,9 @@ class SearchedSheetView: UIView {
     }
     
     private func setupView() {
-        backgroundColor = MemorableColor.White
-        layer.cornerRadius = 40
-        layer.masksToBounds = true
+        self.backgroundColor = MemorableColor.White
+        self.layer.cornerRadius = 40
+        self.layer.masksToBounds = true
         
         tableView.register(RecentsheetCell.self, forCellReuseIdentifier: "RecentsheetCell")
         tableView.separatorStyle = .none
@@ -120,6 +121,7 @@ class SearchedSheetView: UIView {
     }
     
     private func setupConstraints() {
+        
         filterButtonsView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(12)
             make.leading.equalToSuperview().offset(16)
@@ -138,12 +140,19 @@ class SearchedSheetView: UIView {
         allDocuments = documents.sorted(by: { $0.createdDate > $1.createdDate })
         filteredDocuments = allDocuments
         tableView.reloadData()
+        
+        updateButtonState(currentFilterButton, isSelected: true)
+        updateCurrentDocuments()
     }
 
     @objc private func filterButtonTapped(_ sender: UIButton) {
         updateButtonState(sender, isSelected: true)
-        
-        switch sender {
+        currentFilterButton = sender
+        updateCurrentDocuments()
+    }
+    
+    private func updateCurrentDocuments() {
+        switch currentFilterButton {
         case allFilterButton:
             filteredDocuments = allDocuments
         case worksheetFilterButton:
@@ -159,7 +168,7 @@ class SearchedSheetView: UIView {
     }
     
     private func updateButtonState(_ selectedButton: UIButton, isSelected: Bool) {
-        for button in [allFilterButton, worksheetFilterButton, testsheetFilterButton, wrongsheetFilterButton] {
+        [allFilterButton, worksheetFilterButton, testsheetFilterButton, wrongsheetFilterButton].forEach { button in
             var config = button.configuration
             if button == selectedButton && isSelected {
                 config?.baseForegroundColor = MemorableColor.White
@@ -203,6 +212,7 @@ extension SearchedSheetView: UITableViewDataSource, UITableViewDelegate {
     
     // 라우팅
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
         tableView.deselectRow(at: indexPath, animated: true)
         
         let document = filteredDocuments[indexPath.row]
@@ -270,9 +280,9 @@ extension SearchedSheetView: UITableViewDataSource, UITableViewDelegate {
     }
 
     private func navigateToViewController(_ viewController: UIViewController) {
-        if let navigationController = window?.rootViewController as? UINavigationController {
+        if let navigationController = self.window?.rootViewController as? UINavigationController {
             navigationController.pushViewController(viewController, animated: true)
-        } else if let presentingViewController = window?.rootViewController {
+        } else if let presentingViewController = self.window?.rootViewController {
             presentingViewController.present(viewController, animated: true, completion: nil)
         }
     }
@@ -284,6 +294,8 @@ extension SearchedSheetView: RecentsheetCellDelegate {
             allDocuments[index] = document
         }
         tableView.reloadData()
+        // 현재 필터를 적용하여 currentDocuments 업데이트
+        updateCurrentDocuments()
         delegate?.didUpdateBookmark(for: document)
     }
 }

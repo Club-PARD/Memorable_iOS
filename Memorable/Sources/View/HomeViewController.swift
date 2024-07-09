@@ -8,11 +8,14 @@
 import SnapKit
 import UIKit
 
+import SafariServices // 카카오 페이
+
 class HomeViewController: UIViewController {
     var userIdentifier: String = ""
     var givenName: String = ""
     var familyName: String = ""
     var email: String = ""
+    private var mostRecentWorksheetDetail: WorksheetDetail?
     
     let tabBar = TabBarComponent()
     let containerView = UIView()
@@ -45,10 +48,13 @@ class HomeViewController: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor = MemorableColor.Gray5
         headerComponent.delegate = self
+        mypageView.delegate = self
+        headerComponent.isUserInteractionEnabled = true
         
         userIdentifier = UserDefaults.standard.string(forKey: SignInManager.userIdentifierKey)!
         
         fetchDocuments()
+        fetchMostRecentWorksheet()
         
         if let userData = UserDefaults.standard.data(forKey: "userInfo") {
             if let decodedData = try? JSONDecoder().decode(User.self, from: userData) {
@@ -138,13 +144,13 @@ class HomeViewController: UIViewController {
     }
 
     private func setupLibraryViewComponentDocuments() {
-        let worksheetDocuments = documents.filter { $0.fileType == "빈칸학습지" }
-        let testsheetDocuments = documents.filter { $0.fileType == "나만의 시험지" }
-        let wrongsheetDocuments = documents.filter { $0.fileType == "오답노트" }
+        let worksheetDocuments = self.documents.filter { $0.fileType == "빈칸학습지" }
+        let testsheetDocuments = self.documents.filter { $0.fileType == "나만의 시험지" }
+        let wrongsheetDocuments = self.documents.filter { $0.fileType == "오답노트" }
         
-        libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
-                                          testsheet: testsheetDocuments,
-                                          wrongsheet: wrongsheetDocuments)
+        self.libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
+                                               testsheet: testsheetDocuments,
+                                               wrongsheet: wrongsheetDocuments)
     }
 
     private func updateStarViewDocuments() {
@@ -166,12 +172,27 @@ class HomeViewController: UIViewController {
         userDefaults?.synchronize()
     }
     
-    func getExistingCategories() -> [String] {
-        // 모든 문서의 카테고리를 가져와 중복을 제거하고 정렬합니다.
-        let allCategories = documents.map { $0.category }
-        let uniqueCategories = Array(Set(allCategories))
-        return uniqueCategories.sorted()
+    private func fetchMostRecentWorksheet() {
+        APIManagere.shared.getMostRecentWorksheet(userId: userIdentifier) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let worksheetDetail):
+                    self?.mostRecentWorksheetDetail = worksheetDetail
+                    self?.libraryViewComponent.recentWorksheetName = worksheetDetail.name
+                    self?.libraryViewComponent.updateRecentView() // 새로운 메서드 추가
+                case .failure(let error):
+                    print("Error fetching most recent worksheet: \(error)")
+                }
+            }
+        }
     }
+    
+    func getExistingCategories() -> [String] {
+            // 모든 문서의 카테고리를 가져와 중복을 제거하고 정렬합니다.
+            let allCategories = documents.map { $0.category }
+            let uniqueCategories = Array(Set(allCategories))
+            return uniqueCategories.sorted()
+        }
     
     func setUI() {
         // header
@@ -302,14 +323,14 @@ class HomeViewController: UIViewController {
         }
         
         // TODO: API 연결중
-        let worksheetDocuments = documents.filter { $0.fileType == "빈칸학습지" }
-        let testsheetDocuments = documents.filter { $0.fileType == "나만의 시험지" }
-        let wrongsheetDocuments = documents.filter { $0.fileType == "오답노트" }
+        let worksheetDocuments = self.documents.filter { $0.fileType == "빈칸학습지" }
+        let testsheetDocuments = self.documents.filter { $0.fileType == "나만의 시험지" }
+        let wrongsheetDocuments = self.documents.filter { $0.fileType == "오답노트" }
         
         // LibraryViewComponent에 데이터 설정
-        libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
-                                          testsheet: testsheetDocuments,
-                                          wrongsheet: wrongsheetDocuments)
+        self.libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
+                                                testsheet: testsheetDocuments,
+                                                wrongsheet: wrongsheetDocuments)
         
         // titleLabel 숨기기
         titleLabel.isHidden = true
@@ -501,7 +522,7 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
                 // Fetch documents to update the UI
                 self?.fetchDocuments()
                 self?.setupDefaultView()
-            case .failure:
+            case .failure(_):
                 // Handle error (e.g., show an alert to the user)
                 self?.showDeleteErrorAlert(message: "문서 삭제에 실패했습니다.")
             }
@@ -598,18 +619,12 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
     }
     
     func didTapRecentButton() {
-        APIManagere.shared.getMostRecentWorksheet(userId: userIdentifier) { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let worksheetDetail):
-                    let workSheetVC = WorkSheetViewController()
-                    WorkSheetManager.shared.worksheetDetail = worksheetDetail
-                    self?.navigationController?.pushViewController(workSheetVC, animated: true)
-                case .failure(let error):
-                    print("Error fetching most recent worksheet: \(error)")
-                    self?.showCreateErrorAlert(message: "최근 워크시트를 불러오는 데 실패했습니다.")
-                }
-            }
+        if let worksheetDetail = mostRecentWorksheetDetail {
+            let workSheetVC = WorkSheetViewController()
+            WorkSheetManager.shared.worksheetDetail = worksheetDetail
+            navigationController?.pushViewController(workSheetVC, animated: true)
+        } else {
+            showCreateErrorAlert(message: "최근 워크시트를 불러오는 데 실패했습니다.")
         }
     }
     
@@ -637,18 +652,18 @@ extension HomeViewController {
     
     private func updateLibraryView() {
         print("Updating LibraryView")
-        let worksheetDocuments = documents.filter { $0.fileType == "빈칸학습지" }
-        let testsheetDocuments = documents.filter { $0.fileType == "나만의 시험지" }
-        let wrongsheetDocuments = documents.filter { $0.fileType == "오답노트" }
+        let worksheetDocuments = self.documents.filter { $0.fileType == "빈칸학습지" }
+        let testsheetDocuments = self.documents.filter { $0.fileType == "나만의 시험지" }
+        let wrongsheetDocuments = self.documents.filter { $0.fileType == "오답노트" }
         
-        libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
-                                          testsheet: testsheetDocuments,
-                                          wrongsheet: wrongsheetDocuments)
+        self.libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
+                                               testsheet: testsheetDocuments,
+                                               wrongsheet: wrongsheetDocuments)
     }
     
     private func updateStarView() {
-        starView.setDocuments(documents: documents)
-        starView.reloadTable()
+        self.starView.setDocuments(documents: documents)
+        self.starView.reloadTable()
     }
     
     private func updateWorksheetListView() {
@@ -669,5 +684,13 @@ extension UIViewController {
     
     @objc func dismissKeyboard() {
         view.endEditing(true)
+    }
+}
+
+extension HomeViewController: MypageViewDelegate {
+    // 카카오페이 이동
+    func mypageView(_ view: MypageView, didRequestToOpenURL url: URL) {
+        let safariViewController = SFSafariViewController(url: url)
+        present(safariViewController, animated: true, completion: nil)
     }
 }

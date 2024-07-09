@@ -9,15 +9,16 @@ import Foundation
 
 enum APIError: Error {
     case invalidURL
-    case networkError(Error)
     case encodingError(Error)
-    case decodingError(Error)
+    case networkError(Error)
     case serverError(statusCode: Int, message: String)
+    case noData
+    case decodingError(Error)
 }
 
 class APIManagere {
     static let shared = APIManagere()
-    private let baseURL = "http://172.30.1.9:8080"
+    private let baseURL = "http://172.17.217.238:8080"
     
     struct EmptyResponse: Codable {}
     
@@ -337,7 +338,7 @@ class APIManagere {
     }
     
     // 2-4. 나만의 시험지 채점시 / 재응시 하기 확인 클릭시 / 재추출시
-    func updateTestsheet(testsheetId: Int, isReExtracted: Bool, isCompleteAllBlanks: [Bool], userAnswers1: [String], userAnswers2: [String], completion: @escaping (Result<Void, Error>) -> Void) {
+    func updateTestsheet(testsheetId: Int, isReExtracted: Bool, isCompleteAllBlanks: [Bool], userAnswers1: [String], userAnswers2: [String], isCorrect: [Bool], completion: @escaping (Result<TestsheetGrade, Error>) -> Void) {
         let urlString = "\(baseURL)/api/testsheet/\(testsheetId)"
         guard let url = URL(string: urlString) else {
             completion(.failure(APIError.invalidURL))
@@ -352,7 +353,8 @@ class APIManagere {
             "isReExtracted": isReExtracted,
             "isCompleteAllBlanks": isCompleteAllBlanks,
             "userAnswers1": userAnswers1,
-            "userAnswers2": userAnswers2
+            "userAnswers2": userAnswers2,
+            "isCorrect": isCorrect
         ]
         
         do {
@@ -377,11 +379,24 @@ class APIManagere {
                 
             print("Server response status code: \(httpResponse.statusCode)")
                 
-            if let data = data, let responseString = String(data: data, encoding: .utf8) {
-                print("Server response body: \(responseString)")
+            guard let data = data else {
+                completion(.failure(APIError.noData))
+                return
             }
             
-            completion(.success(()))
+            // Print raw response data for debugging
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("Raw server response: \(responseString)")
+            }
+            
+            do {
+                let decoder = JSONDecoder()
+                let testsheetResponse = try decoder.decode(TestsheetGrade.self, from: data)
+                completion(.success(testsheetResponse))
+            } catch {
+                print("Decoding error: \(error)")
+                completion(.failure(APIError.decodingError(error)))
+            }
         }.resume()
     }
     

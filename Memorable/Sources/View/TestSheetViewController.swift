@@ -13,6 +13,7 @@ struct TestSheetState {
     var userAnswers: [String]
     var isSubmitted: Bool
     var score: Int?
+    var isCorrect: [Bool]?
 }
 
 class TestSheetViewController: UIViewController, UITextFieldDelegate {
@@ -190,17 +191,17 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         firstSheetState = TestSheetState(
             userAnswers: testsheetDetail.questions1.map { $0.userAnswer },
             isSubmitted: testsheetDetail.isCompleteAllBlanks[0],
-            score: nil
+            score: testsheetDetail.score?[0],
+            isCorrect: testsheetDetail.isCorrect?.prefix(testsheetDetail.questions1.count).map { $0 }
         )
         
         if testsheetDetail.reExtracted {
             secondSheetState = TestSheetState(
                 userAnswers: testsheetDetail.questions2.map { $0.userAnswer },
                 isSubmitted: testsheetDetail.isCompleteAllBlanks[1],
-                score: nil
+                score: testsheetDetail.score?[1],
+                isCorrect: testsheetDetail.isCorrect?.suffix(testsheetDetail.questions2.count).map { $0 }
             )
-            print("Second sheet loaded. User answers: \(secondSheetState?.userAnswers ?? [])")
-            print("Second sheet submitted: \(secondSheetState?.isSubmitted ?? false)")
         } else {
             secondSheetState = nil
         }
@@ -454,35 +455,34 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
     }
     
     private func updateUI() {
-        let startIndex = currentPage * questionsPerPage
         let currentState = isFirstSheetSelected ? firstSheetState : secondSheetState
-        let isSubmitted = currentState?.isSubmitted ?? false
-        
-        for (index, questionView) in questionViews.enumerated() {
-            let questionIndex = currentPage * questionsPerPage + index
-            if questionIndex < questionManager.questions.count {
-                let question = questionManager.questions[questionIndex]
-                let userAnswer = currentState?.userAnswers[questionIndex]
-                
-                questionView.configure(with: question, questionNumberValue: questionIndex + 1, userAnswer: userAnswer)
-                
-                if isSubmitted {
-                    questionView.replaceTextFieldWithLabels()
+            let isSubmitted = currentState?.isSubmitted ?? false
+            
+            for (index, questionView) in questionViews.enumerated() {
+                let questionIndex = currentPage * questionsPerPage + index
+                if questionIndex < questionManager.questions.count {
+                    let question = questionManager.questions[questionIndex]
+                    let userAnswer = currentState?.userAnswers[questionIndex]
+                    let isCorrect = currentState?.isCorrect?[questionIndex]
+                    
+                    questionView.isHidden = false
+                    questionView.configure(with: question, questionNumberValue: questionIndex + 1, userAnswer: userAnswer, isCorrect: isCorrect)
+                    
+                    if isSubmitted {
+                        questionView.replaceTextFieldWithLabels()
+                    } else {
+                        questionView.resetView(withUserAnswer: userAnswer)
+                    }
                 } else {
-                    questionView.resetView(withUserAnswer: userAnswer)
+                    questionView.isHidden = true
                 }
-            } else {
-                questionView.isHidden = true
             }
-        }
         
         submitButton.isHidden = isSubmitted
         retryButton.isHidden = !isSubmitted
         sendWrongAnswersButton.isHidden = !isSubmitted
         
-        if isSubmitted {
-            checkAnswersAndShowResult(forceUpdate: true)
-        } else {
+        if !isSubmitted {
             resultLabel.isHidden = true
             scoreLabel.isHidden = true
         }
@@ -604,7 +604,7 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
                 let question = questionManager.questions[questionIndex]
                 let currentState = isFirstSheetSelected ? firstSheetState : secondSheetState
                 let userAnswer = currentState?.userAnswers[questionIndex]
-                questionView.configure(with: question, questionNumberValue: questionIndex + 1, userAnswer: userAnswer)
+                questionView.configure(with: question, questionNumberValue: questionIndex + 1, userAnswer: userAnswer, isCorrect: currentState?.isCorrect?[questionIndex])
                 questionView.replaceTextFieldWithLabels()
             }
         }
@@ -621,21 +621,26 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         guard let testsheetDetail = testsheetDetail else { return }
         
         var correctAnswers = 0
+        var isCorrect: [Bool] = []
         let currentQuestions = isFirstSheetSelected ? testsheetDetail.questions1 : testsheetDetail.questions2
         
         for question in currentQuestions {
             let normalizedCorrectAnswer = question.answer.lowercased().replacingOccurrences(of: " ", with: "")
             let normalizedUserAnswer = question.userAnswer.lowercased().replacingOccurrences(of: " ", with: "")
             
-            if normalizedCorrectAnswer == normalizedUserAnswer {
+            let isAnswerCorrect = normalizedCorrectAnswer == normalizedUserAnswer
+            isCorrect.append(isAnswerCorrect)
+            if isAnswerCorrect {
                 correctAnswers += 1
             }
         }
         
         if isFirstSheetSelected {
             firstSheetState?.score = correctAnswers
+            firstSheetState?.isCorrect = isCorrect
         } else {
             secondSheetState?.score = correctAnswers
+            secondSheetState?.isCorrect = isCorrect
         }
         
         resultLabel.text = "\(correctAnswers)/\(currentQuestions.count)"
@@ -654,6 +659,8 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         if !isFirstSheetSelected && testsheetDetail.reExtracted {
             showFinishImage()
         }
+        
+        updateTestsheetOnServer()
     }
     
     @objc private func backButtonTapped() {
@@ -695,9 +702,13 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
             if self.isFirstSheetSelected {
                 self.firstSheetState?.isSubmitted = false
                 self.firstSheetState?.userAnswers = Array(repeating: "", count: self.testsheetDetail?.questions1.count ?? 0)
+                self.firstSheetState?.score = 0
+                self.firstSheetState?.isCorrect = Array(repeating: false, count: self.testsheetDetail?.questions1.count ?? 0)
             } else {
                 self.secondSheetState?.isSubmitted = false
                 self.secondSheetState?.userAnswers = Array(repeating: "", count: self.testsheetDetail?.questions2.count ?? 0)
+                self.secondSheetState?.score = 0
+                self.secondSheetState?.isCorrect = Array(repeating: false, count: self.testsheetDetail?.questions1.count ?? 0)
             }
             
             self.updateTestsheetOnServer()
@@ -722,32 +733,62 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         let isCompleteAllBlanks = [firstSheetState?.isSubmitted ?? false, secondSheetState?.isSubmitted ?? false]
         let userAnswers1 = firstSheetState?.userAnswers ?? []
         let userAnswers2 = secondSheetState?.userAnswers ?? []
+        let score = [firstSheetState?.score, secondSheetState?.score]
+        
+        var isCorrect: [Bool] = []
+        
+        if let firstIsCorrect = firstSheetState?.isCorrect {
+            isCorrect.append(contentsOf: firstIsCorrect)
+        }
+        
+        if let secondIsCorrect = secondSheetState?.isCorrect {
+            isCorrect.append(contentsOf: secondIsCorrect)
+        }
         
         print("Updating server - isReExtracted: \(reExtracted)")
         print("Updating server - isCompleteAllBlanks: \(isCompleteAllBlanks)")
         print("Updating server - userAnswers1: \(userAnswers1)")
         print("Updating server - userAnswers2: \(userAnswers2)")
+        print("Updating server - isCorrect: \(isCorrect)")
 
         apiManager.updateTestsheet(
             testsheetId: testsheetDetail.testsheetId,
-            isReExtracted: testsheetDetail.reExtracted,
+            isReExtracted: reExtracted,
             isCompleteAllBlanks: isCompleteAllBlanks,
             userAnswers1: userAnswers1,
-            userAnswers2: userAnswers2
+            userAnswers2: userAnswers2,
+            isCorrect: isCorrect
         ) { result in
             DispatchQueue.main.async {
                 switch result {
-                case .success:
-                    print("Testsheet updated successfully")
+                case .success(let response):
+                    if self.isFirstSheetSelected {
+                        self.testsheetDetail?.score?[0] = response.score?[0] ?? 0
+                        // 첫 번째 시험지의 isCorrect 업데이트
+                        if let firstAnswerCount = self.firstSheetState?.userAnswers.count,
+                           let responseIsCorrect = response.isCorrect {
+                            self.testsheetDetail?.isCorrect?.replaceSubrange(0..<firstAnswerCount, with: responseIsCorrect.prefix(firstAnswerCount))
+                        }
+                    } else {
+                        self.testsheetDetail?.score?[1] = response.score?[1] ?? 0
+                        // 두 번째 시험지의 isCorrect 업데이트
+                        if let firstAnswerCount = self.firstSheetState?.userAnswers.count,
+                           let secondAnswerCount = self.secondSheetState?.userAnswers.count,
+                           let responseIsCorrect = response.isCorrect {
+                            let startIndex = firstAnswerCount
+                            let endIndex = startIndex + secondAnswerCount
+                            self.testsheetDetail?.isCorrect?.replaceSubrange(startIndex..<endIndex, with: responseIsCorrect.prefix(secondAnswerCount))
+                        }
+                    }
+                    print("firstSheetState: \(String(describing: self.firstSheetState))")
+                    print("secondSheetState: \(String(describing: self.secondSheetState))")
                     self.updateUI()
                 case .failure(let error):
                     print("Failed to update testsheet: \(error)")
-                    // 에러 처리 로직 추가
                 }
             }
         }
     }
-    
     @objc private func sendWrongAnswers() {
         showSendWrongAlert()
     }

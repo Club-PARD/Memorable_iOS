@@ -18,6 +18,7 @@ protocol LibraryViewComponentDelegate: AnyObject {
 
 class LibraryViewComponent: UIView {
     weak var delegate: LibraryViewComponentDelegate?
+    var recentWorksheetName: String?
     
     private let scrollView: UIScrollView
     private let contentView: UIView
@@ -38,6 +39,7 @@ class LibraryViewComponent: UIView {
     private var currentDocuments: [Document] = []
     
     private var filterButtonsView = UIStackView()
+    private var currentFilterButton = UIButton() // MARK: 즐겨찾기 수정
     private let allFilterButton = UIButton(type: .system)
     private let worksheetFilterButton = UIButton(type: .system)
     private let testsheetFilterButton = UIButton(type: .system)
@@ -64,7 +66,7 @@ class LibraryViewComponent: UIView {
         recentsheetView = UIView()
         
         super.init(frame: frame)
-        
+        currentFilterButton = allFilterButton // MARK: 즐겨찾기 수정
         setupViews()
         setupConstraints()
     }
@@ -116,17 +118,17 @@ class LibraryViewComponent: UIView {
             make.edges.equalToSuperview()
         }
         
-        let fullText = "가장 최근에 학습한\n사회학개론 1-1 학습지로 바로 이동할까요?"
-        let coloredText = "사회학개론 1-1"
+        let fullText = "가장 최근에 학습한\n\(recentWorksheetName ?? "Unknown") 학습지로 바로 이동할까요?"
+        let coloredText = recentWorksheetName ?? "Unknown"
         let attributedString = NSMutableAttributedString(string: fullText)
-
+        
         // 전체 텍스트를 흰색으로 설정
         attributedString.addAttribute(.foregroundColor, value: MemorableColor.White ?? .white, range: NSRange(location: 0, length: fullText.count))
-
+        
         // coloredText 부분만 파란색으로 설정
         let range = (fullText as NSString).range(of: coloredText)
         attributedString.addAttribute(.foregroundColor, value: MemorableColor.Blue2 ?? .blue, range: range)
-
+        
         recentLabel.font = MemorableFont.Body2()
         recentLabel.attributedText = attributedString
         recentLabel.numberOfLines = 0
@@ -141,7 +143,6 @@ class LibraryViewComponent: UIView {
         recentButtonConfig.imagePadding = 4
         recentButtonConfig.cornerStyle = .capsule
         recentButtonConfig.imagePlacement = .trailing
-
         // Attributed title 설정
         let titleFont = MemorableFont.Button() // 원하는 폰트와 사이즈 설정
         let titleColor = MemorableColor.White // 원하는 색상 설정
@@ -150,14 +151,11 @@ class LibraryViewComponent: UIView {
             .foregroundColor: titleColor ?? .white
         ]
         let attributedTitle = NSAttributedString(string: "시작하기", attributes: attributes)
-
         // NSAttributedString을 AttributedString으로 변환
         if let attributedTitle = try? AttributedString(attributedTitle) {
             recentButtonConfig.attributedTitle = attributedTitle
         }
-            
-        recentButton.configuration = recentButtonConfig
-
+        
         recentButton.configuration = recentButtonConfig
         
         recentView.addSubview(recentLabel)
@@ -167,10 +165,25 @@ class LibraryViewComponent: UIView {
         recentButton.addTarget(self, action: #selector(recentButtonTapped), for: .touchUpInside)
     }
     
+    func updateRecentView() {
+        let fullText = "가장 최근에 학습한\n\(recentWorksheetName ?? "Unknown") 학습지로 바로 이동할까요?"
+        let coloredText = recentWorksheetName ?? "Unknown"
+        let attributedString = NSMutableAttributedString(string: fullText)
+        
+        // 전체 텍스트를 흰색으로 설정
+        attributedString.addAttribute(.foregroundColor, value: MemorableColor.White ?? .white, range: NSRange(location: 0, length: fullText.count))
+        
+        // coloredText 부분만 파란색으로 설정
+        let range = (fullText as NSString).range(of: coloredText)
+        attributedString.addAttribute(.foregroundColor, value: MemorableColor.Blue2 ?? .blue, range: range)
+        
+        recentLabel.attributedText = attributedString
+    }
+    
     @objc private func recentButtonTapped() {
         delegate?.didTapRecentButton()
     }
-
+    
     // TODO: API 연결중 이까지
     
     private func setupLabels() {
@@ -421,7 +434,6 @@ class LibraryViewComponent: UIView {
         // 초기 선택 상태 설정
         updateButtonState(allFilterButton, isSelected: true)
     }
-
     private func configureButton(_ button: UIButton, title: String, imageName: String? = nil) {
         var config = UIButton.Configuration.filled()
         config.title = title
@@ -488,13 +500,13 @@ class LibraryViewComponent: UIView {
         worksheetDocuments = worksheet
         testsheetDocuments = testsheet
         wrongsheetDocuments = wrongsheet
-
-        // 모든 문서를 결합한 후, 날짜를 기준으로 내림차순 정렬
-        currentDocuments = (worksheet + testsheet + wrongsheet).sorted(by: { $0.createdDate > $1.createdDate })
-
-        recentTableView.reloadData()
+        
+        // 초기 상태로 모든 문서를 표시
+        
+        updateButtonState(currentFilterButton, isSelected: true)
+        updateCurrentDocuments()
     }
-
+    
     private func setupGradientView() {
         let gradientView = GradientView(startColor: MemorableColor.White ?? .white, endColor: MemorableColor.White ?? .white)
         recentsheetView.addSubview(gradientView)
@@ -526,8 +538,12 @@ class LibraryViewComponent: UIView {
     
     @objc private func filterButtonTapped(_ sender: UIButton) {
         updateButtonState(sender, isSelected: true)
-        
-        switch sender {
+        currentFilterButton = sender
+        updateCurrentDocuments()
+    }
+    
+    private func updateCurrentDocuments() {
+        switch currentFilterButton {
         case allFilterButton:
             currentDocuments = (worksheetDocuments + testsheetDocuments + wrongsheetDocuments).sorted { $0.createdDate > $1.createdDate }
         case worksheetFilterButton:
@@ -537,7 +553,7 @@ class LibraryViewComponent: UIView {
         case wrongsheetFilterButton:
             currentDocuments = wrongsheetDocuments
         default:
-            break
+            currentDocuments = (worksheetDocuments + testsheetDocuments + wrongsheetDocuments).sorted { $0.createdDate > $1.createdDate }
         }
         recentTableView.reloadData()
     }
@@ -638,7 +654,6 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
             print("Unknown file type")
         }
     }
-
     // TODO: API 연결중 이까지
     
     private func navigateToViewController(_ viewController: UIViewController) {
@@ -650,10 +665,18 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
     }
     
     func didTapBookmark<T: Document>(for document: T) {
-        if let index = currentDocuments.firstIndex(where: { $0.id == document.id }) {
-            currentDocuments[index] = document
+        // 해당 문서 타입의 배열에서 문서를 업데이트
+        if let index = worksheetDocuments.firstIndex(where: { $0.id == document.id }) {
+            worksheetDocuments[index] = document
+        } else if let index = testsheetDocuments.firstIndex(where: { $0.id == document.id }) {
+            testsheetDocuments[index] = document
+        } else if let index = wrongsheetDocuments.firstIndex(where: { $0.id == document.id }) {
+            wrongsheetDocuments[index] = document
         }
-        recentTableView.reloadData()
+        
+        // 현재 필터를 적용하여 currentDocuments 업데이트
+        updateCurrentDocuments()
+        
         delegate?.didUpdateBookmark(for: document)
     }
 }

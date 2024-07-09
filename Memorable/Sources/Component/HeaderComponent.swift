@@ -1,5 +1,5 @@
 //
-//  SearchBarComponent.swift
+//  HeaderComponent.swift
 //  Memorable
 //
 //  Created by Minhyeok Kim on 6/25/24.
@@ -58,6 +58,10 @@ class HeaderComponent: UIView {
             return subButtonsContainer.hitTest(convert(point, to: subButtonsContainer), with: event)
         }
         
+        if let hitView = searchResultsTableView.hitTest(convert(point, to: searchResultsTableView), with: event) {
+            return hitView
+        }
+        
         return super.hitTest(point, with: event)
     }
     
@@ -74,6 +78,8 @@ class HeaderComponent: UIView {
         setupOverlayViews()
         setupSearchBar()
         setupSubButtons()
+        // MARK: SearchBar 추가 기능
+        setupSearchResultsTableView()
     }
     
     private func setupAppLogoImageView() {
@@ -243,33 +249,34 @@ class HeaderComponent: UIView {
                        initialSpringVelocity: 0,
                        options: .curveEaseInOut,
                        animations: {
-                           // Move search button
-                           self.searchButton.snp.updateConstraints { make in
-                               make.trailing.equalTo(self.plusButton.snp.leading).offset(-818)
-                           }
+            // Move search button
+            self.searchButton.snp.updateConstraints { make in
+                make.trailing.equalTo(self.plusButton.snp.leading).offset(-818)
+            }
             
-                           // Expand search bar
-                           self.searchBar.snp.updateConstraints { make in
-                               make.width.equalTo(850)
-                           }
+            // Expand search bar
+            let screenWidth = UIScreen.main.bounds.width
+            self.searchBar.snp.updateConstraints { make in
+                make.width.equalTo(screenWidth - 322)
+            }
             
-                           // Change colors
-                           self.searchBar.backgroundColor = MemorableColor.White
-                           self.searchBar.searchTextField.backgroundColor = MemorableColor.White
-                           self.searchButton.backgroundColor = MemorableColor.White
+            // Change colors
+            self.searchBar.backgroundColor = MemorableColor.White
+            self.searchBar.searchTextField.backgroundColor = MemorableColor.White
+            self.searchButton.backgroundColor = MemorableColor.White
             
-                           // Show search bar
-                           self.searchBar.alpha = 1
+            // Show search bar
+            self.searchBar.alpha = 1
             
-                           // Change plus button to cancel button
-                           self.plusButtonImageView.isHidden = true
-                           self.plusButton.setTitle("취소", for: .normal)
-                           self.plusButton.titleLabel?.font = MemorableFont.Body1()
-                           self.plusButton.titleLabel?.textColor = MemorableColor.Gray1
-                           self.plusButton.backgroundColor = MemorableColor.Gray4
+            // Change plus button to cancel button
+            self.plusButtonImageView.isHidden = true
+            self.plusButton.setTitle("취소", for: .normal)
+            self.plusButton.titleLabel?.font = MemorableFont.Body1()
+            self.plusButton.titleLabel?.textColor = MemorableColor.Gray1
+            self.plusButton.backgroundColor = MemorableColor.Gray4
             
-                           self.layoutIfNeeded()
-                       })
+            self.layoutIfNeeded()
+        })
     }
     
     private func hideSearchBar() {
@@ -279,31 +286,31 @@ class HeaderComponent: UIView {
                        initialSpringVelocity: 0,
                        options: .curveEaseInOut,
                        animations: {
-                           // Move search button back
-                           self.searchButton.snp.updateConstraints { make in
-                               make.trailing.equalTo(self.plusButton.snp.leading).offset(-20)
-                           }
+            // Move search button back
+            self.searchButton.snp.updateConstraints { make in
+                make.trailing.equalTo(self.plusButton.snp.leading).offset(-20)
+            }
             
-                           // Collapse search bar
-                           self.searchBar.snp.updateConstraints { make in
-                               make.width.equalTo(0)
-                           }
+            // Collapse search bar
+            self.searchBar.snp.updateConstraints { make in
+                make.width.equalTo(0)
+            }
             
-                           // Change colors back
-                           self.searchBar.backgroundColor = MemorableColor.Black
-                           self.searchBar.searchTextField.backgroundColor = MemorableColor.Black
-                           self.searchButton.backgroundColor = MemorableColor.Black
+            // Change colors back
+            self.searchBar.backgroundColor = MemorableColor.Black
+            self.searchBar.searchTextField.backgroundColor = MemorableColor.Black
+            self.searchButton.backgroundColor = MemorableColor.Black
             
-                           // Hide search bar
-                           self.searchBar.alpha = 0
+            // Hide search bar
+            self.searchBar.alpha = 0
             
-                           // Change cancel button back to plus button
-                           self.plusButtonImageView.isHidden = false
-                           self.plusButton.setTitle(nil, for: .normal)
-                           self.plusButton.backgroundColor = MemorableColor.Blue2
+            // Change cancel button back to plus button
+            self.plusButtonImageView.isHidden = false
+            self.plusButton.setTitle(nil, for: .normal)
+            self.plusButton.backgroundColor = MemorableColor.Blue2
             
-                           self.layoutIfNeeded()
-                       })
+            self.layoutIfNeeded()
+        })
     }
     
     private func rotatePlusButton() {
@@ -501,7 +508,7 @@ class HeaderComponent: UIView {
         if UIDevice.current.userInterfaceIdiom == .pad {
             if let popoverController = alertController.popoverPresentationController {
                 popoverController.sourceView = self
-                popoverController.sourceRect = CGRect(x: bounds.midX, y: bounds.midY, width: 0, height: 0)
+                popoverController.sourceRect = CGRect(x: self.bounds.midX, y: self.bounds.midY, width: 0, height: 0)
                 popoverController.permittedArrowDirections = []
             }
         }
@@ -635,7 +642,7 @@ class HeaderComponent: UIView {
         
         let toastWidth: CGFloat = 250
         let toastHeight: CGFloat = 35
-        toastLabel.frame = CGRect(x: window.frame.size.width / 2 - toastWidth / 2,
+        toastLabel.frame = CGRect(x: window.frame.size.width/2 - toastWidth/2,
                                   y: window.frame.size.height - 100,
                                   width: toastWidth, height: toastHeight)
         
@@ -651,6 +658,50 @@ class HeaderComponent: UIView {
             }
         }
     }
+    
+    // TODO: 검색창 추가기능
+    private let searchResultsTableView = UITableView()
+    private var searchResults: [Document] = []
+    
+    private func setupSearchResultsTableView() {
+        insertSubview(searchResultsTableView, belowSubview: searchBar)
+        searchResultsTableView.isUserInteractionEnabled = true
+        searchResultsTableView.isHidden = true
+        searchResultsTableView.delegate = self
+        searchResultsTableView.dataSource = self
+        searchResultsTableView.register(UITableViewCell.self, forCellReuseIdentifier: "SearchResultCell")
+        searchResultsTableView.backgroundColor = .white
+        searchResultsTableView.layer.cornerRadius = 22
+        searchResultsTableView.layer.masksToBounds = true
+        
+        // 테두리 제거
+        searchResultsTableView.layer.borderWidth = 0
+        
+        // 셀 사이의 구분선 제거
+        searchResultsTableView.separatorStyle = .none
+        
+        // 테이블 뷰 헤더 높이 설정
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: searchResultsTableView.frame.width, height: 40))
+        headerView.backgroundColor = MemorableColor.White
+        searchResultsTableView.tableHeaderView = headerView
+        
+        searchResultsTableView.snp.makeConstraints { make in
+            
+            make.top.equalTo(searchBar.snp.centerY).offset(-15) // searchBar의 중간부터 시작
+            make.leading.trailing.equalTo(searchBar)
+            make.height.equalTo(310)
+        }
+    }
+    
+    private func updateSearchResults(with text: String) {
+        searchResults = documents.filter { document in
+            document.name.lowercased().contains(text.lowercased()) ||
+            document.category.lowercased().contains(text.lowercased())
+        }
+        searchResultsTableView.reloadData()
+        searchResultsTableView.isHidden = searchResults.isEmpty
+    }
+    // TODO: 검색창 추가기능
 }
 
 extension HeaderComponent: UIDocumentPickerDelegate {
@@ -685,6 +736,21 @@ extension HeaderComponent: UISearchBarDelegate {
         delegate?.didSearchDocuments(with: filteredDocuments, searchText: searchText)
         searchBar.resignFirstResponder() // 키보드 숨기기
     }
+    
+    // MARK: SearchBar 추가 기능
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        updateSearchResults(with: searchText)
+    }
+    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchResultsTableView.isHidden = false
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        searchResultsTableView.isHidden = true
+    }
+    // MARK: SearchBar 추가 기능
+    
 }
 
 extension UIView {
@@ -697,5 +763,101 @@ extension UIView {
             }
         }
         return nil
+    }
+}
+
+// MARK: SearchBar 추가 기능
+extension HeaderComponent: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return searchResults.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "SearchResultCell", for: indexPath)
+        let document = searchResults[indexPath.row]
+        cell.textLabel?.text = "\(document.name) - \(document.fileType)"
+        cell.textLabel?.textColor = MemorableColor.Gray1
+        cell.textLabel?.font = MemorableFont.Body1()
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print("hi")
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        let document = searchResults[indexPath.row]
+        
+        switch document.fileType {
+        case "빈칸학습지":
+            if let worksheet = document as? Worksheet {
+                APIManager.shared.getData(to: "/api/worksheet/ws/\(worksheet.id)") { (sheetDetail: WorksheetDetail?, error: Error?) in
+                    
+                    DispatchQueue.main.async {
+                        if let error = error {
+                            print("Error fetching data: \(error)")
+                            return
+                        }
+                        
+                        guard let detail = sheetDetail else {
+                            print("No data received")
+                            return
+                        }
+                        
+                        let workSheetVC = WorkSheetViewController()
+                        workSheetVC.worksheetDetail = detail
+                        self.navigateToViewController(workSheetVC)
+                    }
+                }
+            }
+        case "나만의 시험지":
+            if let testsheet = document as? Testsheet {
+                APIManagere.shared.getTestsheet(testsheetId: testsheet.id) { result in
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .success(let testsheetDetail):
+                            let testSheetVC = TestSheetViewController()
+                            testSheetVC.testsheetDetail = testsheetDetail
+                            self.navigateToViewController(testSheetVC)
+                        case .failure(let error):
+                            print("Error fetching testsheet detail: \(error)")
+                        }
+                    }
+                }
+            }
+        case "오답노트":
+            // TODO: API 검증해야함.
+            APIManager.shared.getData(to: "/api/wrongsheet/\(document.id)") { (sheetDetail: WrongsheetDetail?, error: Error?) in
+                DispatchQueue.main.async {
+                    // 3. 받아온 데이터 처리
+                    if let error = error {
+                        print("Error fetching data: \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    guard let detail = sheetDetail else {
+                        print("No data received")
+                        return
+                    }
+                    
+                    // wrong sheet detail
+                    print("GET: \(detail.name)")
+                    print("GET: \(detail.category)")
+                    print("GET: \(detail.questions)")
+                    
+                    let wrongSheetVC = WrongSheetViewController()
+                    wrongSheetVC.wrongsheetDetail = detail
+                    self.navigateToViewController(wrongSheetVC)
+                }
+            }
+        default:
+            print("Unknown file type")
+        }
+    }
+    private func navigateToViewController(_ viewController: UIViewController) {
+        if let navigationController = window?.rootViewController as? UINavigationController {
+            navigationController.pushViewController(viewController, animated: true)
+        } else if let presentingViewController = window?.rootViewController {
+            presentingViewController.present(viewController, animated: true, completion: nil)
+        }
     }
 }

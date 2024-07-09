@@ -255,7 +255,7 @@ class WorksheetListViewComponent: UIView {
         }
         
         // 액션 시트를 표시하면서 동시에 편집 모드 활성화
-        toggleEditingMode()
+        self.toggleEditingMode()
     }
     
     private func hideActionSheet() {
@@ -291,6 +291,7 @@ class WorksheetListViewComponent: UIView {
 }
 
 extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate, RecentsheetCellDelegate {
+    
     func didTapBookmark<T: Document>(for document: T) {
         if let index = worksheets.firstIndex(where: { $0.id == document.id }) {
             worksheets[index] = document

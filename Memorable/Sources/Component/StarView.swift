@@ -16,6 +16,7 @@ class StarView: UIView {
     weak var delegate: StarViewDelegate?
     private let tableView: UITableView
     private let filterButtonsView = UIStackView()
+    private var currentFilterButton = UIButton() // MARK: 즐겨찾기 수정
     private let allFilterButton = UIButton(type: .system)
     private let worksheetFilterButton = UIButton(type: .system)
     private let testsheetFilterButton = UIButton(type: .system)
@@ -28,7 +29,7 @@ class StarView: UIView {
         tableView = UITableView()
         
         super.init(frame: frame)
-        
+        currentFilterButton = allFilterButton // MARK: 즐겨찾기 수정
         setupView()
         setupConstraints()
     }
@@ -137,15 +138,20 @@ class StarView: UIView {
     }
     
     func setDocuments(documents: [Document]) {
-        allDocuments = documents.filter { $0.isBookmarked }.sorted(by: { $0.createdDate > $1.createdDate })
-        filteredDocuments = allDocuments
-        tableView.reloadData()
+        self.allDocuments = documents.filter { $0.isBookmarked }.sorted(by: { $0.createdDate > $1.createdDate })
+        updateButtonState(currentFilterButton, isSelected: true)
+        updateCurrentDocuments()
+        self.tableView.reloadData()
     }
     
     @objc private func filterButtonTapped(_ sender: UIButton) {
         updateButtonState(sender, isSelected: true)
-        
-        switch sender {
+        currentFilterButton = sender
+        updateCurrentDocuments()
+    }
+    
+    private func updateCurrentDocuments() {
+        switch currentFilterButton {
         case allFilterButton:
             filteredDocuments = allDocuments
         case worksheetFilterButton:
@@ -195,7 +201,7 @@ extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellD
         if let index = filteredDocuments.firstIndex(where: { $0.id == document.id }) {
             filteredDocuments[index] = document
         }
-        tableView.reloadData()
+        updateCurrentDocuments()
         delegate?.didUpdateBookmark(for: document)
     }
     

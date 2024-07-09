@@ -10,6 +10,8 @@ import Then
 import UIKit
 
 class WorkSheetViewController: UIViewController {
+    var worksheetDetail: WorksheetDetail?
+
     private let logoImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
         $0.image = UIImage(named: "applogo-v2")
@@ -135,6 +137,7 @@ class WorkSheetViewController: UIViewController {
         view.backgroundColor = .gray5
 
         WorkSheetManager.shared.isFirstSheetSelected = true
+        WorkSheetManager.shared.updateRecentDate()
 
         setupUI()
         setupButtons()
