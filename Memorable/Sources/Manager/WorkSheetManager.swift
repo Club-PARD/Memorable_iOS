@@ -276,7 +276,8 @@ class WorkSheetManager {
             }
             else {
                 textField.textColor = MemorableColor.Gray2
-                textField.text = correctAnswer
+                textField.placeholder = correctAnswer
+                textField.text = ""
             }
         }
         else if userInput.lowercased() == correctAnswer.replacingOccurrences(of: " ", with: "").lowercased() {
