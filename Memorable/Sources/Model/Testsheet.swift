@@ -70,26 +70,37 @@ struct TestsheetDetail: Codable {
     let testsheetId: Int
     let name: String
     let category: String
-
     var reExtracted: Bool
     var isCompleteAllBlanks: [Bool]
-    let questions1: [Question]
-    let questions2: [Question]
+    var questions1: [Question]
+    var questions2: [Question]
+    var score: [Int]?
+    var isCorrect: [Bool]?
 
     enum CodingKeys: String, CodingKey {
-        case testsheetId, name, category, questions1, questions2
-        case reExtracted
-        case isCompleteAllBlanks
+        case testsheetId, name, category, reExtracted, isCompleteAllBlanks, questions1, questions2, score, isCorrect
     }
+}
 
+// 채점 결과
+struct TestsheetGrade: Codable {
+    let score: [Int]?
+    let isCorrect: [Bool]?
+    
+    private struct DynamicCodingKeys: CodingKey {
+        var stringValue: String
+        init?(stringValue: String) {
+            self.stringValue = stringValue
+        }
+        var intValue: Int?
+        init?(intValue: Int) {
+            return nil
+        }
+    }
+    
     init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        testsheetId = try container.decode(Int.self, forKey: .testsheetId)
-        name = try container.decode(String.self, forKey: .name)
-        category = try container.decode(String.self, forKey: .category)
-        questions1 = try container.decode([Question].self, forKey: .questions1)
-        questions2 = try container.decode([Question].self, forKey: .questions2)
-        reExtracted = try container.decodeIfPresent(Bool.self, forKey: .reExtracted) ?? false
-        isCompleteAllBlanks = try container.decodeIfPresent([Bool].self, forKey: .isCompleteAllBlanks) ?? [false, false]
+        let container = try decoder.container(keyedBy: DynamicCodingKeys.self)
+        score = try container.decodeIfPresent([Int].self, forKey: DynamicCodingKeys(stringValue: "score")!)
+        isCorrect = try container.decodeIfPresent([Bool].self, forKey: DynamicCodingKeys(stringValue: "isCorrect")!)
     }
 }

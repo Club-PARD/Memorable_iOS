@@ -21,6 +21,7 @@
 		DB6247602C35C38D00592773 /* InquiryViewcontroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB62475F2C35C38D00592773 /* InquiryViewcontroller.swift */; };
 		DB6247782C39D50100592773 /* EditActionSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6247772C39D50100592773 /* EditActionSheetView.swift */; };
 		DB6247822C3A8DA700592773 /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = DB62477E2C3A8A1500592773 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		DBCEAE2D2C3AFBB100E6C864 /* KakaoPAYManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCEAE2C2C3AFBB100E6C864 /* KakaoPAYManager.swift */; };
 		DBD820492C2A804700A9B1C3 /* TabViewComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD820482C2A804700A9B1C3 /* TabViewComponent.swift */; };
 		DBD8204D2C2ADF5C00A9B1C3 /* HeaderComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD8204C2C2ADF5C00A9B1C3 /* HeaderComponent.swift */; };
 		DBD8204F2C2BE31800A9B1C3 /* LibraryViewComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD8204E2C2BE31800A9B1C3 /* LibraryViewComponent.swift */; };
@@ -153,6 +154,8 @@
 		DB62477E2C3A8A1500592773 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB62477F2C3A8A1500592773 /* MemorableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MemorableTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB6247802C3A8A1500592773 /* MemorableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MemorableUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DBCEAE2C2C3AFBB100E6C864 /* KakaoPAYManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakaoPAYManager.swift; sourceTree = "<group>"; };
+		DBCEAE302C3C313200E6C864 /* APIKeys.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = APIKeys.xcconfig; sourceTree = "<group>"; };
 		DBD820482C2A804700A9B1C3 /* TabViewComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabViewComponent.swift; sourceTree = "<group>"; };
 		DBD8204C2C2ADF5C00A9B1C3 /* HeaderComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderComponent.swift; sourceTree = "<group>"; };
 		DBD8204E2C2BE31800A9B1C3 /* LibraryViewComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewComponent.swift; sourceTree = "<group>"; };
@@ -349,6 +352,7 @@
 		DDAC4BC92C2805AB006206EB = {
 			isa = PBXGroup;
 			children = (
+				DBCEAE302C3C313200E6C864 /* APIKeys.xcconfig */,
 				DDAC4BD42C2805AB006206EB /* Memorable */,
 				DDDC343B2C39789E00158120 /* ShareExtension */,
 				DDAC4BEE2C2805AC006206EB /* MemorableTests */,
@@ -464,6 +468,7 @@
 				DDAB24DF2C3148A700AAEDB6 /* APIManager.swift */,
 				DD421DB82C34EB7C00E4D320 /* Deprecated.swift */,
 				DBEB96F92C35764B00106866 /* APIManagere.swift */,
+				DBCEAE2C2C3AFBB100E6C864 /* KakaoPAYManager.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -725,6 +730,7 @@
 				DDDA800F2C33A8110077E5F2 /* MemorableColor.swift in Sources */,
 				DBD820552C2C7CDA00A9B1C3 /* Document.swift in Sources */,
 				DBD8204D2C2ADF5C00A9B1C3 /* HeaderComponent.swift in Sources */,
+				DBCEAE2D2C3AFBB100E6C864 /* KakaoPAYManager.swift in Sources */,
 				DD421DC92C3586D200E4D320 /* Onboarding1.swift in Sources */,
 				DD421DB52C33FB9000E4D320 /* SplashViewController.swift in Sources */,
 				DBEB96A32C32BF8000106866 /* DayCell.swift in Sources */,
@@ -816,6 +822,7 @@
 /* Begin XCBuildConfiguration section */
 		DDAC4BFD2C2805AC006206EB /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DBCEAE302C3C313200E6C864 /* APIKeys.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -881,6 +888,7 @@
 		};
 		DDAC4BFE2C2805AC006206EB /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DBCEAE302C3C313200E6C864 /* APIKeys.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

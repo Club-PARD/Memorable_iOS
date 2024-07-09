@@ -8,11 +8,14 @@
 import SnapKit
 import UIKit
 
+import SafariServices // 카카오 페이
+
 class HomeViewController: UIViewController {
     var userIdentifier: String = ""
     var givenName: String = ""
     var familyName: String = ""
     var email: String = ""
+    private var mostRecentWorksheetDetail: WorksheetDetail?
     
     let tabBar = TabBarComponent()
     let containerView = UIView()
@@ -45,10 +48,13 @@ class HomeViewController: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor = MemorableColor.Gray5
         headerComponent.delegate = self
+        mypageView.delegate = self
+        headerComponent.isUserInteractionEnabled = true
         
         userIdentifier = UserDefaults.standard.string(forKey: SignInManager.userIdentifierKey)!
         
         fetchDocuments()
+        fetchMostRecentWorksheet()
         
         if let userData = UserDefaults.standard.data(forKey: "userInfo") {
             if let decodedData = try? JSONDecoder().decode(User.self, from: userData) {
@@ -164,6 +170,21 @@ class HomeViewController: UIViewController {
         let userDefaults = UserDefaults(suiteName: "group.io.pard.Memorable24")
         userDefaults?.set(categories, forKey: "ExistingCategories")
         userDefaults?.synchronize()
+    }
+    
+    private func fetchMostRecentWorksheet() {
+        APIManagere.shared.getMostRecentWorksheet(userId: userIdentifier) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let worksheetDetail):
+                    self?.mostRecentWorksheetDetail = worksheetDetail
+                    self?.libraryViewComponent.recentWorksheetName = worksheetDetail.name
+                    self?.libraryViewComponent.updateRecentView() // 새로운 메서드 추가
+                case .failure(let error):
+                    print("Error fetching most recent worksheet: \(error)")
+                }
+            }
+        }
     }
     
     func getExistingCategories() -> [String] {
@@ -468,6 +489,7 @@ extension HomeViewController: HeaderComponentDelegate {
 }
 
 extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, WorksheetListViewComponentDelegate, SearchedSheetViewDelegate {
+    
     func didDeleteDocuments(for document: any Document) {
         print("Deleting document: \(document.id)")
         
@@ -595,18 +617,12 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
     }
     
     func didTapRecentButton() {
-        APIManagere.shared.getMostRecentWorksheet(userId: userIdentifier) { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let worksheetDetail):
-                    let workSheetVC = WorkSheetViewController()
-                    workSheetVC.worksheetDetail = worksheetDetail
-                    self?.navigationController?.pushViewController(workSheetVC, animated: true)
-                case .failure(let error):
-                    print("Error fetching most recent worksheet: \(error)")
-                    self?.showCreateErrorAlert(message: "최근 워크시트를 불러오는 데 실패했습니다.")
-                }
-            }
+        if let worksheetDetail = mostRecentWorksheetDetail {
+            let workSheetVC = WorkSheetViewController()
+            workSheetVC.worksheetDetail = worksheetDetail
+            navigationController?.pushViewController(workSheetVC, animated: true)
+        } else {
+            showCreateErrorAlert(message: "최근 워크시트를 불러오는 데 실패했습니다.")
         }
     }
     
@@ -669,4 +685,10 @@ extension UIViewController {
     }
 }
 
-
+extension HomeViewController: MypageViewDelegate {
+    // 카카오페이 이동
+    func mypageView(_ view: MypageView, didRequestToOpenURL url: URL) {
+        let safariViewController = SFSafariViewController(url: url)
+        present(safariViewController, animated: true, completion: nil)
+    }
+}
