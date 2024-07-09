@@ -143,7 +143,6 @@ class LibraryViewComponent: UIView {
         recentButtonConfig.imagePadding = 4
         recentButtonConfig.cornerStyle = .capsule
         recentButtonConfig.imagePlacement = .trailing
-        
         // Attributed title 설정
         let titleFont = MemorableFont.Button() // 원하는 폰트와 사이즈 설정
         let titleColor = MemorableColor.White // 원하는 색상 설정
@@ -152,7 +151,6 @@ class LibraryViewComponent: UIView {
             .foregroundColor: titleColor ?? .white
         ]
         let attributedTitle = NSAttributedString(string: "시작하기", attributes: attributes)
-        
         // NSAttributedString을 AttributedString으로 변환
         if let attributedTitle = try? AttributedString(attributedTitle) {
             recentButtonConfig.attributedTitle = attributedTitle
@@ -160,11 +158,9 @@ class LibraryViewComponent: UIView {
         
         recentButton.configuration = recentButtonConfig
         
-        recentButton.configuration = recentButtonConfig
-        
         recentView.addSubview(recentLabel)
         recentView.addSubview(recentButton)
-        
+    
         // TODO: API 연결중
         recentButton.addTarget(self, action: #selector(recentButtonTapped), for: .touchUpInside)
     }
@@ -438,7 +434,6 @@ class LibraryViewComponent: UIView {
         // 초기 선택 상태 설정
         updateButtonState(allFilterButton, isSelected: true)
     }
-    
     private func configureButton(_ button: UIButton, title: String, imageName: String? = nil) {
         var config = UIButton.Configuration.filled()
         config.title = title
@@ -608,9 +603,9 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
                         print("isComplete: \(detail.isCompleteAllBlanks)")
                         print("isAddWorksheet: \(detail.isAddWorksheet)")
                         print("isMakeTestSheet: \(detail.isMakeTestSheet)")
-                        
+                    
                         let workSheetVC = WorkSheetViewController()
-                        workSheetVC.worksheetDetail = detail
+                        WorkSheetManager.shared.worksheetDetail = detail
                         self.navigateToViewController(workSheetVC)
                     }
                 }
@@ -659,7 +654,6 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
             print("Unknown file type")
         }
     }
-    
     // TODO: API 연결중 이까지
     
     private func navigateToViewController(_ viewController: UIViewController) {

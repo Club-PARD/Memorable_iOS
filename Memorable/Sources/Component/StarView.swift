@@ -251,7 +251,7 @@ extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellD
                         print("isMakeTestSheet: \(detail.isMakeTestSheet)")
 
                         let workSheetVC = WorkSheetViewController()
-                        workSheetVC.worksheetDetail = detail
+                        WorkSheetManager.shared.worksheetDetail = detail
                         self.navigateToViewController(workSheetVC)
                     }
                 }

@@ -79,7 +79,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 case .success(let worksheetDetail):
                     print("Successfully created worksheet: \(worksheetDetail)")
                     let workSheetVC = WorkSheetViewController()
-                    workSheetVC.worksheetDetail = worksheetDetail
+                    WorkSheetManager.shared.worksheetDetail = worksheetDetail
                     if let navigationController = self?.window?.rootViewController as? UINavigationController {
                         navigationController.pushViewController(workSheetVC, animated: true)
                         

@@ -789,7 +789,6 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
             }
         }
     }
-
     @objc private func sendWrongAnswers() {
         showSendWrongAlert()
     }

@@ -344,7 +344,7 @@ extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate
                             print("isMakeTestSheet: \(detail.isMakeTestSheet)")
                             
                             let workSheetVC = WorkSheetViewController()
-                            workSheetVC.worksheetDetail = detail
+                            WorkSheetManager.shared.worksheetDetail = detail
                             self.navigateToViewController(workSheetVC)
                         }
                     }

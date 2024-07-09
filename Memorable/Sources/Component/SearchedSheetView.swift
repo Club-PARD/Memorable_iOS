@@ -34,6 +34,7 @@ class SearchedSheetView: UIView {
         setupConstraints()
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -225,7 +226,7 @@ extension SearchedSheetView: UITableViewDataSource, UITableViewDelegate {
                         switch result {
                         case .success(let worksheetDetail):
                             let workSheetVC = WorkSheetViewController()
-                            workSheetVC.worksheetDetail = worksheetDetail
+                            WorkSheetManager.shared.worksheetDetail = worksheetDetail
                             self.navigateToViewController(workSheetVC)
                         case .failure(let error):
                             print("Error fetching worksheet detail: \(error)")

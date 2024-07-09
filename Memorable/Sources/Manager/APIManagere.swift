@@ -15,9 +15,10 @@ enum APIError: Error {
     case noData
     case decodingError(Error)
 }
+
 class APIManagere {
     static let shared = APIManagere()
-    private let baseURL = "http://172.30.1.9:8080"
+    private let baseURL = "http://172.17.217.238:8080"
     
     struct EmptyResponse: Codable {}
     

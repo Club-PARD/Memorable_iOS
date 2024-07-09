@@ -459,18 +459,21 @@ extension HomeViewController: HeaderComponentDelegate {
     }
     
     func didCreateWorksheet(name: String, category: String, content: String) {
+        setupActivityIndicator(view: view)
         APIManagere.shared.createWorksheet(userId: userIdentifier, name: name, category: category, content: content) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let worksheetDetail):
                     print("Successfully created worksheet: \(worksheetDetail)")
+                    removeActivityIndicator()
                     let workSheetVC = WorkSheetViewController()
-                    workSheetVC.worksheetDetail = worksheetDetail
+                    WorkSheetManager.shared.worksheetDetail = worksheetDetail
                     self?.navigationController?.pushViewController(workSheetVC, animated: true)
                     self?.refreshDocumentsAfterCreation()
                     self?.updateSharedCategories() // 여기에 추가
                 case .failure(let error):
                     print("Error creating worksheet: \(error)")
+                    removeActivityIndicator()
                     self?.showErrorAlert(message: "학습지 생성에 실패했습니다.")
                 }
             }
@@ -489,7 +492,6 @@ extension HomeViewController: HeaderComponentDelegate {
 }
 
 extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, WorksheetListViewComponentDelegate, SearchedSheetViewDelegate {
-    
     func didDeleteDocuments(for document: any Document) {
         print("Deleting document: \(document.id)")
         
@@ -619,7 +621,7 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
     func didTapRecentButton() {
         if let worksheetDetail = mostRecentWorksheetDetail {
             let workSheetVC = WorkSheetViewController()
-            workSheetVC.worksheetDetail = worksheetDetail
+            WorkSheetManager.shared.worksheetDetail = worksheetDetail
             navigationController?.pushViewController(workSheetVC, animated: true)
         } else {
             showCreateErrorAlert(message: "최근 워크시트를 불러오는 데 실패했습니다.")
