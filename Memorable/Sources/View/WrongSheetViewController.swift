@@ -204,17 +204,30 @@ class WrongSheetViewController: UIViewController {
         present(alert, animated: true)
     }
 
+    func changeReset() {
+        if isShowingAnswer {
+            resetButton.isUserInteractionEnabled = false
+            resetButton.configuration?.baseForegroundColor = MemorableColor.Gray1
+            resetButton.configuration?.baseBackgroundColor = MemorableColor.Black
+        }
+        else {
+            resetButton.isUserInteractionEnabled = true
+            resetButton.configuration?.baseForegroundColor = MemorableColor.White
+            resetButton.configuration?.baseBackgroundColor = MemorableColor.Black
+        }
+
+        resetButton.setNeedsUpdateConfiguration()
+    }
+
     @objc func didTapShowAnswerButton() {
         print("SHOW KEYWORD")
         isShowingAnswer.toggle()
         showAnswerButton.isSelected = isShowingAnswer
 
+        changeReset()
+
         if isShowingAnswer {
             showAnswer()
-
-            var resetButtonConfig = UIButton.Configuration.filled()
-            resetButtonConfig.baseForegroundColor = MemorableColor.Gray1
-            resetButton.configuration = resetButtonConfig
 
             var config = UIButton.Configuration.filled()
             config.image = UIImage(systemName: "eye.slash")
@@ -228,10 +241,6 @@ class WrongSheetViewController: UIViewController {
         }
         else {
             hideAnswer()
-
-            var resetButtonConfig = UIButton.Configuration.filled()
-            resetButtonConfig.baseForegroundColor = MemorableColor.White
-            resetButton.configuration = resetButtonConfig
 
             var config = UIButton.Configuration.filled()
             config.image = UIImage(systemName: "eye")

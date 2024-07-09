@@ -75,6 +75,8 @@ class WorkSheetViewController: UIViewController {
         $0.isEnabled = false
     }
 
+    private let toastLabel = UILabel()
+
     private var workSheetView: UIView?
 
     private let finishAddImage = FloatingImage(frame: CGRect(x: 0, y: 0, width: 260, height: 36)).then {
@@ -96,16 +98,14 @@ class WorkSheetViewController: UIViewController {
         $0.configuration = config
     }
 
-    private let resetButton = UIButton().then {
+    private var resetButton = UIButton().then {
         $0.setTitle("초기화하기", for: .normal)
-        $0.titleLabel?.font = MemorableFont.Body1()
 
         $0.contentMode = .scaleAspectFit
 
         var config = UIButton.Configuration.filled()
         config.baseBackgroundColor = .black
         config.baseForegroundColor = .white
-
         $0.configuration = config
 
         // 버튼의 layer에 직접 cornerRadius를 설정합니다.
@@ -217,6 +217,12 @@ class WorkSheetViewController: UIViewController {
     @objc func didTapShowAnswerButton() {
         WorkSheetManager.shared.isShowingAnswer.toggle()
         showAnswerButton.isSelected = WorkSheetManager.shared.isShowingAnswer
+
+        print("isShowing: \(WorkSheetManager.shared.isShowingAnswer)")
+
+        changeShowAnswer()
+        changeReset()
+
         if WorkSheetManager.shared.isShowingAnswer {
             WorkSheetManager.shared.showAnswer(worksheet: workSheetView) { isCorrectAll in
                 if isCorrectAll {
@@ -229,10 +235,15 @@ class WorkSheetViewController: UIViewController {
                 }
             }
 
-            var resetButtonConfig = UIButton.Configuration.filled()
-            resetButtonConfig.baseForegroundColor = MemorableColor.Gray1
-            resetButton.configuration = resetButtonConfig
+            view.endEditing(true)
+        }
+        else {
+            WorkSheetManager.shared.hideAnswer(worksheet: workSheetView)
+        }
+    }
 
+    func changeShowAnswer() {
+        if WorkSheetManager.shared.isShowingAnswer {
             var config = UIButton.Configuration.filled()
             config.image = UIImage(systemName: "eye.slash")
             config.imagePadding = 10
@@ -240,18 +251,9 @@ class WorkSheetViewController: UIViewController {
             config.baseBackgroundColor = MemorableColor.Blue1?.withAlphaComponent(0.35)
             config.baseForegroundColor = MemorableColor.White
             config.cornerStyle = .large
-
             showAnswerButton.configuration = config
-
-            view.endEditing(true)
         }
         else {
-            WorkSheetManager.shared.hideAnswer(worksheet: workSheetView)
-
-            var resetButtonConfig = UIButton.Configuration.filled()
-            resetButtonConfig.baseForegroundColor = MemorableColor.White
-            resetButton.configuration = resetButtonConfig
-
             var config = UIButton.Configuration.filled()
             config.image = UIImage(systemName: "eye")
             config.imagePadding = 10
@@ -259,9 +261,23 @@ class WorkSheetViewController: UIViewController {
             config.baseBackgroundColor = MemorableColor.Blue2
             config.baseForegroundColor = MemorableColor.White
             config.cornerStyle = .large
-
             showAnswerButton.configuration = config
         }
+    }
+
+    func changeReset() {
+        if WorkSheetManager.shared.isShowingAnswer {
+            resetButton.isUserInteractionEnabled = false
+            resetButton.configuration?.baseForegroundColor = MemorableColor.Gray1
+            resetButton.configuration?.baseBackgroundColor = MemorableColor.Black
+        }
+        else {
+            resetButton.isUserInteractionEnabled = true
+            resetButton.configuration?.baseForegroundColor = MemorableColor.White
+            resetButton.configuration?.baseBackgroundColor = MemorableColor.Black
+        }
+
+        resetButton.setNeedsUpdateConfiguration()
     }
 
     @objc func didTapDoneButton() {
@@ -377,8 +393,10 @@ class WorkSheetViewController: UIViewController {
 
             WorkSheetManager.shared.isShowingAnswer = false
             self.showAnswerButton.isSelected = WorkSheetManager.shared.isShowingAnswer
+
             self.showAnswerButton.setTitle("키워드 보기", for: .normal)
             self.showAnswerButton.setTitle("키워드 가리기", for: .selected)
+
             var config = UIButton.Configuration.filled()
             config.image = UIImage(systemName: "eye")
             config.imagePadding = 10
@@ -456,6 +474,7 @@ class WorkSheetViewController: UIViewController {
 
         WorkSheetManager.shared.isShowingAnswer = false
         showAnswerButton.isSelected = WorkSheetManager.shared.isShowingAnswer
+
         showAnswerButton.setTitle("키워드 보기", for: .normal)
         showAnswerButton.setTitle("키워드 가리기", for: .selected)
 
@@ -530,6 +549,7 @@ class WorkSheetViewController: UIViewController {
 
         WorkSheetManager.shared.isShowingAnswer = false
         showAnswerButton.isSelected = WorkSheetManager.shared.isShowingAnswer
+
         showAnswerButton.setTitle("키워드 보기", for: .normal)
         showAnswerButton.setTitle("키워드 가리기", for: .selected)
 
