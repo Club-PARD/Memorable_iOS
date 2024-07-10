@@ -5,8 +5,8 @@
 //  Created by Minhyeok Kim on 6/30/24.
 //
 
-import UIKit
 import SnapKit
+import UIKit
 
 protocol RecentsheetCellDelegate: AnyObject {
     func didTapBookmark<T: Document>(for document: T)
@@ -68,18 +68,18 @@ class RecentsheetCell: UITableViewCell {
 
         // 이미지 크기 조정을 위한 메서드 추가
         bookmarkButton.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        
         bookmarkButton.addTarget(self, action: #selector(bookmarkTapped), for: .touchUpInside)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     func configure(with document: Document) {
         self.document = document
-        self.id = document.id
-        self.fileType = document.fileType
+        id = document.id
+        fileType = document.fileType
         
         categoryLabel.text = document.category
         categoryLabel.textColor = MemorableColor.Blue2
@@ -141,7 +141,6 @@ class RecentsheetCell: UITableViewCell {
     @objc private func bookmarkTapped() {
         guard let document = document else { return }
 //        let originalBookmarkState = document.isBookmarked
-//        
 //        // 즉시 UI 업데이트
 //        updateBookmarkButton(isBookmarked: !originalBookmarkState)
         

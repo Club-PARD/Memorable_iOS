@@ -16,6 +16,10 @@ protocol Document: Codable {
     var fileType: String { get }
 }
 
+struct UpdatedDocument: Codable {
+    let name: String
+}
+
 enum ViewType {
     case library
     case star

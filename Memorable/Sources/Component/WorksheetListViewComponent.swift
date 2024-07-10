@@ -11,6 +11,7 @@ import UIKit
 protocol WorksheetListViewComponentDelegate: AnyObject {
     func didRequestBookmarkUpdate(for document: Document, inCategory category: String, displayType: WorksheetListViewComponent.DisplayDocumentType)
     func didDeleteDocuments(for document: Document)
+    func didModifyDocument(for document: Document, newName: String)
 }
 
 class WorksheetListViewComponent: UIView {
@@ -32,6 +33,8 @@ class WorksheetListViewComponent: UIView {
     private let settingButton: UIButton
     private var editButton: UIBarButtonItem?
     private var doneButton: UIBarButtonItem?
+    
+    private var isModifying: Bool = false
     
     private var worksheets: [Document] = []
     private var categories: Set<String> = []
@@ -239,10 +242,14 @@ class WorksheetListViewComponent: UIView {
         settingButton.tintColor = MemorableColor.Gray1
         
         let editAction = UIAction(title: "수정하기", image: UIImage(systemName: "pencil")) { _ in
+            self.isModifying = true
+            self.worksheetTableView.allowsMultipleSelection = false
             self.showActionSheet(title: "수정하기")
         }
         
         let deleteAction = UIAction(title: "삭제하기", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
+            self.isModifying = false
+            self.worksheetTableView.allowsMultipleSelection = true
             self.showActionSheet(title: "삭제하기")
         }
         
@@ -274,6 +281,10 @@ class WorksheetListViewComponent: UIView {
             if title == "삭제하기" {
                 self?.deleteSelectedDocuments()
             }
+            
+            if title == "수정하기" {
+                self?.modifySelectedDocument()
+            }
         }
         
         UIView.animate(withDuration: 0.3) {
@@ -281,7 +292,7 @@ class WorksheetListViewComponent: UIView {
         }
         
         // 액션 시트를 표시하면서 동시에 편집 모드 활성화
-        self.toggleEditingMode()
+        toggleEditingMode()
     }
     
     private func hideActionSheet() {
@@ -292,6 +303,53 @@ class WorksheetListViewComponent: UIView {
             self.actionSheetView?.removeFromSuperview()
             self.actionSheetView = nil
         }
+    }
+    
+    private func modifySelectedDocument() {
+        print("파일 수정")
+        guard let selectedIndexPath = worksheetTableView.indexPathForSelectedRow else { return }
+        
+        let documentToModify = filteredWorksheets[selectedIndexPath.row]
+        
+        let alert = UIAlertController(
+            title: "파일명 수정",
+            message: "새로운 파일명을 입력해주세요.",
+            preferredStyle: .alert
+        )
+            
+        alert.addTextField { textField in
+            textField.text = documentToModify.name
+            textField.placeholder = "새 파일명"
+        }
+            
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
+            print("취소하기")
+        }
+            
+        let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
+            guard let textField = alert.textFields?.first,
+                  let newFileName = textField.text, !newFileName.isEmpty
+            else {
+                print("새 파일명이 비어있습니다.")
+                return
+            }
+            print("이름 변경: \(newFileName)")
+            
+            // API 호출 등을 통해 서버에 변경사항을 반영해야 할 수 있습니다.
+            self.delegate?.didModifyDocument(for: documentToModify, newName: newFileName)
+            
+            self.worksheetTableView.reloadData()
+        }
+            
+        alert.addAction(cancelAction)
+        alert.addAction(confirmAction)
+        
+        if let viewController = window?.rootViewController {
+            viewController.present(alert, animated: true, completion: nil)
+        }
+        
+        isEditingMode = false
+        hideActionSheet()
     }
     
     private func deleteSelectedDocuments() {
@@ -324,7 +382,6 @@ class WorksheetListViewComponent: UIView {
 }
 
 extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate, RecentsheetCellDelegate {
-    
     func didTapBookmark<T: Document>(for document: T) {
         delegate?.didRequestBookmarkUpdate(for: document, inCategory: currentCategory, displayType: currentDisplayType)
     }
@@ -343,7 +400,15 @@ extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate
         
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if isEditingMode {
-            // 서버 연결
+            if isModifying {
+                // 수정 모드일 때는 하나의 셀만 선택 가능
+                for otherIndexPath in tableView.indexPathsForSelectedRows ?? [] {
+                    if otherIndexPath != indexPath {
+                        tableView.deselectRow(at: otherIndexPath, animated: false)
+                    }
+                }
+            }
+            print("Selected row: \(indexPath.row)")
         } else {
             tableView.deselectRow(at: indexPath, animated: true)
             let document = worksheets[indexPath.row]

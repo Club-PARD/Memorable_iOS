@@ -79,6 +79,7 @@ class LoginViewController: UIViewController {
 extension LoginViewController: ASAuthorizationControllerDelegate {
     private func registerNewAccount(credential: ASAuthorizationAppleIDCredential) {
         print("Registering New Account with User: \(credential.user)")
+        setupActivityIndicator(view: view)
         
         let userIdentifier: String = credential.user
         let givenName: String = credential.fullName?.givenName ?? "NIL"
@@ -100,6 +101,7 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
                 self.delegate?.loginDidComplete()
                 self.navigationController?.setViewControllers([OnboardingViewController()], animated: true)
             case .failure(let error):
+                removeActivityIndicator()
                 print("Error posting user: \(error)")
             }
         }
@@ -111,40 +113,55 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
         
         dismiss(animated: true) { [weak self] in
             guard let self = self else { return }
-    
-            APIManager.shared.getData(to: "/api/users/\(credential.user)") { (info: User?, error: Error?) in
-                
-                DispatchQueue.main.async {
-                    // 3. 받아온 데이터 처리
-                    if let error = error {
-                        print("Error fetching data: \(error)")
-                        removeActivityIndicator()
-                        self.signOut()
-                        return
-                    }
-                    
-                    guard let user = info else {
-                        print("No data received")
-                        removeActivityIndicator()
-                        self.signOut()
-                        return
-                    }
-                    
-                    if let encodeData = try? JSONEncoder().encode(user) {
-                        UserDefaults.standard.set(encodeData, forKey: "userInfo")
-                        print("👥 User Info Saved")
-                    }
-                    
-                    print("GET: \(user.identifier)")
-                    print("GET: \(user.givenName)")
-                    print("GET: \(user.familyName)")
-                    print("GET: \(user.email)")
-                    
-                    removeActivityIndicator()
+            
+            let userData = User(identifier: "aaaa", givenName: "bbbb", familyName: "cccc", email: "eeee@gmail.com")
+            
+            APIManager.shared.postData(to: "/api/users", body: userData) { (result: Result<EmptyResponse, Error>) in
+                switch result {
+                case .success:
+                    print("User successfully posted")
+                    self.dismiss(animated: true)
                     self.delegate?.loginDidComplete()
-                    self.navigationController?.setViewControllers([HomeViewController()], animated: true)
+                    removeActivityIndicator()
+                    self.navigationController?.setViewControllers([OnboardingViewController()], animated: true)
+                case .failure(let error):
+                    print("Error posting user: \(error)")
                 }
             }
+    
+//            APIManager.shared.getData(to: "/api/users/\(credential.user)") { (info: User?, error: Error?) in
+//
+//                DispatchQueue.main.async {
+//                    // 3. 받아온 데이터 처리
+//                    if let error = error {
+//                        print("Error fetching data: \(error)")
+//                        removeActivityIndicator()
+//                        self.signOut()
+//                        return
+//                    }
+//
+//                    guard let user = info else {
+//                        print("No data received")
+//                        removeActivityIndicator()
+//                        self.signOut()
+//                        return
+//                    }
+//
+//                    if let encodeData = try? JSONEncoder().encode(user) {
+//                        UserDefaults.standard.set(encodeData, forKey: "userInfo")
+//                        print("👥 User Info Saved")
+//                    }
+//
+//                    print("GET: \(user.identifier)")
+//                    print("GET: \(user.givenName)")
+//                    print("GET: \(user.familyName)")
+//                    print("GET: \(user.email)")
+//
+//                    removeActivityIndicator()
+//                    self.delegate?.loginDidComplete()
+//                    self.navigationController?.setViewControllers([HomeViewController()], animated: true)
+//                }
+//            }
         }
     }
     
