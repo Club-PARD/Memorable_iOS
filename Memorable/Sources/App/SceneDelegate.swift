@@ -136,15 +136,16 @@ extension SceneDelegate: LoginViewControllerDelegate {
         if let url = pendingURL {
             handleURL(url)
             pendingURL = nil
-        } else {
-            navigateToHome()
         }
+//        else {
+//            navigateToHome()
+//        }
     }
     
-    func navigateToHome() {
-        let homeVC = HomeViewController()
-        if let navigationController = window?.rootViewController as? UINavigationController {
-            navigationController.setViewControllers([homeVC], animated: true)
-        }
-    }
+//    func navigateToHome() {
+//        let homeVC = HomeViewController()
+//        if let navigationController = window?.rootViewController as? UINavigationController {
+//            navigationController.setViewControllers([homeVC], animated: true)
+//        }
+//    }
 }

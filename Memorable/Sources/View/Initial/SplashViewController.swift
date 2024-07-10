@@ -16,6 +16,10 @@ class SplashViewController: UIViewController {
         $0.contentMode = .scaleAspectFit
     }
 
+    private var isApiCallSuccess = false
+    private var isMinimumDurationPassed = false
+    private let minimumDuration: TimeInterval = 2.2
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = MemorableColor.White
@@ -27,69 +31,107 @@ class SplashViewController: UIViewController {
             make.width.equalTo(276)
         }
 
-        // Do any additional setup after loading the view.
-        gifImage.animate(withGIFNamed: "memorable_splash")
-        Timer.scheduledTimer(withTimeInterval: 2.2, repeats: false, block: { [weak self] _ in
+        // Start animating GIF in a loop
+        gifImage.animate(withGIFNamed: "memorable_splash", loopCount: 0) // 0 means infinite loop
 
-            self?.gifImage.stopAnimatingGIF()
-            self?.navigateToView()
-        })
+        // Start minimum duration timer
+        startMinimumDurationTimer()
+
+        // Start API call process immediately
+        checkAuthAndNavigate()
     }
 
-    func navigateToView() {
-        // 로그인 상태 확인
-        setupActivityIndicator(view: view)
-
-        SignInManager.checkUserAuth { authState in
-            DispatchQueue.main.async {
-                switch authState {
-                case .undefined, .signedOut:
-                    let loginViewController = LoginViewController()
-                    self.navigationController?.setViewControllers([loginViewController], animated: false)
-
-                case .signedIn(let userIdentifier):
-
-                    APIManager.shared.getData(to: "/api/users/\(userIdentifier)") { (info: User?, error: Error?) in
-
-                        DispatchQueue.main.async {
-                            // 3. 받아온 데이터 처리
-                            if let error = error {
-                                print("Error fetching data: \(error)")
-                                removeActivityIndicator()
-                                signOut()
-                                return
-                            }
-
-                            guard let user = info else {
-                                print("No data received")
-                                removeActivityIndicator()
-                                signOut()
-                                return
-                            }
-
-                            if let encodeData = try? JSONEncoder().encode(user) {
-                                UserDefaults.standard.set(encodeData, forKey: "userInfo")
-                                print("👥 User Info Saved")
-                            }
-
-                            print("GET: \(user.identifier)")
-                            print("GET: \(user.givenName)")
-                            print("GET: \(user.familyName)")
-                            print("GET: \(user.email)")
-
-                            removeActivityIndicator()
-                            self.navigationController?.setViewControllers([HomeViewController()], animated: true)
-                        }
-                    }
-                }
+    func startMinimumDurationTimer() {
+        Timer.scheduledTimer(withTimeInterval: minimumDuration, repeats: false) { [weak self] _ in
+            self?.isMinimumDurationPassed = true
+            if (self?.isApiCallSuccess) != nil {
+                self?.navigateIfReady(to: .home)
+            }
+            else {
+                self?.navigateIfReady(to: .login)
             }
         }
+    }
 
-        func signOut() {
-            print("❎ Signed Out")
+    func checkAuthAndNavigate() {
+        SignInManager.checkUserAuth { [weak self] authState in
+            guard let self = self else { return }
 
-            UserDefaults.standard.removeObject(forKey: SignInManager.userIdentifierKey)
-            navigationController?.setViewControllers([LoginViewController()], animated: false)
+            switch authState {
+            case .undefined, .signedOut:
+                self.isApiCallSuccess = false
+                self.navigateIfReady(to: .login)
+
+            case .signedIn(let userIdentifier):
+                self.isApiCallSuccess = true
+                self.fetchUserData(userIdentifier: userIdentifier)
+            }
+        }
+    }
+
+    func fetchUserData(userIdentifier: String) {
+        APIManager.shared.getData(to: "/api/users/\(userIdentifier)") { [weak self] (info: User?, error: Error?) in
+            guard let self = self else { return }
+
+            DispatchQueue.main.async {
+                if let error = error {
+                    print("Error fetching data: \(error)")
+                    self.handleApiError()
+                    return
+                }
+
+                guard let user = info else {
+                    print("No data received")
+                    self.handleApiError()
+                    return
+                }
+
+                self.saveUserInfo(user)
+                self.isApiCallSuccess = true
+                self.navigateIfReady(to: .home)
+            }
+        }
+    }
+
+    func saveUserInfo(_ user: User) {
+        if let encodeData = try? JSONEncoder().encode(user) {
+            UserDefaults.standard.set(encodeData, forKey: "userInfo")
+            print("👥 User Info Saved")
+        }
+        print("GET: \(user.identifier)")
+        print("GET: \(user.givenName)")
+        print("GET: \(user.familyName)")
+        print("GET: \(user.email)")
+    }
+
+    func handleApiError() {
+        isApiCallSuccess = false
+        navigateIfReady(to: .login)
+    }
+
+    func signOut() {
+        print("❎ Signed Out")
+        UserDefaults.standard.removeObject(forKey: SignInManager.userIdentifierKey)
+    }
+
+    enum NavigationDestination {
+        case login
+        case home
+    }
+
+    func navigateIfReady(to destination: NavigationDestination) {
+        guard isMinimumDurationPassed else { return }
+        DispatchQueue.main.async {
+            print(destination)
+            self.gifImage.stopAnimatingGIF()
+            switch destination {
+            case .login:
+                let loginViewController = LoginViewController()
+                self.navigationController?.setViewControllers([loginViewController], animated: false)
+            case .home:
+                print("GO")
+                self.navigationController?.setViewControllers([HomeViewController()], animated: true)
+            }
         }
     }
 }

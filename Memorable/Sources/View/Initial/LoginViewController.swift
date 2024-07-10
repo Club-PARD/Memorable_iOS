@@ -117,52 +117,52 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
             
             let userData = User(identifier: "aaaa", givenName: "bbbb", familyName: "cccc", email: "eeee@gmail.com")
             
-            APIManager.shared.postData(to: "/api/users", body: userData) { (result: Result<EmptyResponse, Error>) in
-                switch result {
-                case .success:
-                    print("User successfully posted")
-                    self.dismiss(animated: true)
-                    self.delegate?.loginDidComplete()
-                    removeActivityIndicator()
-                    self.navigationController?.setViewControllers([OnboardingViewController()], animated: true)
-                case .failure(let error):
-                    print("Error posting user: \(error)")
-                }
-            }
-    
-//            APIManager.shared.getData(to: "/api/users/\(credential.user)") { (info: User?, error: Error?) in
-//
-//                DispatchQueue.main.async {
-//                    // 3. 받아온 데이터 처리
-//                    if let error = error {
-//                        print("Error fetching data: \(error)")
-//                        removeActivityIndicator()
-//                        self.signOut()
-//                        return
-//                    }
-//
-//                    guard let user = info else {
-//                        print("No data received")
-//                        removeActivityIndicator()
-//                        self.signOut()
-//                        return
-//                    }
-//
-//                    if let encodeData = try? JSONEncoder().encode(user) {
-//                        UserDefaults.standard.set(encodeData, forKey: "userInfo")
-//                        print("👥 User Info Saved")
-//                    }
-//
-//                    print("GET: \(user.identifier)")
-//                    print("GET: \(user.givenName)")
-//                    print("GET: \(user.familyName)")
-//                    print("GET: \(user.email)")
-//
-//                    removeActivityIndicator()
+//            APIManager.shared.postData(to: "/api/users", body: userData) { (result: Result<EmptyResponse, Error>) in
+//                removeActivityIndicator()
+//                switch result {
+//                case .success:
+//                    print("User successfully posted")
+//                    self.dismiss(animated: true)
 //                    self.delegate?.loginDidComplete()
-//                    self.navigationController?.setViewControllers([HomeViewController()], animated: true)
+//                    self.navigationController?.setViewControllers([OnboardingViewController()], animated: true)
+//                case .failure(let error):
+//                    print("Error posting user: \(error)")
 //                }
 //            }
+    
+            APIManager.shared.getData(to: "/api/users/\(credential.user)") { (info: User?, error: Error?) in
+
+                DispatchQueue.main.async {
+                    // 3. 받아온 데이터 처리
+                    if let error = error {
+                        print("Error fetching data: \(error)")
+                        removeActivityIndicator()
+                        self.signOut()
+                        return
+                    }
+
+                    guard let user = info else {
+                        print("No data received")
+                        removeActivityIndicator()
+                        self.signOut()
+                        return
+                    }
+
+                    if let encodeData = try? JSONEncoder().encode(user) {
+                        UserDefaults.standard.set(encodeData, forKey: "userInfo")
+                        print("👥 User Info Saved")
+                    }
+
+                    print("GET: \(user.identifier)")
+                    print("GET: \(user.givenName)")
+                    print("GET: \(user.familyName)")
+                    print("GET: \(user.email)")
+
+                    removeActivityIndicator()
+                    self.delegate?.loginDidComplete()
+                    self.navigationController?.setViewControllers([HomeViewController()], animated: true)
+                }
+            }
         }
     }
     
