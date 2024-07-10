@@ -494,13 +494,13 @@ extension HomeViewController: HeaderComponentDelegate {
     }
     
     func didCreateWorksheet(name: String, category: String, content: String) {
-        setupActivityIndicator(view: view)
+//        setupActivityIndicator(view: view)
         APIManagere.shared.createWorksheet(userId: userIdentifier, name: name, category: category, content: content) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let worksheetDetail):
                     print("Successfully created worksheet: \(worksheetDetail)")
-                    removeActivityIndicator()
+//                    removeActivityIndicator()
                     let workSheetVC = WorkSheetViewController()
                     WorkSheetManager.shared.worksheetDetail = worksheetDetail
                     self?.navigationController?.pushViewController(workSheetVC, animated: true)
@@ -509,7 +509,7 @@ extension HomeViewController: HeaderComponentDelegate {
                     self?.updateSharedCategories() 
                 case .failure(let error):
                     print("Error creating worksheet: \(error)")
-                    removeActivityIndicator()
+//                    removeActivityIndicator()
                     self?.showErrorAlert(message: "학습지 생성에 실패했습니다.")
                 }
             }
@@ -668,46 +668,79 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
         print("Modifying document: \(document.id)")
         let updatedDocument = UpdatedDocument(name: newName)
         
-        // Delete document based on type
+        // Modify document based on type
         switch document {
         case let worksheet as Worksheet:
             APIManager.shared.updateData(
                 to: "/api/worksheet/edit/\(worksheet.id)",
                 body: updatedDocument
-            ) { result in
-                switch result {
-                case .success:
-                    print("Update Successfully")
-                case .failure(let error):
-                    print("Failed to update name: \(error.localizedDescription)")
-                }
+            ) { [weak self] result in
+                self?.handleModifyResult(result, for: document)
             }
         case let testsheet as Testsheet:
             APIManager.shared.updateData(
                 to: "/api/testsheet/edit/\(testsheet.id)",
                 body: updatedDocument
-            ) { result in
-                switch result {
-                case .success:
-                    print("Update Successfully")
-                case .failure(let error):
-                    print("Failed to update name: \(error.localizedDescription)")
-                }
+            ) { [weak self] result in
+                self?.handleModifyResult(result, for: document)
             }
         case let wrongsheet as Wrongsheet:
             APIManager.shared.updateData(
                 to: "/api/wrongsheet/edit/\(wrongsheet.id)",
                 body: updatedDocument
-            ) { result in
-                switch result {
-                case .success:
-                    print("Update Successfully")
-                case .failure(let error):
-                    print("Failed to update name: \(error.localizedDescription)")
-                }
+            ) { [weak self] result in
+                self?.handleModifyResult(result, for: document)
             }
         default:
             print("Unknown document type")
+        }
+    }
+
+    private func handleModifyResult(_ result: Result<Void, Error>, for document: Document) {
+        fetchMostRecentWorksheet()
+        
+        fetchDocuments { [weak self] in
+            guard let self = self else { return }
+            
+            let displayDocuments: [Document]
+            switch self.lastDisplayType ?? .worksheet {
+            case .worksheet:
+                displayDocuments = self.documents.filter { $0.fileType == "빈칸학습지" }
+            case .testsheet:
+                displayDocuments = self.documents.filter { $0.fileType == "나만의 시험지" }
+            case .wrongsheet:
+                displayDocuments = self.documents.filter { $0.fileType == "오답노트" }
+            case .all:
+                displayDocuments = self.documents
+            }
+            
+            self.worksheetListViewComponent.setWorksheets(displayDocuments, self.lastCategory ?? "전체보기", displayType: self.lastDisplayType ?? .worksheet)
+            
+            if self.lastCategory != "전체보기" {
+                self.worksheetListViewComponent.selectCategory(self.lastCategory ?? "전체보기")
+            }
+            
+            let title: String
+            switch self.lastDisplayType ?? .worksheet {
+            case .worksheet:
+                title = "총 \(displayDocuments.count)개의\n빈칸 학습지가 있어요"
+            case .testsheet:
+                title = "총 \(displayDocuments.count)개의\n나만의 시험지가 있어요"
+            case .wrongsheet:
+                title = "총 \(displayDocuments.count)개의\n오답노트가 있어요"
+            case .all:
+                title = "총 \(displayDocuments.count)개의\n문서가 있어요"
+            }
+            self.titleLabel.text = title
+        }
+        
+        switch result {
+        case .success:
+            print("Document modified successfully")
+        case .failure:
+            DispatchQueue.main.async {
+                self.showErrorAlert(message: "문서 수정에 실패했습니다.")
+            }
         }
     }
     
@@ -764,18 +797,6 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
                 self.showDeleteErrorAlert(message: "문서 삭제에 실패했습니다.")
             }
         }
-        //        DispatchQueue.main.async { [weak self] in
-        //            switch result {
-        //            case .success(let updatedDocument):
-        //                print("Document deletion successful: \(document.id)")
-        //                // Fetch documents to update the UI
-        //                self?.fetchDocuments()
-        //                self?.setupDefaultView()
-        //            case .failure:
-        //                // Handle error (e.g., show an alert to the user)
-        //                self?.showDeleteErrorAlert(message: "문서 삭제에 실패했습니다.")
-        //            }
-        //        }
     }
     
     private func showDeleteErrorAlert(message: String) {
