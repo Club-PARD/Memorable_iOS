@@ -12,6 +12,7 @@ protocol WorksheetListViewComponentDelegate: AnyObject {
     func didRequestBookmarkUpdate(for document: Document, inCategory category: String, displayType: WorksheetListViewComponent.DisplayDocumentType)
     func didDeleteDocuments(for document: Document)
     func didModifyDocument(for document: Document, newName: String)
+    func didTapWorksheetCell(inCategory category: String, displayType: WorksheetListViewComponent.DisplayDocumentType)
 }
 
 class WorksheetListViewComponent: UIView {
@@ -19,8 +20,10 @@ class WorksheetListViewComponent: UIView {
         case all, worksheet, testsheet, wrongsheet
     }
 
-    private var currentDisplayType: DisplayDocumentType = .all
+    private var currentDisplayType: DisplayDocumentType = .worksheet
     private var currentCategory: String = "전체보기"
+    private var lastDisplayType: DisplayDocumentType?
+    private var lastCategory: String?
     
     private var selectedDocuments: [Document] = []
     private var actionSheetView: EditActionSheetView?
@@ -153,11 +156,18 @@ class WorksheetListViewComponent: UIView {
         isEditingMode.toggle()
     }
     
-    func setWorksheets(_ documents: [Document], displayType: DisplayDocumentType = .all) {
-        currentDisplayType = displayType
-        worksheets = documents.sorted(by: { $0.createdDate > $1.createdDate })
-        filteredWorksheets = documents.sorted(by: { $0.createdDate > $1.createdDate })
-        categories = Set(documents.map { $0.category })
+    func setWorksheets(_ documents: [Document], _ category: String, displayType: DisplayDocumentType = .all) {
+        self.currentDisplayType = displayType
+        self.worksheets = documents.sorted(by: { $0.createdDate > $1.createdDate })
+        
+        // 카테고리에 따라 필터링
+        if category == "전체보기" {
+            self.filteredWorksheets = self.worksheets
+        } else {
+            self.filteredWorksheets = self.worksheets.filter { $0.category == category }
+        }
+        
+        self.categories = Set(documents.map { $0.category })
         updateButtonState(currentFilterButton, isSelected: true)
         updateCurrentDocuments()
         setupFilterButtons()
@@ -168,6 +178,7 @@ class WorksheetListViewComponent: UIView {
         filterStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
         filterStackView.addArrangedSubview(allButton)
+        filterStackView.distribution = .fillProportionally
         
         for category in categories.sorted() {
             let button = createFilterButton(title: category)
@@ -188,7 +199,7 @@ class WorksheetListViewComponent: UIView {
             outgoing.font = MemorableFont.BodyCaption()
             return outgoing
         }
-        configuration.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10)
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
         configuration.cornerStyle = .capsule
         
         if title == "전체보기" {
@@ -298,13 +309,22 @@ class WorksheetListViewComponent: UIView {
         toggleEditingMode()
     }
     
-    private func hideActionSheet() {
+    func hideActionSheet() {
         UIView.animate(withDuration: 0.3, animations: {
             self.actionSheetView?.transform = CGAffineTransform(translationX: 0, y: 59)
-            
         }) { _ in
             self.actionSheetView?.removeFromSuperview()
             self.actionSheetView = nil
+            
+            // 편집 모드 종료
+            self.isEditingMode = false
+            
+            // 선택된 행 모두 선택 해제
+            if let selectedRows = self.worksheetTableView.indexPathsForSelectedRows {
+                for indexPath in selectedRows {
+                    self.worksheetTableView.deselectRow(at: indexPath, animated: true)
+                }
+            }
         }
     }
     
@@ -351,7 +371,11 @@ class WorksheetListViewComponent: UIView {
             viewController.present(alert, animated: true, completion: nil)
         }
         
-        isEditingMode = false
+        var isEditingMode: Bool = false {
+            didSet {
+                worksheetTableView.setEditing(isEditingMode, animated: true)
+            }
+        }
         hideActionSheet()
     }
     
@@ -381,6 +405,24 @@ class WorksheetListViewComponent: UIView {
             print(category)
             filterButtonTapped(button)
         }
+    }
+    
+    func saveCurrentState() {
+        lastDisplayType = currentDisplayType
+        lastCategory = currentCategory
+    }
+
+    func restoreLastState() {
+        if let lastDisplayType = lastDisplayType, let lastCategory = lastCategory {
+            currentDisplayType = lastDisplayType
+            currentCategory = lastCategory
+            updateCurrentDocuments()
+            selectCategory(lastCategory)
+        }
+    }
+    
+    func resetFilterButtonState() {
+        selectCategory("전체보기")
     }
 }
 
@@ -416,6 +458,8 @@ extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate
             tableView.deselectRow(at: indexPath, animated: true)
             let document = worksheets[indexPath.row]
                     
+            saveCurrentState()
+            
             switch document.fileType {
             case "빈칸학습지":
                 if let worksheet = document as? Worksheet {
@@ -441,6 +485,7 @@ extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate
                             print("isMakeTestSheet: \(detail.isMakeTestSheet)")
                             
                             let workSheetVC = WorkSheetViewController()
+                            self.delegate?.didTapWorksheetCell(inCategory: self.currentCategory, displayType: .worksheet)
                             WorkSheetManager.shared.worksheetDetail = detail
                             self.navigateToViewController(workSheetVC)
                         }
@@ -453,6 +498,7 @@ extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate
                             switch result {
                             case .success(let testsheetDetail):
                                 let testSheetVC = TestSheetViewController()
+                                self.delegate?.didTapWorksheetCell(inCategory: self.currentCategory, displayType: .testsheet)
                                 testSheetVC.testsheetDetail = testsheetDetail
                                 self.navigateToViewController(testSheetVC)
                             case .failure(let error):
@@ -481,6 +527,7 @@ extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate
                         print("GET: \(detail.questions)")
                         
                         let wrongSheetVC = WrongSheetViewController()
+                        self.delegate?.didTapWorksheetCell(inCategory: self.currentCategory, displayType: .worksheet)
                         wrongSheetVC.wrongsheetDetail = detail
                         self.navigateToViewController(wrongSheetVC)
                     }
@@ -511,3 +558,5 @@ extension UIView {
         }
     }
 }
+
+

@@ -204,7 +204,7 @@ class MypageView: UIView {
             notificationBanner.subviews.forEach { $0.removeFromSuperview() }
             
             let notificationLabel = UILabel()
-            notificationLabel.text = "이번주에 벌써 \(score)일이나 출석했어요! 짝짝짝!"
+            notificationLabel.text = "이번주에 벌써 \(score)일이나 출석했어요!🎉 짝짝짝!"
             notificationLabel.textColor = MemorableColor.Black
             notificationLabel.font = MemorableFont.BodyCaption()
             notificationBanner.addSubview(notificationLabel)
@@ -311,7 +311,7 @@ class MypageView: UIView {
     }
     
     private func setupMemberships() {
-        setupMembershipButton(membershipStandardButton, title: "Standard", details: "· PDF 파일 10개 업로드\n· 빈칸학습지, 시험지 재추출 1회\n· 오답노트 사용 제한", sale: "", price: "10,000원")
+        setupMembershipButton(membershipStandardButton, title: "Standard", details: "· PDF 파일 10개 업로드\n· 빈칸학습지, 시험지 재추출 1회\n· 오답노트 사용 제한", sale: "", price: "15,000원")
         setupMembershipButton(membershipProButton, title: "Pro", details: "· PDF 파일 50개 업로드\n· 빈칸학습지, 시험지 재추출 3회\n· 오답노트 사용 가능", sale: "60,000", price: "32,000원", isSelected: true)
         setupMembershipButton(membershipPremiumButton, title: "Premium", details: "· PDF 파일 업로드 무제한\n· 빈칸학습지, 시험지 재추출 무제한\n· 오답노트 사용 가능\n· 광고배너 삭제 및 추가 업데이트 우선 사용 가능", sale: "96,000", price: "48,000원")
         

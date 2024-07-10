@@ -14,7 +14,6 @@ protocol LibraryViewComponentDelegate: AnyObject {
     func didTapWrongsheetButton(with documents: [Document])
     func didTapRecentButton()
     func didUpdateBookmark(for document: Document)
-    func didTapWorksheetCell()
 }
 
 class LibraryViewComponent: UIView {
@@ -607,7 +606,6 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
                     
                         let workSheetVC = WorkSheetViewController()
                         WorkSheetManager.shared.worksheetDetail = detail
-                        self.delegate?.didTapWorksheetCell()
                         self.navigateToViewController(workSheetVC)
                     }
                 }
