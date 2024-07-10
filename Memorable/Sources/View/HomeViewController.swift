@@ -16,6 +16,10 @@ class HomeViewController: UIViewController {
     var familyName: String = ""
     var email: String = ""
     private var mostRecentWorksheetDetail: WorksheetDetail?
+    private var worksheetListDisplayType: WorksheetListViewComponent.DisplayDocumentType?
+    private var lastDisplayType: WorksheetListViewComponent.DisplayDocumentType?
+    private var lastCategory: String?
+    private var category: String = "전체보기"
     
     let tabBar = TabBarComponent()
     let containerView = UIView()
@@ -40,9 +44,31 @@ class HomeViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        fetchDocuments()
         fetchMostRecentWorksheet()
-        worksheetListViewComponent.restoreLastState()
+        
+        // displayType에 따라 적절한 문서 필터링
+        fetchDocuments { [weak self] in
+                guard let self = self else { return }
+                
+                let displayDocuments: [Document]
+                switch self.lastDisplayType ?? .worksheet {
+                case .worksheet:
+                    displayDocuments = self.documents.filter { $0.fileType == "빈칸학습지" }
+                case .testsheet:
+                    displayDocuments = self.documents.filter { $0.fileType == "나만의 시험지" }
+                case .wrongsheet:
+                    displayDocuments = self.documents.filter { $0.fileType == "오답노트" }
+                case .all:
+                    displayDocuments = self.documents
+                }
+                
+                self.worksheetListViewComponent.setWorksheets(displayDocuments, self.lastCategory ?? "전체보기", displayType: self.lastDisplayType ?? .worksheet)
+                
+                // WorksheetViewController에서 돌아온 경우에만 마지막 카테고리를 선택
+                if self.lastCategory != "전체보기" {
+                    self.worksheetListViewComponent.selectCategory(self.lastCategory ?? "전체보기")
+                }
+            }
     }
     
     override func viewDidLoad() {
@@ -75,7 +101,7 @@ class HomeViewController: UIViewController {
         setupMaskView()
         setupHeaderComponent()
         setupLibraryViewComponent()
-        hideKeyboardWhenTappedAround()
+//        hideKeyboardWhenTappedAround()
         
         headerComponent.subButton2.addTarget(self, action: #selector(handleTestCreateClicked), for: .touchUpInside)
         
@@ -127,7 +153,8 @@ class HomeViewController: UIViewController {
             self?.documents = worksheets + testsheets + wrongsheets
             print("Fetched documents: Worksheets (\(worksheets.count)), Testsheets (\(testsheets.count)), Wrongsheets (\(wrongsheets.count))")
             self?.setupDocuments()
-            self?.updateSharedCategories() // 여기에 추가
+            self?.updateSharedCategories() 
+            completion?()
         }
         
         updateSharedCategories()
@@ -160,7 +187,7 @@ class HomeViewController: UIViewController {
     }
 
     private func updateWorksheetListViewDocuments() {
-        worksheetListViewComponent.setWorksheets(documents)
+        worksheetListViewComponent.setWorksheets(documents, self.category)
     }
 
     private func updateSearchedSheetViewDocuments() {
@@ -433,6 +460,10 @@ class HomeViewController: UIViewController {
             break
         }
     }
+    
+    func hideWorksheetListActionSheet() {
+        worksheetListViewComponent.hideActionSheet()
+    }
 }
 
 extension UIImage {
@@ -448,6 +479,7 @@ extension UIImage {
 }
 
 extension HomeViewController: HeaderComponentDelegate {
+    
     func didTapPlusButton(isMasked: Bool) {
         UIView.animate(withDuration: 0.5) {
             self.maskView.alpha = isMasked ? 0.5 : 0
@@ -473,7 +505,8 @@ extension HomeViewController: HeaderComponentDelegate {
                     WorkSheetManager.shared.worksheetDetail = worksheetDetail
                     self?.navigationController?.pushViewController(workSheetVC, animated: true)
                     self?.refreshDocumentsAfterCreation()
-                    self?.updateSharedCategories() // 여기에 추가
+                    self?.updateAfterDocumentChange()
+                    self?.updateSharedCategories() 
                 case .failure(let error):
                     print("Error creating worksheet: \(error)")
                     removeActivityIndicator()
@@ -481,6 +514,50 @@ extension HomeViewController: HeaderComponentDelegate {
                 }
             }
         }
+    }
+    
+    func updateAfterDocumentChange() {
+        fetchDocuments { [weak self] in
+            guard let self = self else { return }
+            
+            self.updateLibraryView()
+            self.setupHeaderComponent()
+            self.updateWorksheetListView()
+            self.updateStarView()
+            self.updateSearchedSheetView()
+            
+            // WorksheetListViewComponent 타이틀 업데이트
+            if self.viewStack.last == "worksheet" {
+                self.updateWorksheetListViewTitle()
+            }
+        }
+    }
+    
+    private func updateWorksheetListViewTitle() {
+        let displayDocuments: [Document]
+        switch self.lastDisplayType ?? .worksheet {
+        case .worksheet:
+            displayDocuments = self.documents.filter { $0.fileType == "빈칸학습지" }
+        case .testsheet:
+            displayDocuments = self.documents.filter { $0.fileType == "나만의 시험지" }
+        case .wrongsheet:
+            displayDocuments = self.documents.filter { $0.fileType == "오답노트" }
+        case .all:
+            displayDocuments = self.documents
+        }
+        
+        let title: String
+        switch self.lastDisplayType ?? .worksheet {
+        case .worksheet:
+            title = "총 \(displayDocuments.count)개의\n빈칸 학습지가 있어요"
+        case .testsheet:
+            title = "총 \(displayDocuments.count)개의\n나만의 시험지가 있어요"
+        case .wrongsheet:
+            title = "총 \(displayDocuments.count)개의\n오답노트가 있어요"
+        case .all:
+            title = "총 \(displayDocuments.count)개의\n문서가 있어요"
+        }
+        self.titleLabel.text = title
     }
     
     func refreshDocumentsAfterCreation() {
@@ -495,6 +572,12 @@ extension HomeViewController: HeaderComponentDelegate {
 }
 
 extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, WorksheetListViewComponentDelegate, SearchedSheetViewDelegate {
+    func didTapWorksheetCell(inCategory category: String, displayType: WorksheetListViewComponent.DisplayDocumentType) {
+        lastDisplayType = displayType
+        lastCategory = category
+        worksheetListDisplayType = displayType
+        self.category = category
+    }
     
     
     // worksheetlist
@@ -542,7 +625,7 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
                         case .wrongsheet:
                             updatedDocuments = self?.documents.filter { $0.fileType == "오답노트" } ?? []
                         }
-                        self?.worksheetListViewComponent.setWorksheets(updatedDocuments, displayType: displayType)
+                        self?.worksheetListViewComponent.setWorksheets(updatedDocuments, self?.category ?? "전체보기", displayType: displayType)
                         self?.worksheetListViewComponent.selectCategory(category)
                     }
                     
@@ -629,18 +712,70 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
     }
     
     private func handleDeleteResult(_ result: Result<APIManagere.EmptyResponse, Error>, for document: Document) {
-        DispatchQueue.main.async { [weak self] in
-            switch result {
-            case .success(let updatedDocument):
-                print("Document deletion successful: \(document.id)")
-                // Fetch documents to update the UI
-                self?.fetchDocuments()
-                self?.setupDefaultView()
-            case .failure:
-                // Handle error (e.g., show an alert to the user)
-                self?.showDeleteErrorAlert(message: "문서 삭제에 실패했습니다.")
+        
+        fetchMostRecentWorksheet()
+        
+        // displayType에 따라 적절한 문서 필터링
+        fetchDocuments { [weak self] in
+            guard let self = self else { return }
+            
+            let displayDocuments: [Document]
+            switch self.lastDisplayType ?? .worksheet {
+            case .worksheet:
+                displayDocuments = self.documents.filter { $0.fileType == "빈칸학습지" }
+            case .testsheet:
+                displayDocuments = self.documents.filter { $0.fileType == "나만의 시험지" }
+            case .wrongsheet:
+                displayDocuments = self.documents.filter { $0.fileType == "오답노트" }
+            case .all:
+                displayDocuments = self.documents
+            }
+            
+            self.worksheetListViewComponent.setWorksheets(displayDocuments, self.lastCategory ?? "전체보기", displayType: self.lastDisplayType ?? .worksheet)
+            
+            // WorksheetViewController에서 돌아온 경우에만 마지막 카테고리를 선택
+            if self.lastCategory != "전체보기" {
+                self.worksheetListViewComponent.selectCategory(self.lastCategory ?? "전체보기")
+            }
+            
+//            // LibraryViewComponent 업데이트
+//            self.updateLibraryView()
+//            
+//            // HeaderComponent 업데이트
+//            self.setupHeaderComponent()
+//            
+            //
+            let title: String
+            switch self.lastDisplayType ?? .worksheet {
+            case .worksheet:
+                title = "총 \(displayDocuments.count)개의\n빈칸 학습지가 있어요"
+            case .testsheet:
+                title = "총 \(displayDocuments.count)개의\n나만의 시험지가 있어요"
+            case .wrongsheet:
+                title = "총 \(displayDocuments.count)개의\n오답노트가 있어요"
+            case .all:
+                title = "총 \(displayDocuments.count)개의\n문서가 있어요"
+            }
+            self.titleLabel.text = title
+        }
+        
+        if case .failure = result {
+            DispatchQueue.main.async {
+                self.showDeleteErrorAlert(message: "문서 삭제에 실패했습니다.")
             }
         }
+        //        DispatchQueue.main.async { [weak self] in
+        //            switch result {
+        //            case .success(let updatedDocument):
+        //                print("Document deletion successful: \(document.id)")
+        //                // Fetch documents to update the UI
+        //                self?.fetchDocuments()
+        //                self?.setupDefaultView()
+        //            case .failure:
+        //                // Handle error (e.g., show an alert to the user)
+        //                self?.showDeleteErrorAlert(message: "문서 삭제에 실패했습니다.")
+        //            }
+        //        }
     }
     
     private func showDeleteErrorAlert(message: String) {
@@ -696,6 +831,7 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
     }
     
     func didTapBackButton() {
+        hideWorksheetListActionSheet()
         if viewStack.count > 1 {
             viewStack.removeLast()
             showView(config: viewStack.last!)
@@ -705,19 +841,22 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
     func didTapWorksheetButton(with documents: [Document]) {
         showWorksheetView(withTitle: "총 \(documents.count)개의\n빈칸 학습지가 있어요", documents: documents, displayType: .worksheet)
     }
-
+    
     func didTapTestsheetButton(with documents: [Document]) {
         showWorksheetView(withTitle: "총 \(documents.count)개의\n나만의 시험지가 있어요", documents: documents, displayType: .testsheet)
     }
-
+    
     func didTapWrongsheetButton(with documents: [Document]) {
         showWorksheetView(withTitle: "총 \(documents.count)개의\n오답노트가 있어요", documents: documents, displayType: .wrongsheet)
     }
-
+    
     func showWorksheetView(withTitle title: String, documents: [Document], displayType: WorksheetListViewComponent.DisplayDocumentType) {
-        worksheetListViewComponent.setWorksheets(documents, displayType: displayType)
+        worksheetListViewComponent.resetFilterButtonState()
+        worksheetListViewComponent.setWorksheets(documents, "전체보기", displayType: displayType)
         showView(config: "worksheet")
         titleLabel.text = title
+        lastDisplayType = displayType
+        lastCategory = "전체보기"
     }
     
     @objc private func handleTestCreateClicked() {
@@ -777,7 +916,7 @@ extension HomeViewController {
     }
     
     private func updateWorksheetListView() {
-        worksheetListViewComponent.setWorksheets(documents)
+        worksheetListViewComponent.setWorksheets(documents, category)
     }
     
     private func updateSearchedSheetView() {

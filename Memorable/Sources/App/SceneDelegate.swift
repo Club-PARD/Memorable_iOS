@@ -73,10 +73,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
         
+        // 인디케이터 표시
+        setupActivityIndicator(view: window!)
+        
         APIManagere.shared.createWorksheet(userId: userIdentifier, name: name, category: category, content: content) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let worksheetDetail):
+                    removeActivityIndicator()
                     print("Successfully created worksheet: \(worksheetDetail)")
                     let workSheetVC = WorkSheetViewController()
                     WorkSheetManager.shared.worksheetDetail = worksheetDetail
@@ -86,9 +90,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         // 워크시트 생성 후 문서 목록 업데이트
                         if let homeVC = navigationController.viewControllers.first as? HomeViewController {
                             homeVC.fetchDocuments()
+                            homeVC.updateAfterDocumentChange()
                         }
                     }
                 case .failure(let error):
+                    removeActivityIndicator()
                     print("Error creating worksheet: \(error)")
                     // 에러 처리 로직 추가
                 }

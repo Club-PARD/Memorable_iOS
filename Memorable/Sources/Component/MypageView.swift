@@ -202,7 +202,7 @@ class MypageView: UIView {
             notificationBanner.subviews.forEach { $0.removeFromSuperview() }
             
             let notificationLabel = UILabel()
-            notificationLabel.text = "이번주에 벌써 \(score)일이나 출석했어요! 짝짝짝!"
+            notificationLabel.text = "이번주에 벌써 \(score)일이나 출석했어요!🎉 짝짝짝!"
             notificationLabel.textColor = MemorableColor.Black
             notificationLabel.font = MemorableFont.BodyCaption()
             notificationBanner.addSubview(notificationLabel)
