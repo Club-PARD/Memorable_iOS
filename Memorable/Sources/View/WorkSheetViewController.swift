@@ -147,7 +147,6 @@ class WorkSheetViewController: UIViewController {
 
     private func setupUI() {
         guard let detail = WorkSheetManager.shared.worksheetDetail else { return }
-
         titleLabel.text = detail.name
         categoryLabel.text = detail.category
 
