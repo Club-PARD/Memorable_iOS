@@ -118,9 +118,13 @@ class WorkSheetView: UIView {
 
     func createFillInTheBlanksUI(question: String, answers: [String]) -> UIView {
         // Split the question and replace answers with text fields
+        print(question)
         var remainingQuestion = question
         var currentLineView: UIStackView?
         var currentLineWidth: CGFloat = 0
+        
+        // 줄바꿈을 기준으로 질문 나눔
+        let lines = question.components(separatedBy: .newlines)
 
         for answer in answers {
             guard let range = remainingQuestion.range(of: answer) else { continue }
