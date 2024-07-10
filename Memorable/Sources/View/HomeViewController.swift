@@ -144,13 +144,13 @@ class HomeViewController: UIViewController {
     }
 
     private func setupLibraryViewComponentDocuments() {
-        let worksheetDocuments = self.documents.filter { $0.fileType == "빈칸학습지" }
-        let testsheetDocuments = self.documents.filter { $0.fileType == "나만의 시험지" }
-        let wrongsheetDocuments = self.documents.filter { $0.fileType == "오답노트" }
+        let worksheetDocuments = documents.filter { $0.fileType == "빈칸학습지" }
+        let testsheetDocuments = documents.filter { $0.fileType == "나만의 시험지" }
+        let wrongsheetDocuments = documents.filter { $0.fileType == "오답노트" }
         
-        self.libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
-                                               testsheet: testsheetDocuments,
-                                               wrongsheet: wrongsheetDocuments)
+        libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
+                                          testsheet: testsheetDocuments,
+                                          wrongsheet: wrongsheetDocuments)
     }
 
     private func updateStarViewDocuments() {
@@ -188,11 +188,11 @@ class HomeViewController: UIViewController {
     }
     
     func getExistingCategories() -> [String] {
-            // 모든 문서의 카테고리를 가져와 중복을 제거하고 정렬합니다.
-            let allCategories = documents.map { $0.category }
-            let uniqueCategories = Array(Set(allCategories))
-            return uniqueCategories.sorted()
-        }
+        // 모든 문서의 카테고리를 가져와 중복을 제거하고 정렬합니다.
+        let allCategories = documents.map { $0.category }
+        let uniqueCategories = Array(Set(allCategories))
+        return uniqueCategories.sorted()
+    }
     
     func setUI() {
         // header
@@ -323,14 +323,14 @@ class HomeViewController: UIViewController {
         }
         
         // TODO: API 연결중
-        let worksheetDocuments = self.documents.filter { $0.fileType == "빈칸학습지" }
-        let testsheetDocuments = self.documents.filter { $0.fileType == "나만의 시험지" }
-        let wrongsheetDocuments = self.documents.filter { $0.fileType == "오답노트" }
+        let worksheetDocuments = documents.filter { $0.fileType == "빈칸학습지" }
+        let testsheetDocuments = documents.filter { $0.fileType == "나만의 시험지" }
+        let wrongsheetDocuments = documents.filter { $0.fileType == "오답노트" }
         
         // LibraryViewComponent에 데이터 설정
-        self.libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
-                                                testsheet: testsheetDocuments,
-                                                wrongsheet: wrongsheetDocuments)
+        libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
+                                          testsheet: testsheetDocuments,
+                                          wrongsheet: wrongsheetDocuments)
         
         // titleLabel 숨기기
         titleLabel.isHidden = true
@@ -514,6 +514,53 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
         }
     }
     
+    func didModifyDocument(for document: any Document, newName: String) {
+        print("Modifying document: \(document.id)")
+        let updatedDocument = UpdatedDocument(name: newName)
+        
+        // Delete document based on type
+        switch document {
+        case let worksheet as Worksheet:
+            APIManager.shared.updateData(
+                to: "/api/worksheet/edit/\(worksheet.id)",
+                body: updatedDocument
+            ) { result in
+                switch result {
+                case .success:
+                    print("Update Successfully")
+                case .failure(let error):
+                    print("Failed to update name: \(error.localizedDescription)")
+                }
+            }
+        case let testsheet as Testsheet:
+            APIManager.shared.updateData(
+                to: "/api/testsheet/edit/\(testsheet.id)",
+                body: updatedDocument
+            ) { result in
+                switch result {
+                case .success:
+                    print("Update Successfully")
+                case .failure(let error):
+                    print("Failed to update name: \(error.localizedDescription)")
+                }
+            }
+        case let wrongsheet as Wrongsheet:
+            APIManager.shared.updateData(
+                to: "/api/wrongsheet/edit/\(wrongsheet.id)",
+                body: updatedDocument
+            ) { result in
+                switch result {
+                case .success:
+                    print("Update Successfully")
+                case .failure(let error):
+                    print("Failed to update name: \(error.localizedDescription)")
+                }
+            }
+        default:
+            print("Unknown document type")
+        }
+    }
+    
     private func handleDeleteResult(_ result: Result<APIManagere.EmptyResponse, Error>, for document: Document) {
         DispatchQueue.main.async { [weak self] in
             switch result {
@@ -522,7 +569,7 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
                 // Fetch documents to update the UI
                 self?.fetchDocuments()
                 self?.setupDefaultView()
-            case .failure(_):
+            case .failure:
                 // Handle error (e.g., show an alert to the user)
                 self?.showDeleteErrorAlert(message: "문서 삭제에 실패했습니다.")
             }
@@ -652,18 +699,18 @@ extension HomeViewController {
     
     private func updateLibraryView() {
         print("Updating LibraryView")
-        let worksheetDocuments = self.documents.filter { $0.fileType == "빈칸학습지" }
-        let testsheetDocuments = self.documents.filter { $0.fileType == "나만의 시험지" }
-        let wrongsheetDocuments = self.documents.filter { $0.fileType == "오답노트" }
+        let worksheetDocuments = documents.filter { $0.fileType == "빈칸학습지" }
+        let testsheetDocuments = documents.filter { $0.fileType == "나만의 시험지" }
+        let wrongsheetDocuments = documents.filter { $0.fileType == "오답노트" }
         
-        self.libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
-                                               testsheet: testsheetDocuments,
-                                               wrongsheet: wrongsheetDocuments)
+        libraryViewComponent.setDocuments(worksheet: worksheetDocuments,
+                                          testsheet: testsheetDocuments,
+                                          wrongsheet: wrongsheetDocuments)
     }
     
     private func updateStarView() {
-        self.starView.setDocuments(documents: documents)
-        self.starView.reloadTable()
+        starView.setDocuments(documents: documents)
+        starView.reloadTable()
     }
     
     private func updateWorksheetListView() {

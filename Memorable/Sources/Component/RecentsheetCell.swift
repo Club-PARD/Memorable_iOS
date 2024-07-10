@@ -5,14 +5,17 @@
 //  Created by Minhyeok Kim on 6/30/24.
 //
 
-import UIKit
 import SnapKit
+import UIKit
 
 protocol RecentsheetCellDelegate: AnyObject {
     func didTapBookmark<T: Document>(for document: T)
 }
 
 class RecentsheetCell: UITableViewCell {
+    private var id: Int?
+    private var fileType: String?
+    
     private let categoryImageView = UIImageView()
     private let categoryLabel = UILabel()
     private let titleLabel = UILabel()
@@ -66,12 +69,15 @@ class RecentsheetCell: UITableViewCell {
         bookmarkButton.addTarget(self, action: #selector(bookmarkTapped), for: .touchUpInside)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     func configure(with document: Document) {
         self.document = document
+        id = document.id
+        fileType = document.fileType
         
         categoryLabel.text = document.category
         categoryLabel.textColor = MemorableColor.Blue2
@@ -132,10 +138,10 @@ class RecentsheetCell: UITableViewCell {
     
     @objc private func bookmarkTapped() {
         guard let document = document else { return }
-        let originalBookmarkState = document.isBookmarked
-        
-        // 즉시 UI 업데이트
-        updateBookmarkButton(isBookmarked: !originalBookmarkState)
+//        let originalBookmarkState = document.isBookmarked
+//
+//        // 즉시 UI 업데이트
+//        updateBookmarkButton(isBookmarked: !originalBookmarkState)
         
         delegate?.didTapBookmark(for: document)
     }

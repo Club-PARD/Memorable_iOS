@@ -15,3 +15,7 @@ protocol Document: Codable {
     var createdDate: Date { get }
     var fileType: String { get }
 }
+
+struct UpdatedDocument: Codable {
+    let name: String
+}
