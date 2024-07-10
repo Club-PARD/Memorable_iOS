@@ -117,6 +117,8 @@ class WorkSheetView: UIView {
     // MARK: - Content Methods
 
     func createFillInTheBlanksUI(question: String, answers: [String]) -> UIView {
+        print(question)
+
         // Split the question and replace answers with text fields
         print(question)
         var remainingQuestion = question
@@ -249,7 +251,6 @@ class WorkSheetView: UIView {
         let font = UIFont.systemFont(ofSize: 13)
         let attributes = [NSAttributedString.Key.font: font]
         let size = (text as NSString).size(withAttributes: attributes)
-        print("SIZE: \(size)")
         return min(max(size.width + 50, minWidth), maxWidth) // 30은 여백을 위한 추가 너비
     }
 
