@@ -164,9 +164,9 @@ class MypageView: UIView {
         streakRightGradientView.startPoint = CGPoint(x: 0.5, y: 0.5)
         streakRightGradientView.endPoint = CGPoint(x: 1, y: 0.5)
         
-        streakView.layer.addSublayer(streakLeftGradientView)
-        streakView.layer.addSublayer(streakRightGradientView)
-        
+            streakView.layer.addSublayer(streakLeftGradientView)
+            streakView.layer.addSublayer(streakRightGradientView)
+            
         // Ensure the gradient layers are added after the subviews are added
         streakView.layoutIfNeeded()
         streakLeftGradientView.frame = CGRect(x: 0, y: 0, width: streakView.bounds.width / 2, height: streakView.bounds.height)
@@ -339,6 +339,7 @@ class MypageView: UIView {
         saleLabel.text = sale
         saleLabel.textColor = MemorableColor.Gray3
         saleLabel.font = MemorableFont.Title()
+        saleLabel.attributedText = saleLabel.text?.strikeThrough()
         
         let priceLabel = UILabel()
         priceLabel.text = price
@@ -840,5 +841,13 @@ class MypageView: UIView {
     // 문의하기 토스트 메시지 표시 메서드
     @objc private func showInquiryToast() {
         showToast(message: "전화번호 010-9544-8491\n이메일 htms0730@gmail.com")
+    }
+}
+
+extension String {
+    func strikeThrough() -> NSAttributedString {
+        let attributeString = NSMutableAttributedString(string: self)
+        attributeString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: NSUnderlineStyle.single.rawValue, range: NSMakeRange(0, attributeString.length))
+        return attributeString
     }
 }

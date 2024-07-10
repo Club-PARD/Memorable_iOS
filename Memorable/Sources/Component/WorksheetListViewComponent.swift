@@ -9,17 +9,26 @@ import SnapKit
 import UIKit
 
 protocol WorksheetListViewComponentDelegate: AnyObject {
-    func didUpdateBookmark(for document: Document)
+    func didRequestBookmarkUpdate(for document: Document, inCategory category: String, displayType: WorksheetListViewComponent.DisplayDocumentType)
     func didDeleteDocuments(for document: Document)
 }
 
 class WorksheetListViewComponent: UIView {
+    enum DisplayDocumentType {
+        case all, worksheet, testsheet, wrongsheet
+    }
+
+    private var currentDisplayType: DisplayDocumentType = .all
+    private var currentCategory: String = "전체보기"
+    
     private var selectedDocuments: [Document] = []
     private var actionSheetView: EditActionSheetView?
     weak var delegate: WorksheetListViewComponentDelegate?
     let worksheetTableView: UITableView
     private let filterScrollView: UIScrollView
     private let filterStackView: UIStackView
+    private var allButton = UIButton()
+    private var currentFilterButton = UIButton() // MARK: 즐겨찾기 수정
     private let settingButton: UIButton
     private var editButton: UIBarButtonItem?
     private var doneButton: UIBarButtonItem?
@@ -43,6 +52,8 @@ class WorksheetListViewComponent: UIView {
         self.backgroundColor = MemorableColor.White
         layer.cornerRadius = 40
         self.clipsToBounds = true
+        self.allButton = createFilterButton(title: "전체보기")
+        currentFilterButton = allButton // MARK: 즐겨찾기 수정
         
         setupViews()
         setupTableView()
@@ -70,6 +81,7 @@ class WorksheetListViewComponent: UIView {
         worksheetTableView.register(RecentsheetCell.self, forCellReuseIdentifier: "WorksheetTableViewCell")
         
         setupConstraints()
+        setupSettingButton()
     }
     
     private func setupConstraints() {
@@ -102,6 +114,7 @@ class WorksheetListViewComponent: UIView {
         worksheetTableView.dataSource = self
         worksheetTableView.delegate = self
         worksheetTableView.rowHeight = 62
+        worksheetTableView.separatorStyle = .none // 구분선 삭제
         worksheetTableView.allowsSelection = true
         worksheetTableView.allowsMultipleSelectionDuringEditing = true
         
@@ -134,25 +147,29 @@ class WorksheetListViewComponent: UIView {
         isEditingMode.toggle()
     }
     
-    func setWorksheets(_ documents: [Document]) {
-        worksheets = documents.sorted(by: { $0.createdDate > $1.createdDate })
-        filteredWorksheets = documents.sorted(by: { $0.createdDate > $1.createdDate })
-        categories = Set(documents.map { $0.category })
+    func setWorksheets(_ documents: [Document], displayType: DisplayDocumentType = .all) {
+        self.currentDisplayType = displayType
+        self.worksheets = documents.sorted(by: { $0.createdDate > $1.createdDate })
+        self.filteredWorksheets = documents.sorted(by: { $0.createdDate > $1.createdDate })
+        self.categories = Set(documents.map { $0.category })
+        updateButtonState(currentFilterButton, isSelected: true)
+        updateCurrentDocuments()
         setupFilterButtons()
-        setupSettingButton()
         worksheetTableView.reloadData()
     }
     
     private func setupFilterButtons() {
         filterStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
-        let allButton = createFilterButton(title: "전체보기")
         filterStackView.addArrangedSubview(allButton)
         
         for category in categories.sorted() {
             let button = createFilterButton(title: category)
             filterStackView.addArrangedSubview(button)
         }
+        
+        // 초기 상태 설정
+        updateButtonState(self.allButton, isSelected: true)
     }
     
     private func createFilterButton(title: String) -> UIButton {
@@ -183,6 +200,13 @@ class WorksheetListViewComponent: UIView {
     }
     
     @objc private func filterButtonTapped(_ sender: UIButton) {
+        updateButtonState(sender, isSelected: true)
+        currentFilterButton = sender
+        currentCategory = sender.configuration?.title ?? "전체보기"
+        updateCurrentDocuments()
+    }
+    
+    private func updateButtonState(_ sender: UIButton, isSelected: Bool) {
         for view in filterStackView.arrangedSubviews {
             if let button = view as? UIButton {
                 var config = button.configuration
@@ -196,11 +220,13 @@ class WorksheetListViewComponent: UIView {
         config?.baseBackgroundColor = MemorableColor.Black
         config?.baseForegroundColor = MemorableColor.White
         sender.configuration = config
-        
-        if sender.configuration?.title == "전체보기" {
+    }
+    
+    private func updateCurrentDocuments() {
+        if currentFilterButton.configuration?.title == "전체보기" {
             filteredWorksheets = worksheets
         } else {
-            filteredWorksheets = worksheets.filter { $0.category == sender.configuration?.title }
+            filteredWorksheets = worksheets.filter { $0.category == currentFilterButton.configuration?.title }
         }
         
         worksheetTableView.reloadData()
@@ -288,16 +314,19 @@ class WorksheetListViewComponent: UIView {
         isEditingMode = false
         hideActionSheet()
     }
+    
+    func selectCategory(_ category: String) {
+        if let button = filterStackView.arrangedSubviews.first(where: { ($0 as? UIButton)?.configuration?.title == category }) as? UIButton {
+            print(category)
+            filterButtonTapped(button)
+        }
+    }
 }
 
 extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate, RecentsheetCellDelegate {
     
     func didTapBookmark<T: Document>(for document: T) {
-        if let index = worksheets.firstIndex(where: { $0.id == document.id }) {
-            worksheets[index] = document
-        }
-        worksheetTableView.reloadData()
-        delegate?.didUpdateBookmark(for: document)
+        delegate?.didRequestBookmarkUpdate(for: document, inCategory: currentCategory, displayType: currentDisplayType)
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

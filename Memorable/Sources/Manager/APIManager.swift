@@ -10,7 +10,7 @@ import Foundation
 class APIManager {
     static let shared = APIManager()
     
-    let baseURL = "http://172.17.217.238:8080"
+    let baseURL = "https://memorable-pard.site"
     
     // 각 function 의 endpoint는 rootUrl 뒤의 나머지
     func getData<T: Decodable>(to endpoint: String, completion: @escaping (T?, Error?) -> Void) {
