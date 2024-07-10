@@ -44,7 +44,7 @@ class SplashViewController: UIViewController {
     func startMinimumDurationTimer() {
         Timer.scheduledTimer(withTimeInterval: minimumDuration, repeats: false) { [weak self] _ in
             self?.isMinimumDurationPassed = true
-            if (self?.isApiCallSuccess) != nil {
+            if self?.isApiCallSuccess == true {
                 self?.navigateIfReady(to: .home)
             }
             else {
