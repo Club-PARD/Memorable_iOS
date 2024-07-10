@@ -23,7 +23,7 @@ Learn more, Be memorable 당신의 기억에 남게
 
 <br/>
 
-## ⚙️ Development Environments
+## ⚙️ 개발환경 및 언어
 
 ### 프론트
 ![iOS](https://img.shields.io/badge/iOS-000000?style=for-the-badge&logo=ios&logoColor=white)
