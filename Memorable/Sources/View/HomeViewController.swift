@@ -179,6 +179,7 @@ class HomeViewController: UIViewController {
                 case .success(let worksheetDetail):
                     self?.mostRecentWorksheetDetail = worksheetDetail
                     self?.libraryViewComponent.recentWorksheetName = worksheetDetail.name
+                        print(self?.libraryViewComponent.recentWorksheetName)
                     self?.libraryViewComponent.updateRecentView() // 새로운 메서드 추가
                 case .failure(let error):
                     print("Error fetching most recent worksheet: \(error)")
@@ -492,6 +493,75 @@ extension HomeViewController: HeaderComponentDelegate {
 }
 
 extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, WorksheetListViewComponentDelegate, SearchedSheetViewDelegate {
+    func didTapWorksheetCell() {
+        print("최근 학습지 업데이트")
+        fetchMostRecentWorksheet()
+        // TODO: 왜 안돼?
+    }
+    
+    
+    // worksheetlist
+    func didRequestBookmarkUpdate(for document: Document, inCategory category: String, displayType: WorksheetListViewComponent.DisplayDocumentType) {
+            print("북마크 업데이트 시작: \(document.id)")
+            var updatedDocument = document
+            updatedDocument.isBookmarked.toggle()
+            
+            // API 호출
+            switch updatedDocument {
+            case let worksheet as Worksheet:
+                APIManagere.shared.toggleWorksheetBookmark(worksheetId: worksheet.id) { [weak self] result in
+                    self?.handleBookmarkToggleResult(result, for: updatedDocument, inCategory: category, displayType: displayType)
+                }
+            case let testsheet as Testsheet:
+                APIManagere.shared.toggleTestsheetBookmark(testsheetId: testsheet.id) { [weak self] result in
+                    self?.handleBookmarkToggleResult(result, for: updatedDocument, inCategory: category, displayType: displayType)
+                }
+            case let wrongsheet as Wrongsheet:
+                APIManagere.shared.toggleWrongsheetBookmark(wrongsheetId: wrongsheet.id) { [weak self] result in
+                    self?.handleBookmarkToggleResult(result, for: updatedDocument, inCategory: category, displayType: displayType)
+                }
+            default:
+                print("Unknown document type")
+            }
+        }
+        
+        private func handleBookmarkToggleResult<T: Document>(_ result: Result<T, Error>, for document: Document, inCategory category: String, displayType: WorksheetListViewComponent.DisplayDocumentType) {
+            DispatchQueue.main.async { [weak self] in
+                switch result {
+                case .success(let updatedDocument):
+                    print("북마크 토글 성공: \(type(of: updatedDocument))")
+                    self?.updateDocument(updatedDocument)
+                    
+                    // WorksheetListView 업데이트
+                    if self?.viewStack.last == "worksheet" {
+                        let updatedDocuments: [Document]
+                        switch displayType {
+                        case .all:
+                            updatedDocuments = self?.documents ?? []
+                        case .worksheet:
+                            updatedDocuments = self?.documents.filter { $0.fileType == "빈칸학습지" } ?? []
+                        case .testsheet:
+                            updatedDocuments = self?.documents.filter { $0.fileType == "나만의 시험지" } ?? []
+                        case .wrongsheet:
+                            updatedDocuments = self?.documents.filter { $0.fileType == "오답노트" } ?? []
+                        }
+                        self?.worksheetListViewComponent.setWorksheets(updatedDocuments, displayType: displayType)
+                        self?.worksheetListViewComponent.selectCategory(category)
+                    }
+                    
+                case .failure(let error):
+                    print("북마크 토글 실패: \(error)")
+                    self?.showBookmarkUpdateErrorAlert()
+                }
+            }
+        }
+        
+        private func showBookmarkUpdateErrorAlert() {
+            let alert = UIAlertController(title: "오류", message: "북마크 업데이트에 실패했습니다.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+        }
+    
     func didDeleteDocuments(for document: any Document) {
         print("Deleting document: \(document.id)")
         
@@ -589,24 +659,20 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
     }
     
     func didTapWorksheetButton(with documents: [Document]) {
-        showWorksheetView(withTitle: "총 \(documents.count)개의\n빈칸 학습지가 있어요", documents: documents)
+        showWorksheetView(withTitle: "총 \(documents.count)개의\n빈칸 학습지가 있어요", documents: documents, displayType: .worksheet)
     }
-    
+
     func didTapTestsheetButton(with documents: [Document]) {
-        showWorksheetView(withTitle: "총 \(documents.count)개의\n나만의 시험지가 있어요", documents: documents)
+        showWorksheetView(withTitle: "총 \(documents.count)개의\n나만의 시험지가 있어요", documents: documents, displayType: .testsheet)
     }
-    
+
     func didTapWrongsheetButton(with documents: [Document]) {
-        showWorksheetView(withTitle: "총 \(documents.count)개의\n오답노트가 있어요", documents: documents)
+        showWorksheetView(withTitle: "총 \(documents.count)개의\n오답노트가 있어요", documents: documents, displayType: .wrongsheet)
     }
-    
-    func showWorksheetView(withTitle title: String, documents: [Document]) {
-        print("showWorksheetView")
-        
-        worksheetListViewComponent.setWorksheets(documents)
+
+    func showWorksheetView(withTitle title: String, documents: [Document], displayType: WorksheetListViewComponent.DisplayDocumentType) {
+        worksheetListViewComponent.setWorksheets(documents, displayType: displayType)
         showView(config: "worksheet")
-        
-        // titleLabel 업데이트
         titleLabel.text = title
     }
     
@@ -638,7 +704,7 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
 extension HomeViewController {
     func updateDocument(_ updatedDocument: Document) {
         print("문서 업데이트 중: \(updatedDocument.id), isBookmarked: \(updatedDocument.isBookmarked)")
-        if let index = documents.firstIndex(where: { $0.id == updatedDocument.id }) {
+        if let index = documents.firstIndex(where: { $0.id == updatedDocument.id && $0.fileType == updatedDocument.fileType }) {
             documents[index] = updatedDocument
         }
         

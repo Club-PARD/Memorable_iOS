@@ -28,6 +28,7 @@ class HeaderComponent: UIView {
     private let backButton = UIButton()
     private let searchBar = UISearchBar()
     private let searchButton = UIButton()
+    private let backButtonOverlayView = UIView()
     private let searchButtonOverlayView = UIView()
     let plusButton = UIButton()
     private let plusButtonImageView = UIImageView()
@@ -103,6 +104,7 @@ class HeaderComponent: UIView {
         backButton.layer.cornerRadius = 0.5 * 44
         backButton.clipsToBounds = true
         backButton.isHidden = true // 초기에는 숨김 상태
+        backButtonOverlayView.isHidden = true
         
         backButton.snp.makeConstraints { make in
             make.leading.equalTo(appLogoImageView.snp.trailing).offset(16)
@@ -114,6 +116,7 @@ class HeaderComponent: UIView {
     
     func showBackButton(_ show: Bool) {
         backButton.isHidden = !show
+        backButtonOverlayView.isHidden = !show
     }
     
     private func setupPlusButton() {
@@ -165,6 +168,14 @@ class HeaderComponent: UIView {
             make.edges.equalTo(searchButton)
         }
         searchButtonOverlayView.layer.cornerRadius = 22
+        
+        backButtonOverlayView.backgroundColor = MemorableColor.Black
+        backButtonOverlayView.alpha = 0
+        addSubview(backButtonOverlayView)
+        backButtonOverlayView.snp.makeConstraints { make in
+            make.edges.equalTo(backButton)
+        }
+        backButtonOverlayView.layer.cornerRadius = 0.5 * 44
     }
     
     private func setupSearchBar() {
@@ -318,6 +329,7 @@ class HeaderComponent: UIView {
             self.plusButton.backgroundColor = MemorableColor.Black
             self.plusButtonImageView.transform = CGAffineTransform(rotationAngle: .pi / 4)
             self.searchButtonOverlayView.alpha = 0.5
+            self.backButtonOverlayView.alpha = 0.5
         }
         searchButton.isEnabled.toggle()
     }
@@ -327,6 +339,7 @@ class HeaderComponent: UIView {
             self.plusButton.backgroundColor = MemorableColor.Blue2
             self.plusButtonImageView.transform = CGAffineTransform.identity
             self.searchButtonOverlayView.alpha = 0
+            self.backButtonOverlayView.alpha = 0
         }
         searchButton.isEnabled.toggle()
     }

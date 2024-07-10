@@ -15,3 +15,10 @@ protocol Document: Codable {
     var createdDate: Date { get }
     var fileType: String { get }
 }
+
+enum ViewType {
+    case library
+    case star
+    case worksheetList
+    case searchedSheet
+}

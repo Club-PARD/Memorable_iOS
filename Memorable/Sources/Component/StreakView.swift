@@ -28,6 +28,10 @@ class StreakView: UIView {
         if let streakRightGradientView = layer.sublayers?.first(where: { $0 is CAGradientLayer && ($0 as! CAGradientLayer).startPoint.x == 0.5 }) {
             streakRightGradientView.frame = CGRect(x: bounds.width / 2, y: 0, width: bounds.width / 2, height: bounds.height)
         }
+
+        // 오늘 날짜가 컬렉션뷰의 중앙에 오도록 스크롤
+        let todayIndexPath = IndexPath(item: 7, section: 0) // 오늘 날짜의 인덱스는 7
+        collectionView.scrollToItem(at: todayIndexPath, at: .centeredHorizontally, animated: false)
     }
     
     override init(frame: CGRect) {
@@ -72,10 +76,16 @@ class StreakView: UIView {
         let calendar = Calendar.current
         let today = Date()
         
+        dates.removeAll() // Clear previous dates
         for i in -7...7 {
             if let date = calendar.date(byAdding: .day, value: i, to: today) {
                 dates.append(date)
             }
+        }
+        
+        // Ensure attendanceRecord has the same number of elements as dates
+        if attendanceRecord.count != dates.count {
+            attendanceRecord = Array(repeating: false, count: dates.count)
         }
     }
     
@@ -95,13 +105,14 @@ class StreakView: UIView {
 
 extension StreakView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 9 // 3일 전부터 3일 후까지
+//        return 9 // 3일 전부터 3일 후까지
+        return attendanceRecord.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DayCell", for: indexPath) as! DayCell
         
-        let dateIndex = indexPath.item + 3 // 7일 전부터 시작하므로 4를 더해 3일 전부터 시작
+        let dateIndex = indexPath.item
         let date = dates[dateIndex]
         let calendar = Calendar.current
         let dayIndex = calendar.component(.weekday, from: date) - 1

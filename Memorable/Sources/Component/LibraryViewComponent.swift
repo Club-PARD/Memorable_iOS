@@ -14,6 +14,7 @@ protocol LibraryViewComponentDelegate: AnyObject {
     func didTapWrongsheetButton(with documents: [Document])
     func didTapRecentButton()
     func didUpdateBookmark(for document: Document)
+    func didTapWorksheetCell()
 }
 
 class LibraryViewComponent: UIView {
@@ -606,6 +607,7 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
                     
                         let workSheetVC = WorkSheetViewController()
                         WorkSheetManager.shared.worksheetDetail = detail
+                        self.delegate?.didTapWorksheetCell()
                         self.navigateToViewController(workSheetVC)
                     }
                 }
@@ -665,18 +667,14 @@ extension LibraryViewComponent: UITableViewDataSource, UITableViewDelegate, Rece
     }
     
     func didTapBookmark<T: Document>(for document: T) {
-        // 해당 문서 타입의 배열에서 문서를 업데이트
-        if let index = worksheetDocuments.firstIndex(where: { $0.id == document.id }) {
-            worksheetDocuments[index] = document
-        } else if let index = testsheetDocuments.firstIndex(where: { $0.id == document.id }) {
-            testsheetDocuments[index] = document
-        } else if let index = wrongsheetDocuments.firstIndex(where: { $0.id == document.id }) {
-            wrongsheetDocuments[index] = document
+        if let index = currentDocuments.firstIndex(where: { $0.id == document.id && $0.fileType == document.fileType }) {
+            currentDocuments[index] = document
+            
+            let indexPath = IndexPath(row: index, section: 0)
+            recentTableView.reloadRows(at: [indexPath], with: .none)
         }
         
-        // 현재 필터를 적용하여 currentDocuments 업데이트
         updateCurrentDocuments()
-        
         delegate?.didUpdateBookmark(for: document)
     }
 }
