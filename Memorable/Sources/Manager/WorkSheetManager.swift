@@ -166,8 +166,10 @@ class WorkSheetManager {
                 }
 
                 if self.correctCount == self.userAnswer.count {
-                    self.correctAll()
-                    isCorrectAll(true)
+                    if !detail.isCompleteAllBlanks {
+                        self.correctAll()
+                        isCorrectAll(true)
+                    }
                 }
 
                 worksheet.layoutIfNeeded()
@@ -200,8 +202,10 @@ class WorkSheetManager {
                 }
 
                 if self.correctCount == self.userAnswer.count {
-                    self.correctAll()
-                    isCorrectAll(true)
+                    if !detail.isCompleteAllBlanks {
+                        self.correctAll()
+                        isCorrectAll(true)
+                    }
                 }
 
                 worksheet.layoutIfNeeded()
@@ -276,7 +280,8 @@ class WorkSheetManager {
             }
             else {
                 textField.textColor = MemorableColor.Gray2
-                textField.text = correctAnswer
+                textField.placeholder = correctAnswer
+                textField.text = ""
             }
         }
         else if userInput.lowercased() == correctAnswer.replacingOccurrences(of: " ", with: "").lowercased() {

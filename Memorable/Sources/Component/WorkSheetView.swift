@@ -140,7 +140,7 @@ class WorkSheetView: UIView {
                 }
                 let labelWidth = label.intrinsicContentSize.width
 
-                if currentLineWidth + labelWidth < self.viewWidth - 300 {
+                if currentLineWidth + labelWidth < self.viewWidth - 250 {
                     if currentLineView == nil {
                         currentLineView = self.createNewLineView()
                         self.containerView.addArrangedSubview(currentLineView!)
@@ -159,7 +159,8 @@ class WorkSheetView: UIView {
                 }
             }
 
-            // Create and add text field
+            // 텍스트필드 생성 부분 수정
+            let textFieldWidth = self.calculateWidth(for: answer)
             let textField = UITextField().then {
                 $0.delegate = self
                 $0.textAlignment = .center
@@ -168,10 +169,10 @@ class WorkSheetView: UIView {
                 $0.backgroundColor = MemorableColor.Gray5
 
                 $0.snp.makeConstraints { make in
-                    make.width.equalTo(100)
+                    make.width.equalTo(textFieldWidth)
                     make.height.equalTo(30)
                 }
-                $0.placeholder = "                           "
+                $0.placeholder = String(repeating: " ", count: answer.count) // 답변 길이만큼 공백으로 플레이스홀더 설정
 
                 // 좌우 여백 추가
                 let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 30))
@@ -182,9 +183,7 @@ class WorkSheetView: UIView {
             }
             self.userAnswers.append(textField)
 
-            let textFieldWidth = textField.intrinsicContentSize.width
-
-            if currentLineWidth + textFieldWidth < self.viewWidth - 300 {
+            if currentLineWidth + textFieldWidth < self.viewWidth - 250 {
                 if currentLineView == nil {
                     currentLineView = self.createNewLineView()
                     self.containerView.addArrangedSubview(currentLineView!)
@@ -213,13 +212,13 @@ class WorkSheetView: UIView {
 
         for word in words {
             let label = UILabel().then {
-                $0.text = String(word) + " "
+                $0.text = String(word) + ""
                 $0.textColor = .black
                 $0.textAlignment = .center
             }
             let labelWidth = label.intrinsicContentSize.width
 
-            if currentLineWidth + labelWidth < self.viewWidth - 300 {
+            if currentLineWidth + labelWidth < self.viewWidth - 250 {
                 if currentLineView == nil {
                     currentLineView = self.createNewLineView()
                     self.containerView.addArrangedSubview(currentLineView!)
@@ -239,6 +238,15 @@ class WorkSheetView: UIView {
         }
 
         return self.containerView
+    }
+
+    // 텍스트 길이에 따른 너비 계산 함수
+    func calculateWidth(for text: String, minWidth: CGFloat = 80, maxWidth: CGFloat = 150) -> CGFloat {
+        let font = UIFont.systemFont(ofSize: 13)
+        let attributes = [NSAttributedString.Key.font: font]
+        let size = (text as NSString).size(withAttributes: attributes)
+        print("SIZE: \(size)")
+        return min(max(size.width + 50, minWidth), maxWidth) // 30은 여백을 위한 추가 너비
     }
 
     func calculateLineWidth(_ lineView: UIStackView) -> CGFloat {
