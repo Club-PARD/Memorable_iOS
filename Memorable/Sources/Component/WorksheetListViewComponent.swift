@@ -20,6 +20,8 @@ class WorksheetListViewComponent: UIView {
 
     private var currentDisplayType: DisplayDocumentType = .all
     private var currentCategory: String = "전체보기"
+    private var lastDisplayType: DisplayDocumentType?
+    private var lastCategory: String?
     
     private var selectedDocuments: [Document] = []
     private var actionSheetView: EditActionSheetView?
@@ -321,6 +323,20 @@ class WorksheetListViewComponent: UIView {
             filterButtonTapped(button)
         }
     }
+    
+    func saveCurrentState() {
+        lastDisplayType = currentDisplayType
+        lastCategory = currentCategory
+    }
+
+    func restoreLastState() {
+        if let lastDisplayType = lastDisplayType, let lastCategory = lastCategory {
+            currentDisplayType = lastDisplayType
+            currentCategory = lastCategory
+            updateCurrentDocuments()
+            selectCategory(lastCategory)
+        }
+    }
 }
 
 extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate, RecentsheetCellDelegate {
@@ -348,6 +364,8 @@ extension WorksheetListViewComponent: UITableViewDataSource, UITableViewDelegate
             tableView.deselectRow(at: indexPath, animated: true)
             let document = worksheets[indexPath.row]
                     
+            saveCurrentState()
+            
             switch document.fileType {
             case "빈칸학습지":
                 if let worksheet = document as? Worksheet {

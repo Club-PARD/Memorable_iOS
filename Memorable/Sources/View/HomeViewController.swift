@@ -41,6 +41,8 @@ class HomeViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         fetchDocuments()
+        fetchMostRecentWorksheet()
+        worksheetListViewComponent.restoreLastState()
     }
     
     override func viewDidLoad() {
@@ -493,11 +495,6 @@ extension HomeViewController: HeaderComponentDelegate {
 }
 
 extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, WorksheetListViewComponentDelegate, SearchedSheetViewDelegate {
-    func didTapWorksheetCell() {
-        print("최근 학습지 업데이트")
-        fetchMostRecentWorksheet()
-        // TODO: 왜 안돼?
-    }
     
     
     // worksheetlist
