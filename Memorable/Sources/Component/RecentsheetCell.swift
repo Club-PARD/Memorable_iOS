@@ -61,11 +61,13 @@ class RecentsheetCell: UITableViewCell {
         }
         
         bookmarkButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-32)
+            make.trailing.equalToSuperview().offset(-22) // 오른쪽 여백 조정
             make.centerY.equalToSuperview()
-            make.width.height.equalTo(24)
+            make.width.height.equalTo(44) // 버튼 크기를 44x44로 설정
         }
-        
+
+        // 이미지 크기 조정을 위한 메서드 추가
+        bookmarkButton.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         bookmarkButton.addTarget(self, action: #selector(bookmarkTapped), for: .touchUpInside)
     }
     
@@ -139,7 +141,6 @@ class RecentsheetCell: UITableViewCell {
     @objc private func bookmarkTapped() {
         guard let document = document else { return }
 //        let originalBookmarkState = document.isBookmarked
-//
 //        // 즉시 UI 업데이트
 //        updateBookmarkButton(isBookmarked: !originalBookmarkState)
         

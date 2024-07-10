@@ -158,6 +158,19 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         super.viewWillAppear(animated)
         print("TestSheetViewController - viewWillAppear called")
         loadTestsheet()
+        displayScore()
+    }
+    
+    private func displayScore() {
+        let currentState = isFirstSheetSelected ? firstSheetState : secondSheetState
+        if let score = currentState?.score, currentState?.isSubmitted == true {
+            resultLabel.text = "\(score)/\(currentQuestions.count)"
+            resultLabel.isHidden = false
+            scoreLabel.isHidden = false
+        } else {
+            resultLabel.isHidden = true
+            scoreLabel.isHidden = true
+        }
     }
     
     override func viewDidLoad() {
@@ -664,7 +677,7 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
     }
     
     @objc private func backButtonTapped() {
-        let alertController = UIAlertController(title: "시험지 나가기", message: "응시 데이터는 모두 사라지며\n재진입 시 작성하신 답안은 모두 지워집니다.", preferredStyle: .alert)
+        let alertController = UIAlertController(title: "시험지 나가기", message: "제출되지 않은 시험지의 응시데이터는 지워집니다.", preferredStyle: .alert)
         let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
             self.navigationController?.popViewController(animated: true)
         }
@@ -764,20 +777,28 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
                 case .success(let response):
                     if self.isFirstSheetSelected {
                         self.testsheetDetail?.score?[0] = response.score?[0] ?? 0
-                        // 첫 번째 시험지의 isCorrect 업데이트
                         if let firstAnswerCount = self.firstSheetState?.userAnswers.count,
                            let responseIsCorrect = response.isCorrect {
                             self.testsheetDetail?.isCorrect?.replaceSubrange(0..<firstAnswerCount, with: responseIsCorrect.prefix(firstAnswerCount))
+                            self.firstSheetState?.isCorrect = Array(responseIsCorrect.prefix(firstAnswerCount))
+                            print("Updated isCorrect for first sheet: \(self.testsheetDetail?.isCorrect ?? [])")
                         }
                     } else {
                         self.testsheetDetail?.score?[1] = response.score?[1] ?? 0
-                        // 두 번째 시험지의 isCorrect 업데이트
                         if let firstAnswerCount = self.firstSheetState?.userAnswers.count,
                            let secondAnswerCount = self.secondSheetState?.userAnswers.count,
                            let responseIsCorrect = response.isCorrect {
                             let startIndex = firstAnswerCount
                             let endIndex = startIndex + secondAnswerCount
-                            self.testsheetDetail?.isCorrect?.replaceSubrange(startIndex..<endIndex, with: responseIsCorrect.prefix(secondAnswerCount))
+                            if responseIsCorrect.count >= endIndex {
+                                self.testsheetDetail?.isCorrect?.replaceSubrange(startIndex..<endIndex, with: responseIsCorrect[startIndex..<endIndex])
+                                self.secondSheetState?.isCorrect = Array(responseIsCorrect[startIndex..<endIndex])
+                                print("Updated isCorrect for second sheet: \(self.testsheetDetail?.isCorrect ?? [])")
+                            } else {
+                                self.testsheetDetail?.isCorrect?.replaceSubrange(startIndex..<endIndex, with: responseIsCorrect.prefix(secondAnswerCount))
+                                self.secondSheetState?.isCorrect = Array(responseIsCorrect.prefix(secondAnswerCount))
+                                print("Updated isCorrect for second sheet (partial): \(self.testsheetDetail?.isCorrect ?? [])")
+                            }
                         }
                     }
                     print("firstSheetState: \(String(describing: self.firstSheetState))")
@@ -789,6 +810,8 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
             }
         }
     }
+
+
     @objc private func sendWrongAnswers() {
         showSendWrongAlert()
     }

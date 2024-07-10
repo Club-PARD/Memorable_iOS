@@ -9,7 +9,8 @@ import UIKit
 import SnapKit
 
 class QuestionView: UIView {
-
+    
+    var isCorrect: Bool?
     
     let questionNumberView: UIView = {
         let view = UIView()

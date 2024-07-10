@@ -19,3 +19,10 @@ protocol Document: Codable {
 struct UpdatedDocument: Codable {
     let name: String
 }
+
+enum ViewType {
+    case library
+    case star
+    case worksheetList
+    case searchedSheet
+}

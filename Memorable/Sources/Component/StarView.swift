@@ -198,7 +198,7 @@ class StarView: UIView {
 
 extension StarView: UITableViewDataSource, UITableViewDelegate, RecentsheetCellDelegate {
     func didTapBookmark<T: Document>(for document: T) {
-        if let index = filteredDocuments.firstIndex(where: { $0.id == document.id }) {
+        if let index = filteredDocuments.firstIndex(where: { $0.id == document.id && $0.fileType == document.fileType}) {
             filteredDocuments[index] = document
         }
         updateCurrentDocuments()

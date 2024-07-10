@@ -290,7 +290,7 @@ extension SearchedSheetView: UITableViewDataSource, UITableViewDelegate {
 
 extension SearchedSheetView: RecentsheetCellDelegate {
     func didTapBookmark<T: Document>(for document: T) {
-        if let index = allDocuments.firstIndex(where: { $0.id == document.id }) {
+        if let index = allDocuments.firstIndex(where: { $0.id == document.id && $0.fileType == document.fileType}) {
             allDocuments[index] = document
         }
         tableView.reloadData()
