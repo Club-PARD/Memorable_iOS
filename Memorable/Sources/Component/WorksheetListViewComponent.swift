@@ -29,7 +29,9 @@ class WorksheetListViewComponent: UIView {
     private let filterScrollView: UIScrollView
     private let filterStackView: UIStackView
     private var allButton = UIButton()
+
     private var currentFilterButton = UIButton() // MARK: 즐겨찾기 수정
+
     private let settingButton: UIButton
     private var editButton: UIBarButtonItem?
     private var doneButton: UIBarButtonItem?
@@ -56,7 +58,8 @@ class WorksheetListViewComponent: UIView {
         layer.cornerRadius = 40
         self.clipsToBounds = true
         self.allButton = createFilterButton(title: "전체보기")
-        currentFilterButton = allButton // MARK: 즐겨찾기 수정
+
+        self.currentFilterButton = allButton // MARK: 즐겨찾기 수정
         
         setupViews()
         setupTableView()
@@ -151,10 +154,10 @@ class WorksheetListViewComponent: UIView {
     }
     
     func setWorksheets(_ documents: [Document], displayType: DisplayDocumentType = .all) {
-        self.currentDisplayType = displayType
-        self.worksheets = documents.sorted(by: { $0.createdDate > $1.createdDate })
-        self.filteredWorksheets = documents.sorted(by: { $0.createdDate > $1.createdDate })
-        self.categories = Set(documents.map { $0.category })
+        currentDisplayType = displayType
+        worksheets = documents.sorted(by: { $0.createdDate > $1.createdDate })
+        filteredWorksheets = documents.sorted(by: { $0.createdDate > $1.createdDate })
+        categories = Set(documents.map { $0.category })
         updateButtonState(currentFilterButton, isSelected: true)
         updateCurrentDocuments()
         setupFilterButtons()
@@ -172,7 +175,7 @@ class WorksheetListViewComponent: UIView {
         }
         
         // 초기 상태 설정
-        updateButtonState(self.allButton, isSelected: true)
+        updateButtonState(allButton, isSelected: true)
     }
     
     private func createFilterButton(title: String) -> UIButton {

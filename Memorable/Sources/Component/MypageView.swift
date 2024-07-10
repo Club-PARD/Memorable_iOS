@@ -63,6 +63,7 @@ class MypageView: UIView {
     private let logoutButton: UIButton
     private let inquiryButton: UIButton
     private let removeUserButton: UIButton
+    private let privacyPolicyButton: UIButton
     
     private var selectedMembershipButton: UIView?
     private let purchaseButton = UIButton(type: .system).then {
@@ -96,6 +97,7 @@ class MypageView: UIView {
         logoutButton = UIButton(type: .system)
         inquiryButton = UIButton(type: .system)
         removeUserButton = UIButton(type: .system)
+        privacyPolicyButton = UIButton(type: .system)
         
         super.init(frame: frame)
         
@@ -164,8 +166,8 @@ class MypageView: UIView {
         streakRightGradientView.startPoint = CGPoint(x: 0.5, y: 0.5)
         streakRightGradientView.endPoint = CGPoint(x: 1, y: 0.5)
         
-            streakView.layer.addSublayer(streakLeftGradientView)
-            streakView.layer.addSublayer(streakRightGradientView)
+        streakView.layer.addSublayer(streakLeftGradientView)
+        streakView.layer.addSublayer(streakRightGradientView)
             
         // Ensure the gradient layers are added after the subviews are added
         streakView.layoutIfNeeded()
@@ -429,10 +431,12 @@ class MypageView: UIView {
         setupServiceButton(logoutButton, title: "로그아웃하기", imageName: "logout", action: #selector(showLogoutAlert))
         setupServiceButton(inquiryButton, title: "문의하기", imageName: "inquiry", action: #selector(showInquiryActionSheet))
         setupServiceButton(removeUserButton, title: "회원 탈퇴하기", imageName: "removeuser", action: #selector(showRemoveUserAlert))
+        setupServiceButton(privacyPolicyButton, title: "개인정보처리방침", imageName: "privacy", action: #selector(seePrivacyPolicy))
         
         contentView.addSubview(logoutButton)
         contentView.addSubview(inquiryButton)
         contentView.addSubview(removeUserButton)
+        contentView.addSubview(privacyPolicyButton)
     }
     
     private func setupPurchaseButton() {
@@ -568,6 +572,13 @@ class MypageView: UIView {
         removeUserButton.snp.makeConstraints { make in
             make.top.equalTo(logoutButton.snp.bottom).offset(20)
             make.leading.equalTo(logoutButton)
+            make.width.equalTo(logoutButton)
+            make.height.equalTo(80)
+        }
+        
+        privacyPolicyButton.snp.makeConstraints { make in
+            make.top.equalTo(removeUserButton)
+            make.leading.equalTo(removeUserButton.snp.trailing).offset(20)
             make.width.equalTo(logoutButton)
             make.height.equalTo(80)
         }
@@ -714,7 +725,7 @@ class MypageView: UIView {
 //    @objc private func purchaseButtonTapped() {
 //        guard let selectedButton = selectedMembershipButton else { return }
 //        _ = ["Standard", "Pro", "Premium"][selectedButton.tag]
-//        
+//
 //        if purchaseButton.title(for: .normal) == "결제 관리하기" {
 //            showToast(message: "추후 결제 및 관리는 다음 버전 출시 시 사용가능합니다.")
 //        } else {
@@ -765,7 +776,8 @@ class MypageView: UIView {
                         do {
                             if let jsonResult = try JSONSerialization.jsonObject(with: responseData, options: []) as? [String: Any] {
                                 if let webURL = jsonResult["next_redirect_pc_url"] as? String ?? jsonResult["next_redirect_mobile_url"] as? String,
-                                   let url = URL(string: webURL) {
+                                   let url = URL(string: webURL)
+                                {
                                     self.delegate?.mypageView(self, didRequestToOpenURL: url)
                                 } else {
                                     self.showToast(message: "결제 페이지 URL을 찾을 수 없습니다.")
@@ -816,6 +828,13 @@ class MypageView: UIView {
         alert.addAction(UIAlertAction(title: "아니오", style: .cancel, handler: nil))
         if let viewController = window?.rootViewController {
             viewController.present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    @objc private func seePrivacyPolicy() {
+        print("Privacy Policy")
+        if let viewController = window?.rootViewController {
+            viewController.present(PrivacyPolicyView(), animated: true, completion: nil)
         }
     }
     
