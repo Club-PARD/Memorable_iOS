@@ -79,7 +79,7 @@ class LoginViewController: UIViewController {
 extension LoginViewController: ASAuthorizationControllerDelegate {
     private func registerNewAccount(credential: ASAuthorizationAppleIDCredential) {
         print("Registering New Account with User: \(credential.user)")
-        setupActivityIndicator(view: view)
+//        setupActivityIndicator(view: view)
         
         let userIdentifier: String = credential.user
         let givenName: String = credential.fullName?.givenName ?? "NIL"
@@ -96,12 +96,13 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
         APIManager.shared.postData(to: "/api/users", body: userData) { (result: Result<EmptyResponse, Error>) in
             switch result {
             case .success:
+//                removeActivityIndicator()
                 print("User successfully posted")
                 self.dismiss(animated: true)
                 self.delegate?.loginDidComplete()
                 self.navigationController?.setViewControllers([OnboardingViewController()], animated: true)
             case .failure(let error):
-                removeActivityIndicator()
+//                removeActivityIndicator()
                 print("Error posting user: \(error)")
             }
         }

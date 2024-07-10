@@ -404,15 +404,17 @@ class HeaderComponent: UIView {
         
         for pageIndex in 0 ..< pdfDocument.pageCount {
             if let page = pdfDocument.page(at: pageIndex) {
-                if let pageText = page.string {
+                if let pageText = page.string, !pageText.isEmpty {
+                    // PDF에 텍스트 레이어가 있는 경우 이를 사용
                     extractedText += pageText
-                }
-                
-                let pageImage = page.thumbnail(of: page.bounds(for: .mediaBox).size, for: .mediaBox)
-                dispatchGroup.enter()
-                recognizeTextInImage(image: pageImage) { recognizedText in
-                    self.extractedText += recognizedText
-                    dispatchGroup.leave()
+                } else {
+                    // 텍스트 레이어가 없거나 비어있는 경우 OCR 사용
+                    let pageImage = page.thumbnail(of: page.bounds(for: .mediaBox).size, for: .mediaBox)
+                    dispatchGroup.enter()
+                    recognizeTextInImage(image: pageImage) { recognizedText in
+                        self.extractedText += recognizedText
+                        dispatchGroup.leave()
+                    }
                 }
             }
         }
@@ -675,6 +677,26 @@ class HeaderComponent: UIView {
     // TODO: 검색창 추가기능
     private let searchResultsTableView = UITableView()
     private var searchResults: [Document] = []
+    private var tapGesture: UITapGestureRecognizer!
+    
+    override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        setupTapGesture()
+    }
+    
+    private func setupTapGesture() {
+        tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        tapGesture.cancelsTouchesInView = false
+        superview?.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func handleTap(_ gesture: UITapGestureRecognizer) {
+        let location = gesture.location(in: self)
+        if !searchBar.frame.contains(location) && !searchResultsTableView.frame.contains(location) {
+            searchBar.resignFirstResponder()
+            searchResultsTableView.isHidden = true
+        }
+    }
     
     private func setupSearchResultsTableView() {
         insertSubview(searchResultsTableView, belowSubview: searchBar)
@@ -817,7 +839,7 @@ extension HeaderComponent: UITableViewDataSource, UITableViewDelegate {
                         }
                         
                         let workSheetVC = WorkSheetViewController()
-                        workSheetVC.worksheetDetail = detail
+                        WorkSheetManager.shared.worksheetDetail = detail
                         self.navigateToViewController(workSheetVC)
                     }
                 }
