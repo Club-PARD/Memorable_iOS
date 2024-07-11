@@ -18,6 +18,8 @@
 		DB3CEC932C31655A00F8211C /* RecentsheetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC922C31655A00F8211C /* RecentsheetCell.swift */; };
 		DB3CEC952C31A5DA00F8211C /* SearchedSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC942C31A5DA00F8211C /* SearchedSheetView.swift */; };
 		DB3CEC972C31E16100F8211C /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3CEC962C31E16100F8211C /* GradientView.swift */; };
+		DB494C032C3F98DF0061F4CD /* LoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB494C022C3F98DF0061F4CD /* LoadingViewController.swift */; };
+		DB494C052C3FB92A0061F4CD /* LoadingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB494C042C3FB92A0061F4CD /* LoadingIndicatorView.swift */; };
 		DB6247602C35C38D00592773 /* InquiryViewcontroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB62475F2C35C38D00592773 /* InquiryViewcontroller.swift */; };
 		DB6247782C39D50100592773 /* EditActionSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6247772C39D50100592773 /* EditActionSheetView.swift */; };
 		DBCEAE2D2C3AFBB100E6C864 /* KakaoPAYManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCEAE2C2C3AFBB100E6C864 /* KakaoPAYManager.swift */; };
@@ -118,6 +120,8 @@
 		DB3CEC922C31655A00F8211C /* RecentsheetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentsheetCell.swift; sourceTree = "<group>"; };
 		DB3CEC942C31A5DA00F8211C /* SearchedSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchedSheetView.swift; sourceTree = "<group>"; };
 		DB3CEC962C31E16100F8211C /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
+		DB494C022C3F98DF0061F4CD /* LoadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewController.swift; sourceTree = "<group>"; };
+		DB494C042C3FB92A0061F4CD /* LoadingIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIndicatorView.swift; sourceTree = "<group>"; };
 		DB62475F2C35C38D00592773 /* InquiryViewcontroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InquiryViewcontroller.swift; sourceTree = "<group>"; };
 		DB6247772C39D50100592773 /* EditActionSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditActionSheetView.swift; sourceTree = "<group>"; };
 		DBCEAE2C2C3AFBB100E6C864 /* KakaoPAYManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakaoPAYManager.swift; sourceTree = "<group>"; };
@@ -275,6 +279,7 @@
 				DB3CEC962C31E16100F8211C /* GradientView.swift */,
 				DBEB96A02C32BACF00106866 /* StreakView.swift */,
 				DBEB96A22C32BF8000106866 /* DayCell.swift */,
+				DB494C042C3FB92A0061F4CD /* LoadingIndicatorView.swift */,
 			);
 			path = Component;
 			sourceTree = "<group>";
@@ -338,6 +343,7 @@
 				DB3CEC8A2C30457A00F8211C /* TestSheetViewController.swift */,
 				DB62475F2C35C38D00592773 /* InquiryViewcontroller.swift */,
 				DB6247772C39D50100592773 /* EditActionSheetView.swift */,
+				DB494C022C3F98DF0061F4CD /* LoadingViewController.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -558,6 +564,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB494C052C3FB92A0061F4CD /* LoadingIndicatorView.swift in Sources */,
 				DB3CEC8B2C30457A00F8211C /* TestSheetViewController.swift in Sources */,
 				DDF67E8A2C330F3400F37BFC /* WrongQuestionView.swift in Sources */,
 				DB6247602C35C38D00592773 /* InquiryViewcontroller.swift in Sources */,
@@ -569,6 +576,7 @@
 				DDAC4BD62C2805AB006206EB /* AppDelegate.swift in Sources */,
 				DDAC4BE02C2805AB006206EB /* Memorable.xcdatamodeld in Sources */,
 				DD421DCB2C3586D900E4D320 /* Onboarding2.swift in Sources */,
+				DB494C032C3F98DF0061F4CD /* LoadingViewController.swift in Sources */,
 				DB3CEC912C314AAB00F8211C /* MypageView.swift in Sources */,
 				DB6247782C39D50100592773 /* EditActionSheetView.swift in Sources */,
 				DBEB97002C35775900106866 /* Wrongsheet.swift in Sources */,
