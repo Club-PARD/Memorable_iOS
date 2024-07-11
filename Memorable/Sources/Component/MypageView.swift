@@ -62,8 +62,9 @@ class MypageView: UIView {
     private let serviceLabel: UILabel
     private let logoutButton: UIButton
     private let inquiryButton: UIButton
-    private let removeUserButton: UIButton
+    private let guideButton: UIButton
     private let privacyPolicyButton: UIButton
+    private let removeUserButton: UIButton
     
     private var selectedMembershipButton: UIView?
     private let purchaseButton = UIButton(type: .system).then {
@@ -96,8 +97,9 @@ class MypageView: UIView {
         serviceLabel = UILabel()
         logoutButton = UIButton(type: .system)
         inquiryButton = UIButton(type: .system)
-        removeUserButton = UIButton(type: .system)
+        guideButton = UIButton(type: .system)
         privacyPolicyButton = UIButton(type: .system)
+        removeUserButton = UIButton(type: .system)
         
         super.init(frame: frame)
         
@@ -430,13 +432,15 @@ class MypageView: UIView {
         
         setupServiceButton(logoutButton, title: "로그아웃하기", imageName: "logout", action: #selector(showLogoutAlert))
         setupServiceButton(inquiryButton, title: "문의하기", imageName: "inquiry", action: #selector(showInquiryActionSheet))
-        setupServiceButton(removeUserButton, title: "회원 탈퇴하기", imageName: "removeuser", action: #selector(showRemoveUserAlert))
+        setupServiceButton(guideButton, title: "사용가이드 보기", imageName: "guide", action: #selector(showUserGuide))
         setupServiceButton(privacyPolicyButton, title: "개인정보처리방침", imageName: "privacy", action: #selector(seePrivacyPolicy))
+        setupServiceButton(removeUserButton, title: "회원 탈퇴하기", imageName: "removeuser", action: #selector(showRemoveUserAlert))
         
         contentView.addSubview(logoutButton)
         contentView.addSubview(inquiryButton)
-        contentView.addSubview(removeUserButton)
+        contentView.addSubview(guideButton)
         contentView.addSubview(privacyPolicyButton)
+        contentView.addSubview(removeUserButton)
     }
     
     private func setupPurchaseButton() {
@@ -569,7 +573,7 @@ class MypageView: UIView {
             make.height.equalTo(80)
         }
         
-        removeUserButton.snp.makeConstraints { make in
+        guideButton.snp.makeConstraints { make in
             make.top.equalTo(logoutButton.snp.bottom).offset(20)
             make.leading.equalTo(logoutButton)
             make.width.equalTo(logoutButton)
@@ -577,8 +581,15 @@ class MypageView: UIView {
         }
         
         privacyPolicyButton.snp.makeConstraints { make in
-            make.top.equalTo(removeUserButton)
-            make.leading.equalTo(removeUserButton.snp.trailing).offset(20)
+            make.top.equalTo(guideButton)
+            make.leading.equalTo(guideButton.snp.trailing).offset(20)
+            make.width.equalTo(logoutButton)
+            make.height.equalTo(80)
+        }
+        
+        removeUserButton.snp.makeConstraints { make in
+            make.top.equalTo(privacyPolicyButton.snp.bottom).offset(20)
+            make.leading.equalTo(privacyPolicyButton)
             make.width.equalTo(logoutButton)
             make.height.equalTo(80)
         }
@@ -822,10 +833,24 @@ class MypageView: UIView {
     // 회원 탈퇴 알림창 표시 메서드
     @objc private func showRemoveUserAlert() {
         let alert = UIAlertController(title: "회원 탈퇴", message: "가입하신 모든 정보가 삭제되며 업로드된 파일 정보가 모두 지워집니다.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "예", style: .destructive, handler: { _ in
-            // 회원 탈퇴 처리 코드
-        }))
         alert.addAction(UIAlertAction(title: "아니오", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "예", style: .destructive, handler: { _ in
+            print("Identifier: \(SignInManager.userIdentifierKey)")
+            // 회원 탈퇴 처리 코드
+            APIManager.shared.deleteData(endpoint: "/api/users/\(SignInManager.userIdentifierKey)") { error in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        print("사용자 삭제 실패: \(error.localizedDescription)")
+                    } else {
+                        print("사용자 삭제 성공")
+                        UserDefaults.standard.removeObject(forKey: SignInManager.userIdentifierKey)
+                        
+                        guard let navigationController = self.window?.rootViewController as? UINavigationController else { return }
+                        navigationController.setViewControllers([LoginViewController()], animated: true)
+                    }
+                }
+            }
+        }))
         if let viewController = window?.rootViewController {
             viewController.present(alert, animated: true, completion: nil)
         }
@@ -834,14 +859,14 @@ class MypageView: UIView {
     @objc private func seePrivacyPolicy() {
         print("Privacy Policy")
         if let viewController = window?.rootViewController {
-            viewController.present(PrivacyPolicyView(), animated: true, completion: nil)
+            viewController.present(PrivacyPolicyViewController(), animated: true, completion: nil)
         }
     }
     
     @objc func signOut() {
         print("❎ Signed Out")
 
-        UserDefaults.standard.removeObject(forKey: SignInManager.userIdentifierKey)
+        UserDefaults.standard.removeObject(forKey: "login")
         
         guard let navigationController = window?.rootViewController as? UINavigationController else { return }
         navigationController.setViewControllers([LoginViewController()], animated: false)
@@ -855,6 +880,12 @@ class MypageView: UIView {
         if let viewController = window?.rootViewController {
             viewController.present(inquiryVC, animated: true, completion: nil)
         }
+    }
+    
+    @objc private func showUserGuide() {
+        print("SHOW User Guide")
+        guard let navigationController = window?.rootViewController as? UINavigationController else { return }
+        navigationController.pushViewController(OnboardingViewController(isFromProfile: true), animated: true)
     }
     
     // 문의하기 토스트 메시지 표시 메서드

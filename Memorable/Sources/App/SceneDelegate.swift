@@ -56,7 +56,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func isLoggedIn() -> Bool {
-        return UserDefaults.standard.string(forKey: SignInManager.userIdentifierKey) != nil
+        return UserDefaults.standard.string(forKey: "login") != nil
     }
     
     func navigateToLogin() {
@@ -68,7 +68,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func createAndNavigateToWorksheet(name: String, category: String, content: String) {
-        guard let userIdentifier = UserDefaults.standard.string(forKey: SignInManager.userIdentifierKey) else {
+        guard let userIdentifier = UserDefaults.standard.string(forKey: "login") else {
             print("User identifier not found")
             return
         }
