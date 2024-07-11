@@ -40,37 +40,46 @@ Learn more, Be memorable 당신의 기억에 남게
 <br/>
 
 ## 🌟 Memorable 주요 기능들
+<details>
+  <summary><b>주요 기능</b></summary>
+  <div markdown="1">
+    <ul>
+      <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/24c19b37-160c-4e38-beb4-30b8bfc3ae91">
+      <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/9ffd6cd9-fa8c-4aee-a33c-222f6e4c96e6">
+      <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/fcdc11a0-90bd-4634-8947-6ffbdec846b2">
+      <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/b9fb8b34-3557-4a3a-b73c-9ba31faed6ae">
+      <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/10bd44b1-98f7-4d6b-b5f8-aa50500ab3bc">
+    </ul>
+  </div>
+</details>
 
+## 🌟 Memorable 세부 기능들
 > 🔑 애플로그인으로 간편하게 Memorable에 접속할 수 있어요!
 
 <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/e8c6a4ea-1ea5-4d17-b5d0-41520ee5bda2" width=45%> <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/cc32ed2b-b44a-43dd-8a81-8dab5a86624c" width=45%>
-
+  
 > 🏃‍♂️‍➡️ 온보딩 화면으로 쉽게 사용법을 익힐 수 있어요!
 
-<img src="https://github.com/nth221/videx/assets/64348852/bb69d390-8185-49d5-bd2f-dbec84cb229a" width=30%>
+<img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/c4311641-c5bf-4916-b652-be7b5ae48172" width=45%> <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/ed014d2b-12ea-4093-a408-736518d97eb7" width=45%>
 
 > 📖 빈칸 학습지를 자동으로 추출해 손쉽고 효율적으로 공부할 수 있어요!
 
-<img src="https://github.com/snackads/SnackAds/assets/64348852/87400302-c3a8-4d7c-acc5-452ddd958667" width="30%"> <img src="https://github.com/nth221/videx/assets/64348852/e1cdc9b2-d47c-41ea-aca7-a83e03afc129" width=30%>
+<img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/c4311641-c5bf-4916-b652-be7b5ae48172" width=45%> <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/ed014d2b-12ea-4093-a408-736518d97eb7" width=45%>
 
 > 📝 학습지를 통해 공부한 내용을 토대로 추출된 시험지로 효과적으로 테스트할 수 있어요!
 
-<img src="https://github.com/nth221/videx/assets/64348852/101dbd88-1e92-49ef-9271-cfa4f1b839c4" width=30%>
+<img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/c4311641-c5bf-4916-b652-be7b5ae48172" width=45%> <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/ed014d2b-12ea-4093-a408-736518d97eb7" width=45%>
 
 > 📚 시험지에서 오답처리된 문제들을 오답노트를 통해 다시 한번 복습할 수 있어요!
 
-<img src="https://github.com/nth221/videx/assets/64348852/36525b76-8ece-46cf-af58-9d105e9d2b0a" width=30%>
+<img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/c4311641-c5bf-4916-b652-be7b5ae48172" width=45%> <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/ed014d2b-12ea-4093-a408-736518d97eb7" width=45%>
 
 > 🔍 홈 라이브러리
 
-<img src="https://github.com/nth221/videx/assets/64348852/bb69d390-8185-49d5-bd2f-dbec84cb229a" width=30%>
+<img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/c4311641-c5bf-4916-b652-be7b5ae48172" width=45%> <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/ed014d2b-12ea-4093-a408-736518d97eb7" width=45%>
 
-> 📑 홈 즐겨찾기
+> 📑 홈 즐겨찾기 & 마이페이지
 
-<img src="https://github.com/nth221/videx/assets/64348852/bb69d390-8185-49d5-bd2f-dbec84cb229a" width=30%>
-
-> 👤 홈 마이페이지
-
-<img src="https://github.com/nth221/videx/assets/64348852/307d61b4-cf1f-41f2-9e63-69978d68324e" width=30%>
+<img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/c4311641-c5bf-4916-b652-be7b5ae48172" width=45%> <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/ed014d2b-12ea-4093-a408-736518d97eb7" width=45%>
 
 <br/>
