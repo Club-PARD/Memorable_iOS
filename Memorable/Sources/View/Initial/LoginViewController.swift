@@ -98,12 +98,50 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
             case .success:
 //                removeActivityIndicator()
                 print("User successfully posted")
+                
+                if let encodeData = try? JSONEncoder().encode(userData) {
+                    UserDefaults.standard.set(userData.identifier, forKey: "login")
+                    UserDefaults.standard.set(encodeData, forKey: "userInfo")
+                    print("👥 User Info Saved")
+                }
+                
                 self.dismiss(animated: true)
                 self.delegate?.loginDidComplete()
                 self.navigationController?.setViewControllers([OnboardingViewController()], animated: true)
             case .failure(let error):
-//                removeActivityIndicator()
                 print("Error posting user: \(error)")
+                
+                APIManager.shared.getData(to: "/api/users/\(credential.user)") { (info: User?, error: Error?) in
+
+                    DispatchQueue.main.async {
+                        // 3. 받아온 데이터 처리
+                        if let error = error {
+                            print("Error fetching data: \(error)")
+                            self.signOut()
+                            return
+                        }
+
+                        guard let user = info else {
+                            print("No data received")
+                            self.signOut()
+                            return
+                        }
+                        
+                        if let encodeData = try? JSONEncoder().encode(user) {
+                            UserDefaults.standard.set(userData.identifier, forKey: "login")
+                            UserDefaults.standard.set(encodeData, forKey: "userInfo")
+                            print("👥 User Info Saved")
+                        }
+
+                        print("GET: \(user.identifier)")
+                        print("GET: \(user.givenName)")
+                        print("GET: \(user.familyName)")
+                        print("GET: \(user.email)")
+
+                        self.delegate?.loginDidComplete()
+                        self.navigationController?.setViewControllers([OnboardingViewController()], animated: true)
+                    }
+                }
             }
         }
     }
@@ -114,21 +152,6 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
         
         dismiss(animated: true) { [weak self] in
             guard let self = self else { return }
-            
-            let userData = User(identifier: "aaaa", givenName: "bbbb", familyName: "cccc", email: "eeee@gmail.com")
-            
-//            APIManager.shared.postData(to: "/api/users", body: userData) { (result: Result<EmptyResponse, Error>) in
-//                removeActivityIndicator()
-//                switch result {
-//                case .success:
-//                    print("User successfully posted")
-//                    self.dismiss(animated: true)
-//                    self.delegate?.loginDidComplete()
-//                    self.navigationController?.setViewControllers([OnboardingViewController()], animated: true)
-//                case .failure(let error):
-//                    print("Error posting user: \(error)")
-//                }
-//            }
     
             APIManager.shared.getData(to: "/api/users/\(credential.user)") { (info: User?, error: Error?) in
 
@@ -149,6 +172,7 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
                     }
 
                     if let encodeData = try? JSONEncoder().encode(user) {
+                        UserDefaults.standard.set(user.identifier, forKey: "login")
                         UserDefaults.standard.set(encodeData, forKey: "userInfo")
                         print("👥 User Info Saved")
                     }
@@ -194,18 +218,16 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
 //                print("identifyTokenString: \(identifyTokenString)")
 //            }
             
-            print("User Identifier: \(userIdentifier)")
-            
-            UserDefaults.standard.set(userIdentifier, forKey: SignInManager.userIdentifierKey)
-            if fullName != nil && email != nil {
-                let user = User(identifier: userIdentifier, givenName: fullName?.givenName ?? "NIL", familyName: fullName?.familyName ?? "NIL", email: email ?? "NIL")
-                
-                if let encodeData = try? JSONEncoder().encode(user) {
-                    UserDefaults.standard.set(encodeData, forKey: "userInfo")
-                }
-                
-                print("👥 User Info Saved")
-            }
+//            if fullName != nil && email != nil {
+//                let user = User(identifier: userIdentifier, givenName: fullName?.givenName ?? "NIL", familyName: fullName?.familyName ?? "NIL", email: email ?? "NIL")
+//
+//                if let encodeData = try? JSONEncoder().encode(user) {
+//                    UserDefaults.standard.set(userIdentifier, forKey: "login")
+//                    UserDefaults.standard.set(encodeData, forKey: "userInfo")
+//                }
+//
+//                print("👥 User Info Saved")
+//            }
             
             if let _ = appleIDCredential.email, let _ = appleIDCredential.fullName {
                 registerNewAccount(credential: appleIDCredential)
@@ -215,6 +237,8 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
             
         case let passwordCredential as ASPasswordCredential:
             
+            SignInManager.userIdentifierKey = passwordCredential.user
+            
             // Sign in using an existing iCloud Keychain credential
             let username = passwordCredential.user
             let password = passwordCredential.password
@@ -222,7 +246,7 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
             print("User Name: \(username)")
             print("Password: \(password)")
             
-            UserDefaults.standard.set(username, forKey: SignInManager.userIdentifierKey)
+            UserDefaults.standard.set(username, forKey: "login")
             
             signInWithUserAndPassword(credential: passwordCredential)
             
@@ -247,7 +271,7 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
     func signOut() {
         print("❎ Signed Out")
 
-        UserDefaults.standard.removeObject(forKey: SignInManager.userIdentifierKey)
+        UserDefaults.standard.removeObject(forKey: "login")
         navigationController?.setViewControllers([LoginViewController()], animated: false)
     }
 }

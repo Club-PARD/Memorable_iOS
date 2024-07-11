@@ -54,6 +54,12 @@ class SplashViewController: UIViewController {
     }
 
     func checkAuthAndNavigate() {
+        guard let identifier = UserDefaults.standard.string(forKey: "login") else {
+            print("❌ No Identifier..")
+            return
+        }
+        SignInManager.userIdentifierKey = identifier
+
         SignInManager.checkUserAuth { [weak self] authState in
             guard let self = self else { return }
 
@@ -111,7 +117,7 @@ class SplashViewController: UIViewController {
 
     func signOut() {
         print("❎ Signed Out")
-        UserDefaults.standard.removeObject(forKey: SignInManager.userIdentifierKey)
+        UserDefaults.standard.removeObject(forKey: "login")
     }
 
     enum NavigationDestination {

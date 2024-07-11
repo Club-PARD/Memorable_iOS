@@ -1,5 +1,5 @@
 //
-//  Onboarding2.swift
+//  Onboarding6.swift
 //  Memorable
 //
 //  Created by 김현기 on 7/11/24.
@@ -9,9 +9,9 @@ import SnapKit
 import Then
 import UIKit
 
-class Onboarding2: UIView {
+class Onboarding6: UIView {
     private let onboardingImage = UIImageView().then {
-        $0.image = UIImage(named: "onboarding2")
+        $0.image = UIImage(named: "onboarding6")
         $0.contentMode = .scaleAspectFit
     }
     

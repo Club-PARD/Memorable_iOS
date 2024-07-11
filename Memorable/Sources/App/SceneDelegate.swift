@@ -16,8 +16,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         
-        let initialVC = LoadingViewController()
-//        let initialVC = SplashViewController()
+//        let initialVC = LoadingViewController()
+        let initialVC = SplashViewController()
         let navigationVC = UINavigationController(rootViewController: initialVC)
         
         if #available(iOS 13.0, *) {
@@ -57,7 +57,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func isLoggedIn() -> Bool {
-        return UserDefaults.standard.string(forKey: SignInManager.userIdentifierKey) != nil
+        return UserDefaults.standard.string(forKey: "login") != nil
     }
     
     func navigateToLogin() {
@@ -69,7 +69,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func createAndNavigateToWorksheet(name: String, category: String, content: String) {
-        guard let userIdentifier = UserDefaults.standard.string(forKey: SignInManager.userIdentifierKey) else {
+        guard let userIdentifier = UserDefaults.standard.string(forKey: "login") else {
             print("User identifier not found")
             return
         }

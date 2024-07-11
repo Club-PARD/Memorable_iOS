@@ -9,15 +9,15 @@ import AuthenticationServices
 import Foundation
 
 enum SignInManager {
-    static var userIdentifierKey = "userIdentifier"
-    static var userGivenName = "givenName"
-    static var userFamilyName = "familyName"
-    static var userEmail = "email"
+    static var userIdentifierKey = ""
+    static var userGivenName = ""
+    static var userFamilyName = ""
+    static var userEmail = ""
 
     static func checkUserAuth(completion: @escaping (AuthState)
         -> ())
     {
-        guard let userIdentifier = UserDefaults.standard.string(forKey: userIdentifierKey) else {
+        guard let userIdentifier = UserDefaults.standard.string(forKey: "login") else {
             print("User Identifier Does Not Exist!")
             completion(.undefined)
             return

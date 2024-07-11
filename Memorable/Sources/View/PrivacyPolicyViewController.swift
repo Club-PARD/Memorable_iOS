@@ -10,7 +10,7 @@ import SnapKit
 import Then
 import UIKit
 
-class PrivacyPolicyView: UIViewController {
+class PrivacyPolicyViewController: UIViewController {
     private lazy var pdfView = PDFView().then {
         $0.autoScales = true
         $0.displayMode = .singlePageContinuous
