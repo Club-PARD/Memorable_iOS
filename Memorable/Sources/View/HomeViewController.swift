@@ -493,13 +493,14 @@ extension HomeViewController: HeaderComponentDelegate {
     }
     
     func didCreateWorksheet(name: String, category: String, content: String) {
-//        setupActivityIndicator(view: view)
+        showLoadingViewController(withMessage: "빈칸학습지를 생성하는 중입니다...\n(자료의 양에 따라 소요시간이 증가합니다)")
+                
         APIManagere.shared.createWorksheet(userId: userIdentifier, name: name, category: category, content: content) { [weak self] result in
             DispatchQueue.main.async {
+                self?.hideLoadingViewController()
                 switch result {
                 case .success(let worksheetDetail):
                     print("Successfully created worksheet: \(worksheetDetail)")
-//                    removeActivityIndicator()
                     let workSheetVC = WorkSheetViewController()
                     WorkSheetManager.shared.worksheetDetail = worksheetDetail
                     self?.navigationController?.pushViewController(workSheetVC, animated: true)
@@ -508,7 +509,6 @@ extension HomeViewController: HeaderComponentDelegate {
                     self?.updateSharedCategories()
                 case .failure(let error):
                     print("Error creating worksheet: \(error)")
-//                    removeActivityIndicator()
                     self?.showErrorAlert(message: "학습지 생성에 실패했습니다.")
                 }
             }
@@ -903,6 +903,19 @@ extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, Wo
 }
 
 extension HomeViewController {
+    func showLoadingViewController(withMessage message: String) {
+        let loadingVC = LoadingViewController(loadingMessage: message)
+        loadingVC.modalPresentationStyle = .overFullScreen
+        loadingVC.modalTransitionStyle = .crossDissolve
+        present(loadingVC, animated: true, completion: nil)
+    }
+    
+    func hideLoadingViewController() {
+        if let loadingVC = presentedViewController as? LoadingViewController {
+            loadingVC.dismiss(animated: true, completion: nil)
+        }
+    }
+    
     func updateDocument(_ updatedDocument: Document) {
         print("문서 업데이트 중: \(updatedDocument.id), isBookmarked: \(updatedDocument.isBookmarked)")
         if let index = documents.firstIndex(where: { $0.id == updatedDocument.id && $0.fileType == updatedDocument.fileType }) {
