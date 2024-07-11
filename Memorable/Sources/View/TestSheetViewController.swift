@@ -578,7 +578,6 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
             self.updateTestsheetOnServer()
             self.replaceTextFieldsWithLabels()
             self.printAnswers()
-            self.checkAnswersAndShowResult()
             self.moveToFirstPage()
             
             
@@ -628,52 +627,6 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         for (index, question) in questionManager.questions.enumerated() {
             print("질문 \(index + 1) - 정답: \(question.answer), 쓴 답: \(String(describing: currentState?.userAnswers[index] ?? ""))")
         }
-    }
-    
-    private func checkAnswersAndShowResult(forceUpdate: Bool = false) {
-        guard let testsheetDetail = testsheetDetail else { return }
-        
-        var correctAnswers = 0
-        var isCorrect: [Bool] = []
-        let currentQuestions = isFirstSheetSelected ? testsheetDetail.questions1 : testsheetDetail.questions2
-        
-        for question in currentQuestions {
-            let normalizedCorrectAnswer = question.answer.lowercased().replacingOccurrences(of: " ", with: "")
-            let normalizedUserAnswer = question.userAnswer.lowercased().replacingOccurrences(of: " ", with: "")
-            
-            let isAnswerCorrect = normalizedCorrectAnswer == normalizedUserAnswer
-            isCorrect.append(isAnswerCorrect)
-            if isAnswerCorrect {
-                correctAnswers += 1
-            }
-        }
-        
-        if isFirstSheetSelected {
-            firstSheetState?.score = correctAnswers
-            firstSheetState?.isCorrect = isCorrect
-        } else {
-            secondSheetState?.score = correctAnswers
-            secondSheetState?.isCorrect = isCorrect
-        }
-        
-        resultLabel.text = "\(correctAnswers)/\(currentQuestions.count)"
-        resultLabel.isHidden = false
-        scoreLabel.isHidden = false
-        
-        if !forceUpdate {
-            resultLabel.alpha = 0
-            UIView.animate(withDuration: 0.5) {
-                self.resultLabel.alpha = 1
-            }
-        }
-        
-        updateUIForSubmittedState()
-        
-        if !isFirstSheetSelected && testsheetDetail.reExtracted {
-            showFinishImage()
-        }
-        
-        updateTestsheetOnServer()
     }
     
     @objc private func backButtonTapped() {
@@ -763,7 +716,21 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
         print("Updating server - userAnswers1: \(userAnswers1)")
         print("Updating server - userAnswers2: \(userAnswers2)")
         print("Updating server - isCorrect: \(isCorrect)")
-
+        
+        func showLoadingViewController(withMessage message: String) {
+            let loadingVC = LoadingViewController(loadingMessage: message)
+            loadingVC.modalPresentationStyle = .overFullScreen
+            loadingVC.modalTransitionStyle = .crossDissolve
+            present(loadingVC, animated: true, completion: nil)
+        }
+        
+        func hideLoadingViewController() {
+            if let loadingVC = presentedViewController as? LoadingViewController {
+                loadingVC.dismiss(animated: true, completion: nil)
+            }
+        }
+        
+        showLoadingViewController(withMessage: "빈칸학습지를 생성하는 중입니다...\n(자료의 양에 따라 소요시간이 증가합니다)")
         apiManager.updateTestsheet(
             testsheetId: testsheetDetail.testsheetId,
             isReExtracted: reExtracted,
@@ -773,10 +740,11 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
             isCorrect: isCorrect
         ) { result in
             DispatchQueue.main.async {
+                hideLoadingViewController()
                 switch result {
                 case .success(let response):
                     if self.isFirstSheetSelected {
-                        self.testsheetDetail?.score?[0] = response.score?[0] ?? 0
+                        self.firstSheetState?.score = response.score?[0] ?? 0
                         if let firstAnswerCount = self.firstSheetState?.userAnswers.count,
                            let responseIsCorrect = response.isCorrect {
                             self.testsheetDetail?.isCorrect?.replaceSubrange(0..<firstAnswerCount, with: responseIsCorrect.prefix(firstAnswerCount))
@@ -784,8 +752,8 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
                             print("Updated isCorrect for first sheet: \(self.testsheetDetail?.isCorrect ?? [])")
                         }
                     } else {
-                        self.testsheetDetail?.score?[1] = response.score?[1] ?? 0
-                        if let firstAnswerCount = self.firstSheetState?.userAnswers.count,
+                        self.secondSheetState?.score = response.score?[1] ?? 0
+                        if let firstAnswerCount = self.secondSheetState?.userAnswers.count,
                            let secondAnswerCount = self.secondSheetState?.userAnswers.count,
                            let responseIsCorrect = response.isCorrect {
                             let startIndex = firstAnswerCount
@@ -804,6 +772,7 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
                     print("firstSheetState: \(String(describing: self.firstSheetState))")
                     print("secondSheetState: \(String(describing: self.secondSheetState))")
                     self.updateUI()
+                    self.displayScore()
                 case .failure(let error):
                     print("Failed to update testsheet: \(error)")
                 }
@@ -819,15 +788,17 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
     @objc private func showSendWrongAlert() {
         let alertController = UIAlertController(title: "오답노트 보내기", message: "오답문제를 오답노트에 추가합니다\n오답노트 페이지로 이동하시겠습니까?", preferredStyle: .alert)
         let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
-            for question in self.currentQuestions {
-                let normalizedCorrectAnswer = question.answer.lowercased().replacingOccurrences(of: " ", with: "")
-                let normalizedUserAnswer = question.userAnswer.lowercased().replacingOccurrences(of: " ", with: "")
-                
-                if normalizedCorrectAnswer != normalizedUserAnswer {
+            guard let currentState = self.isFirstSheetSelected ? self.firstSheetState : self.secondSheetState else {
+                return
+            }
+
+            for (index, isCorrect) in (currentState.isCorrect ?? []).enumerated() {
+                if !isCorrect {
+                    let question = self.currentQuestions[index]
                     self.incorrectQuestions.append(question.questionId)
                 }
             }
-            
+
             // Call API to create wrongsheet with self.incorrectQuestions
             self.sendIncorrectQuestions()
         }
