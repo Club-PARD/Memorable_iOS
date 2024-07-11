@@ -70,6 +70,8 @@ class StreakView: UIView {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.backgroundColor = .white
+        
+        collectionView.showsHorizontalScrollIndicator = false
     }
     
     private func calculateDates() {

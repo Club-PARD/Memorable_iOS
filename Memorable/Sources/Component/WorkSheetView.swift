@@ -9,7 +9,7 @@ import SnapKit
 import Then
 import UIKit
 
-class WorkSheetView: UIView {
+class WorkSheetView: UIView, UIScrollViewDelegate {
     // MARK: - Properties
 
     var userAnswers: [UITextField] = []
@@ -30,9 +30,18 @@ class WorkSheetView: UIView {
         $0.layer.cornerRadius = 40
     }
 
-    private let scrollView = UIScrollView().then {
-        $0.alwaysBounceVertical = true
-        $0.showsVerticalScrollIndicator = true
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.alwaysBounceVertical = true
+        scrollView.showsVerticalScrollIndicator = true
+        scrollView.minimumZoomScale = 1.0
+        scrollView.maximumZoomScale = 3.0
+        scrollView.delegate = self
+        return scrollView
+    }()
+    
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return workSheetContent
     }
 
     private var contentString = ""
@@ -117,133 +126,78 @@ class WorkSheetView: UIView {
     // MARK: - Content Methods
 
     func createFillInTheBlanksUI(question: String, answers: [String]) -> UIView {
-        print(question)
-
-        // Split the question and replace answers with text fields
-        print(question)
-        var remainingQuestion = question
-        var currentLineView: UIStackView?
-        var currentLineWidth: CGFloat = 0
-        
-        // 줄바꿈을 기준으로 질문 나눔
         let lines = question.components(separatedBy: .newlines)
+        var answerIndex = 0
 
-        for answer in answers {
-            guard let range = remainingQuestion.range(of: answer) else { continue }
+        for line in lines {
+            let lineView = self.createNewLineView()
+            self.containerView.addArrangedSubview(lineView)
+            
+            var remainingLine = line
+            var currentLineWidth: CGFloat = 0
 
-            // Split the question into prefix and remaining parts
-            let prefixString = String(remainingQuestion[..<range.lowerBound])
-            remainingQuestion = String(remainingQuestion[range.upperBound...])
+            while !remainingLine.isEmpty {
+                if let range = answers.indices.contains(answerIndex) ? remainingLine.range(of: answers[answerIndex]) : nil {
+                    // Add text before the answer
+                    let prefixString = String(remainingLine[..<range.lowerBound])
+                    self.addWordsToLineView(words: prefixString.split(separator: " "), to: lineView, currentLineWidth: &currentLineWidth)
 
-            // Add prefix label
-            let words = prefixString.split(separator: " ")
+                    // Add text field for the answer
+                    let answer = answers[answerIndex]
+                    let textField = self.createTextField(for: answer)
+                    lineView.addArrangedSubview(textField)
+                    currentLineWidth += textField.frame.width
 
-            for word in words {
-                let label = UILabel().then {
-                    $0.text = String(word) + " "
-                    $0.textColor = .black
-                    $0.textAlignment = .center
+                    remainingLine = String(remainingLine[range.upperBound...])
+                    answerIndex += 1
+                } else {
+                    // Add remaining text
+                    self.addWordsToLineView(words: remainingLine.split(separator: " "), to: lineView, currentLineWidth: &currentLineWidth)
+                    break
                 }
-                let labelWidth = label.intrinsicContentSize.width
-
-                if currentLineWidth + labelWidth < self.viewWidth - 250 {
-                    if currentLineView == nil {
-                        currentLineView = self.createNewLineView()
-                        self.containerView.addArrangedSubview(currentLineView!)
-                    }
-                    currentLineView!.addArrangedSubview(label)
-                    currentLineWidth += labelWidth
-                }
-                // viewWidth 초과했을떄
-                else {
-                    // 새로운 라인 시작
-                    currentLineView = self.createNewLineView()
-                    self.containerView.addArrangedSubview(currentLineView!)
-                    currentLineView!.addArrangedSubview(label)
-
-                    currentLineWidth = labelWidth
-                }
-            }
-
-            // 텍스트필드 생성 부분 수정
-            let textFieldWidth = self.calculateWidth(for: answer)
-            let textField = UITextField().then {
-                $0.delegate = self
-                $0.textAlignment = .center
-                $0.font = .systemFont(ofSize: 13)
-                $0.layer.cornerRadius = 15
-                $0.backgroundColor = MemorableColor.Gray5
-
-                $0.snp.makeConstraints { make in
-                    make.width.equalTo(textFieldWidth)
-                    make.height.equalTo(30)
-                }
-                $0.placeholder = String(repeating: " ", count: answer.count) // 답변 길이만큼 공백으로 플레이스홀더 설정
-
-                // 좌우 여백 추가
-                let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 30))
-                $0.leftView = paddingView
-                $0.leftViewMode = .always
-                $0.rightView = paddingView
-                $0.rightViewMode = .always
-            }
-            self.userAnswers.append(textField)
-
-            if currentLineWidth + textFieldWidth < self.viewWidth - 250 {
-                if currentLineView == nil {
-                    currentLineView = self.createNewLineView()
-                    self.containerView.addArrangedSubview(currentLineView!)
-                }
-                currentLineView!.addArrangedSubview(textField)
-                currentLineWidth += textFieldWidth
-            }
-            // viewWidth 초과했을떄
-            else {
-                // 새로운 라인 시작
-                currentLineView = self.createNewLineView()
-                self.containerView.addArrangedSubview(currentLineView!)
-                currentLineView!.addArrangedSubview(textField)
-
-                currentLineWidth = textFieldWidth
-            }
-
-            if self.previousLineViewWidth == 0 {
-                self.previousLineView = currentLineView
-                self.previousLineViewWidth = currentLineWidth
-            }
-        }
-
-        // Add the remaining part of the question as a suffix label
-        let words = remainingQuestion.split(separator: " ")
-
-        for word in words {
-            let label = UILabel().then {
-                $0.text = String(word) + ""
-                $0.textColor = .black
-                $0.textAlignment = .center
-            }
-            let labelWidth = label.intrinsicContentSize.width
-
-            if currentLineWidth + labelWidth < self.viewWidth - 250 {
-                if currentLineView == nil {
-                    currentLineView = self.createNewLineView()
-                    self.containerView.addArrangedSubview(currentLineView!)
-                }
-                currentLineView!.addArrangedSubview(label)
-                currentLineWidth += labelWidth
-            }
-            // viewWidth 초과했을떄
-            else {
-                // 새로운 라인 시작
-                currentLineView = self.createNewLineView()
-                self.containerView.addArrangedSubview(currentLineView!)
-                currentLineView!.addArrangedSubview(label)
-
-                currentLineWidth = labelWidth
             }
         }
 
         return self.containerView
+    }
+
+    private func addWordsToLineView(words: [Substring], to lineView: UIStackView, currentLineWidth: inout CGFloat) {
+        for word in words {
+            let label = UILabel().then {
+                $0.text = String(word) + " "
+                $0.textColor = .black
+                $0.textAlignment = .center
+            }
+            let labelWidth = label.intrinsicContentSize.width
+            
+            lineView.addArrangedSubview(label)
+            currentLineWidth += labelWidth
+        }
+    }
+
+    private func createTextField(for answer: String) -> UITextField {
+        let textFieldWidth = self.calculateWidth(for: answer)
+        let textField = UITextField().then {
+            $0.delegate = self
+            $0.textAlignment = .center
+            $0.font = .systemFont(ofSize: 13)
+            $0.layer.cornerRadius = 15
+            $0.backgroundColor = MemorableColor.Gray5
+
+            $0.snp.makeConstraints { make in
+                make.width.equalTo(textFieldWidth)
+                make.height.equalTo(30)
+            }
+            $0.placeholder = String(repeating: " ", count: answer.count)
+
+            let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 30))
+            $0.leftView = paddingView
+            $0.leftViewMode = .always
+            $0.rightView = paddingView
+            $0.rightViewMode = .always
+        }
+        self.userAnswers.append(textField)
+        return textField
     }
 
     // 텍스트 길이에 따른 너비 계산 함수
