@@ -68,6 +68,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
     
+    func showLoadingViewController(withMessage message: String) {
+        let loadingVC = LoadingViewController(loadingMessage: message)
+        loadingVC.modalPresentationStyle = .overFullScreen
+        loadingVC.modalTransitionStyle = .crossDissolve
+        present(loadingVC, animated: true, completion: nil)
+    }
+    
+    func hideLoadingViewController() {
+        if let loadingVC = presentedViewController as? LoadingViewController {
+            loadingVC.dismiss(animated: true, completion: nil)
+        }
+    }
+    
     func createAndNavigateToWorksheet(name: String, category: String, content: String) {
         guard let userIdentifier = UserDefaults.standard.string(forKey: "login") else {
             print("User identifier not found")
@@ -75,13 +88,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
         // 인디케이터 표시
-        setupActivityIndicator(view: window!)
+        showLoadingViewController(withMessage: "빈칸학습지를 생성하는 중입니다...\n(자료의 양에 따라 소요시간이 증가합니다)")
         
         APIManagere.shared.createWorksheet(userId: userIdentifier, name: name, category: category, content: content) { [weak self] result in
             DispatchQueue.main.async {
+                self?.hideLoadingViewController()
                 switch result {
                 case .success(let worksheetDetail):
-                    removeActivityIndicator()
                     print("Successfully created worksheet: \(worksheetDetail)")
                     let workSheetVC = WorkSheetViewController()
                     WorkSheetManager.shared.worksheetDetail = worksheetDetail
@@ -95,7 +108,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         }
                     }
                 case .failure(let error):
-                    removeActivityIndicator()
                     print("Error creating worksheet: \(error)")
                     // 에러 처리 로직 추가
                 }

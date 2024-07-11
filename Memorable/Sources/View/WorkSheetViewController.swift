@@ -278,7 +278,20 @@ class WorkSheetViewController: UIViewController {
 
         resetButton.setNeedsUpdateConfiguration()
     }
-
+    
+    func showLoadingViewController(withMessage message: String) {
+        let loadingVC = LoadingViewController(loadingMessage: message)
+        loadingVC.modalPresentationStyle = .overFullScreen
+        loadingVC.modalTransitionStyle = .crossDissolve
+        present(loadingVC, animated: true, completion: nil)
+    }
+    
+    func hideLoadingViewController() {
+        if let loadingVC = presentedViewController as? LoadingViewController {
+            loadingVC.dismiss(animated: true, completion: nil)
+        }
+    }
+    
     @objc func didTapDoneButton() {
         print("DONE")
         let alert = UIAlertController(title: "시험지 받기", message: "시험지가 자동으로 생성되고\n생성된 시험지로 이동합니다.", preferredStyle: .alert)
@@ -293,14 +306,14 @@ class WorkSheetViewController: UIViewController {
                 print("detail 없음")
                 return
             }
-            setupActivityIndicator(view: self.view)
+            self.showLoadingViewController(withMessage: "시험지를 생성하는 중입니다...\n(자료의 양에 따라 소요시간이 증가합니다)")
 
             APIManager.shared.updateData(to: "/api/worksheet/make/\(detail.worksheetId)", body: detail) { result in
                 switch result {
                 case .success:
                     print("isMakeTestSheet Update 성공")
                 case .failure(let error):
-                    removeActivityIndicator()
+                    self.hideLoadingViewController()
                     print("Update 실패: \(error.localizedDescription)")
                 }
             }
@@ -313,12 +326,12 @@ class WorkSheetViewController: UIViewController {
                         let testSheetVC = TestSheetViewController()
                         testSheetVC.testsheetDetail = testSheetDetail
 
-                        removeActivityIndicator()
+                        self.hideLoadingViewController()
 
                         self.navigationController?.setViewControllers([HomeViewController(), testSheetVC], animated: true)
 
                     case .failure(let error):
-                        removeActivityIndicator()
+                        self.hideLoadingViewController()
                         print("Error posting testsheet: \(error.localizedDescription)")
                     }
                 }
