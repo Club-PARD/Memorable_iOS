@@ -146,14 +146,14 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
         }
     }
     
-    private func signInWithExistingAccount(credential: ASAuthorizationAppleIDCredential) {
-        print("Signing in with existing account with user: \(credential.user)")
+    private func signInWithExistingAccount(identifier: String) {
+        print("Signing in with existing account with user: \(SignInManager.userIdentifierKey)")
         setupActivityIndicator(view: view)
         
         dismiss(animated: true) { [weak self] in
             guard let self = self else { return }
     
-            APIManager.shared.getData(to: "/api/users/\(credential.user)") { (info: User?, error: Error?) in
+            APIManager.shared.getData(to: "/api/users/\(SignInManager.userIdentifierKey)") { (info: User?, error: Error?) in
 
                 DispatchQueue.main.async {
                     // 3. 받아온 데이터 처리
@@ -203,9 +203,9 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
         case let appleIDCredential as ASAuthorizationAppleIDCredential:
             
             // 우리 앱에 계정을 생성한다.
-            let userIdentifier = appleIDCredential.user
-            let fullName = appleIDCredential.fullName
-            let email = appleIDCredential.email
+            SignInManager.userIdentifierKey = appleIDCredential.user
+//            let fullName = appleIDCredential.fullName
+//            let email = appleIDCredential.email
             
 //            if let authorizationCode = appleIDCredential.authorizationCode,
 //               let identityToken = appleIDCredential.identityToken,
@@ -229,10 +229,12 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
 //                print("👥 User Info Saved")
 //            }
             
+            print("USER: \(SignInManager.userIdentifierKey)")
+            
             if let _ = appleIDCredential.email, let _ = appleIDCredential.fullName {
                 registerNewAccount(credential: appleIDCredential)
             } else {
-                signInWithExistingAccount(credential: appleIDCredential)
+                signInWithExistingAccount(identifier: SignInManager.userIdentifierKey)
             }
             
         case let passwordCredential as ASPasswordCredential:
