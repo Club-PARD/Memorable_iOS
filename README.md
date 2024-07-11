@@ -54,32 +54,33 @@ Learn more, Be memorable 당신의 기억에 남게
 </details>
 
 ## 🌟 Memorable 세부 기능들
-> 🔑 애플로그인으로 간편하게 Memorable에 접속할 수 있어요!
+> 🔑 <b>애플로그인</b>으로 간편하게 Memorable에 접속할 수 있어요!
 
 <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/e8c6a4ea-1ea5-4d17-b5d0-41520ee5bda2" width=45%> <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/cc32ed2b-b44a-43dd-8a81-8dab5a86624c" width=45%>
   
-> 🏃‍♂️‍➡️ 온보딩 화면으로 쉽게 사용법을 익힐 수 있어요!
+> 🏃‍♂️‍➡️ <b>온보딩 화면</b>으로 쉽게 사용법을 익힐 수 있어요!
 
 <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/c4311641-c5bf-4916-b652-be7b5ae48172" width=45%> <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/ed014d2b-12ea-4093-a408-736518d97eb7" width=45%>
 
-> 📖 빈칸 학습지를 자동으로 추출해 손쉽고 효율적으로 공부할 수 있어요!
+> 📖 <b>빈칸 학습지</b>를 자동으로 추출해 손쉽고 효율적으로 공부할 수 있어요!
 
-<img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/c4311641-c5bf-4916-b652-be7b5ae48172" width=45%> <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/ed014d2b-12ea-4093-a408-736518d97eb7" width=45%>
+<img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/c2b10c96-e749-4524-83ae-0ac36191fe9f" width=45%> <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/733e27c4-64fc-45de-817f-0cae03e2f4ea" width=45%>
 
-> 📝 학습지를 통해 공부한 내용을 토대로 추출된 시험지로 효과적으로 테스트할 수 있어요!
+> 📝 학습지를 통해 공부한 내용을 토대로 추출된 <b>나만의 시험지</b>로 효과적으로 테스트할 수 있어요!
 
-<img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/c4311641-c5bf-4916-b652-be7b5ae48172" width=45%> <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/ed014d2b-12ea-4093-a408-736518d97eb7" width=45%>
+<img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/2ea20326-c69d-4db4-bdfe-eaded9f559ee" width=45%> <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/584bf3bf-57b6-49e9-a216-bc341b61d292" width=45%>
 
-> 📚 시험지에서 오답처리된 문제들을 오답노트를 통해 다시 한번 복습할 수 있어요!
+> 📚 시험지에서 오답처리된 문제들을 <b>오답노트</b>를 통해 다시 한번 복습할 수 있어요!
 
-<img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/c4311641-c5bf-4916-b652-be7b5ae48172" width=45%> <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/ed014d2b-12ea-4093-a408-736518d97eb7" width=45%>
+<img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/0bc51c98-7b94-457a-b1f5-401ec2671266" width=90%>
 
 > 🔍 홈 라이브러리
 
-<img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/c4311641-c5bf-4916-b652-be7b5ae48172" width=45%> <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/ed014d2b-12ea-4093-a408-736518d97eb7" width=45%>
+<img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/85f44ce6-b327-4990-b259-3220eb809439" width=45%> <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/376afee2-6f7e-475a-9f37-027418fbcfeb" width=45%>
 
 > 📑 홈 즐겨찾기 & 마이페이지
 
-<img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/c4311641-c5bf-4916-b652-be7b5ae48172" width=45%> <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/ed014d2b-12ea-4093-a408-736518d97eb7" width=45%>
+<img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/67722c34-0390-4668-a99b-bc53311a16c8" width=45%> <img src="https://github.com/hgkim215/Memorable_iOS/assets/61077215/f8a4bee0-3f3c-41c2-96b1-a8b87b3729dd" width=45%>
 
 <br/>
+
