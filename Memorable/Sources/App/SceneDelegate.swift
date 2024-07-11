@@ -72,12 +72,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let loadingVC = LoadingViewController(loadingMessage: message)
         loadingVC.modalPresentationStyle = .overFullScreen
         loadingVC.modalTransitionStyle = .crossDissolve
-        present(loadingVC, animated: true, completion: nil)
+        if let rootVC = window?.rootViewController {
+            rootVC.present(loadingVC, animated: true, completion: nil)
+        }
     }
     
     func hideLoadingViewController() {
-        if let loadingVC = presentedViewController as? LoadingViewController {
-            loadingVC.dismiss(animated: true, completion: nil)
+        if let rootVC = window?.rootViewController {
+            if let loadingVC = rootVC.presentedViewController as? LoadingViewController {
+                loadingVC.dismiss(animated: true, completion: nil)
+            }
         }
     }
     
