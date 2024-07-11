@@ -479,7 +479,7 @@ class TestSheetViewController: UIViewController, UITextFieldDelegate {
                     let isCorrect = currentState?.isCorrect?[questionIndex]
                     
                     questionView.isHidden = false
-                    questionView.configure(with: question, questionNumberValue: questionIndex + 1, userAnswer: userAnswer, isCorrect: isCorrect)
+                    questionView.configure(with: question, questionNumberValue: questionIndex + 1, userAnswer: userAnswer, isCorrect: currentState?.isCorrect?[questionIndex])
                     
                     if isSubmitted {
                         questionView.replaceTextFieldWithLabels()
