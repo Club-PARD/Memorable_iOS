@@ -14,6 +14,7 @@ protocol LibraryViewComponentDelegate: AnyObject {
     func didTapWrongsheetButton(with documents: [Document])
     func didTapRecentButton()
     func didUpdateBookmark(for document: Document)
+    func refreshLibraryView()
 }
 
 class LibraryViewComponent: UIView {
@@ -69,11 +70,25 @@ class LibraryViewComponent: UIView {
         currentFilterButton = allFilterButton // MARK: 즐겨찾기 수정
         setupViews()
         setupConstraints()
+        configureRefreshControl()
     }
     
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func configureRefreshControl() {
+        scrollView.refreshControl = UIRefreshControl()
+        scrollView.refreshControl?.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
+    }
+    
+    @objc func handleRefreshControl() {
+        delegate?.refreshLibraryView()
+        
+        DispatchQueue.main.async {
+            self.scrollView.refreshControl?.endRefreshing()
+        }
     }
     
     private func setupViews() {

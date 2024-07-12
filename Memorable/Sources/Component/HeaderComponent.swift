@@ -377,22 +377,47 @@ class HeaderComponent: UIView {
         }
     }
     
-    private func handleDocument(url: URL, fileName: String, fileType: String) {
-        if fileType == "PDF" {
-            pdfDocument = PDFDocument(url: url)
-            extractTextFromPDF { [weak self] in
-                self?.showNameAlert(fileName: fileName, previousName: "")
-            }
-        } else if ["jpg", "jpeg", "png"].contains(fileType.lowercased()) {
-            if let image = UIImage(contentsOfFile: url.path) {
-                extractTextFromImage(image: image) { [weak self] in
-                    self?.showNameAlert(fileName: fileName, previousName: "")
+    func handleDocument(url: URL, fileName: String, fileType: String) {
+            let fileCoordinator = NSFileCoordinator()
+            var error: NSError?
+            fileCoordinator.coordinate(readingItemAt: url, options: [], error: &error) { newURL in
+                print("Accessing file at URL: \(newURL)")
+                if fileType == "pdf" {
+                    self.pdfDocument = PDFDocument(url: newURL)
+                    if self.pdfDocument != nil {
+                        print("PDF document loaded successfully")
+                        self.extractTextFromPDF { [weak self] in
+                            self?.showNameAlert(fileName: fileName, previousName: "")
+                        }
+                    } else {
+                        print("Failed to load PDF document from URL: \(newURL)")
+                    }
+                } else if ["jpg", "jpeg", "png"].contains(fileType) {
+                    DispatchQueue.global().async {
+                        do {
+                            let imageData = try Data(contentsOf: newURL)
+                            guard let image = UIImage(data: imageData) else {
+                                print("Failed to load image from URL: \(newURL)")
+                                return
+                            }
+                            print("Image loaded successfully from URL: \(newURL)")
+                            self.extractTextFromImage(image: image) { [weak self] in
+                                DispatchQueue.main.async {
+                                    self?.showNameAlert(fileName: fileName, previousName: "")
+                                }
+                            }
+                        } catch {
+                            print("Error loading image data: \(error)")
+                        }
+                    }
                 }
             }
+            if let error = error {
+                print("Failed to access file: \(error.localizedDescription)")
+            }
         }
-    }
     
-    private func extractTextFromPDF(completion: @escaping () -> Void) {
+   func extractTextFromPDF(completion: @escaping () -> Void) {
         guard let pdfDocument = pdfDocument else {
             print("No PDF to extract text from")
             completion()
@@ -424,35 +449,35 @@ class HeaderComponent: UIView {
         }
     }
     
-    private func extractTextFromImage(image: UIImage, completion: @escaping () -> Void) {
+    func extractTextFromImage(image: UIImage, completion: @escaping () -> Void) {
         recognizeTextInImage(image: image) { recognizedText in
             self.extractedText = recognizedText
             completion()
         }
     }
-    
-    private func recognizeTextInImage(image: UIImage, completion: @escaping (String) -> Void) {
+
+    func recognizeTextInImage(image: UIImage, completion: @escaping (String) -> Void) {
         guard let cgImage = image.cgImage else {
             completion("")
             return
         }
-        
+
         let requestHandler = VNImageRequestHandler(cgImage: cgImage, options: [:])
         let request = VNRecognizeTextRequest { request, _ in
             guard let observations = request.results as? [VNRecognizedTextObservation] else {
                 completion("")
                 return
             }
-            
+
             let recognizedStrings = observations.compactMap { observation in
                 observation.topCandidates(1).first?.string
             }
-            
+
             completion(recognizedStrings.joined(separator: "\n"))
         }
-        
+
         request.recognitionLanguages = ["ko", "en"]
-        
+
         do {
             try requestHandler.perform([request])
         } catch {
@@ -741,21 +766,11 @@ class HeaderComponent: UIView {
 
 extension HeaderComponent: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        guard let url = urls.first else {
-            print("No URL selected")
-            return
-        }
+        guard let selectedURL = urls.first else { return }
+        let fileName = selectedURL.lastPathComponent
+        let fileType = selectedURL.pathExtension.lowercased()
         
-        let fileExtension = url.pathExtension.lowercased()
-        if fileExtension == "pdf" {
-            // Handle PDF document
-            handleDocument(url: url, fileName: url.lastPathComponent, fileType: "PDF")
-        } else if ["jpg", "jpeg", "png"].contains(fileExtension) {
-            // Handle image document
-            handleDocument(url: url, fileName: url.lastPathComponent, fileType: "Image")
-        } else {
-            print("Selected file is not supported (PDF, JPG, JPEG, PNG)")
-        }
+        handleDocument(url: selectedURL, fileName: fileName, fileType: fileType)
     }
 }
 

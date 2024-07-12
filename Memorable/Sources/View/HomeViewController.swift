@@ -571,6 +571,36 @@ extension HomeViewController: HeaderComponentDelegate {
 }
 
 extension HomeViewController: LibraryViewComponentDelegate, StarViewDelegate, WorksheetListViewComponentDelegate, SearchedSheetViewDelegate {
+    func refreshLibraryView() {
+        
+        // displayType에 따라 적절한 문서 필터링
+        fetchDocuments { [weak self] in
+            guard let self = self else { return }
+                
+            let displayDocuments: [Document]
+            switch self.lastDisplayType ?? .worksheet {
+            case .worksheet:
+                displayDocuments = self.documents.filter { $0.fileType == "빈칸학습지" }
+            case .testsheet:
+                displayDocuments = self.documents.filter { $0.fileType == "나만의 시험지" }
+            case .wrongsheet:
+                displayDocuments = self.documents.filter { $0.fileType == "오답노트" }
+            case .all:
+                displayDocuments = self.documents
+            }
+                
+            self.worksheetListViewComponent.setWorksheets(displayDocuments, self.lastCategory ?? "전체보기", displayType: self.lastDisplayType ?? .worksheet)
+                
+            // WorksheetViewController에서 돌아온 경우에만 마지막 카테고리를 선택
+            if self.lastCategory != "전체보기" {
+                self.worksheetListViewComponent.selectCategory(self.lastCategory ?? "전체보기")
+            }
+        }
+        DispatchQueue.main.async {
+            self.fetchMostRecentWorksheet()
+        }
+    }
+    
     func didTapWorksheetCell(inCategory category: String, displayType: WorksheetListViewComponent.DisplayDocumentType) {
         lastDisplayType = displayType
         lastCategory = category
