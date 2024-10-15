@@ -55,7 +55,6 @@
 	</dict>
 	<key>UIBackgroundModes</key>
 	<array>
-		<string>external-accessory</string>
 		<string>fetch</string>
 	</array>
 	<key>UIFileSharingEnabled</key>
