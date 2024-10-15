@@ -151,8 +151,7 @@ class ShareViewController: UIViewController {
             let result = recognizedStrings.joined(separator: "\n")
             completion(result)
         }
-        request.recognitionLevel = .fast // Use .accurate for better results but higher memory usage
-        request.usesLanguageCorrection = false
+        request.recognitionLanguages = ["ko", "en"]
 
         do {
             try requestHandler.perform([request])

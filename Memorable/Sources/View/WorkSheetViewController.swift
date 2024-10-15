@@ -166,6 +166,12 @@ class WorkSheetViewController: UIViewController {
             doneButton.isEnabled = true
         }
 
+        // for demoday
+//        finishImage.isHidden = false
+//        doneButton.setTitleColor(MemorableColor.White, for: .normal)
+//        doneButton.backgroundColor = MemorableColor.Blue2
+//        doneButton.isEnabled = true
+
         if detail.isAddWorksheet {
             finishAddWorksheet()
         }
@@ -278,20 +284,20 @@ class WorkSheetViewController: UIViewController {
 
         resetButton.setNeedsUpdateConfiguration()
     }
-    
+
     func showLoadingViewController(withMessage message: String) {
         let loadingVC = LoadingViewController(loadingMessage: message)
         loadingVC.modalPresentationStyle = .overFullScreen
         loadingVC.modalTransitionStyle = .crossDissolve
         present(loadingVC, animated: true, completion: nil)
     }
-    
+
     func hideLoadingViewController() {
         if let loadingVC = presentedViewController as? LoadingViewController {
             loadingVC.dismiss(animated: true, completion: nil)
         }
     }
-    
+
     @objc func didTapDoneButton() {
         print("DONE")
         let alert = UIAlertController(title: "시험지 받기", message: "시험지가 자동으로 생성되고\n생성된 시험지로 이동합니다.", preferredStyle: .alert)

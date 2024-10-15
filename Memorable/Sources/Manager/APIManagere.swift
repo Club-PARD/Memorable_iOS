@@ -18,7 +18,7 @@ enum APIError: Error {
 
 class APIManagere {
     static let shared = APIManagere()
-    private let baseURL = "https://memorable-pard.site"
+    private let baseURL = "https://memorable-study.site"
     
     struct EmptyResponse: Codable {}
     
